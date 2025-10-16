@@ -1,0 +1,192 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "HealthyPlacesToolkit",
+    "section": "",
+    "text": "Introduction\nThis toolkit provides an introduction to GIS and spatial analysis for opioid environment applications that will allow researchers, analysts, and practitioners to support their communities with better data analytics and visualization services.\nWe introduce basic spatial analytic functionalities using open source tools, mainly in R, using applied examples for visualizing, mapping, and understanding the opioid risk environment.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "intro.html",
+    "href": "intro.html",
+    "title": "1  Intro to Spatial Data",
+    "section": "",
+    "text": "1.1 Load Spatial Data\nFirst load in the shapefile. Remember, this type of data is actually comprised of multiple files. All need to be present in order to read correctly.\nChi_tracts = st_read(\"data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp\")\n\nReading layer `geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e' from data source `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 801 features and 9 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: -87.94025 ymin: 41.64429 xmax: -87.52366 ymax: 42.02392\nGeodetic CRS:  WGS84(DD)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "2  Summary",
+    "section": "",
+    "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Summary</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "crumbs": [
+      "References"
+    ]
+  },
+  {
+    "objectID": "intro.html#software-basics",
+    "href": "intro.html#software-basics",
+    "title": "Introduction",
+    "section": "",
+    "text": "sf\ntmap\ntidyverse\ntidycensus",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "intro.html#author-team",
+    "href": "intro.html#author-team",
+    "title": "Introduction",
+    "section": "Author Team",
+    "text": "Author Team\nThis toolkit was developed for the JCOIN Network by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.\nJCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide range of programs to develop new or improved prevention and treatment strategies for opioid addiction.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "intro.html#acknowledgements",
+    "href": "intro.html#acknowledgements",
+    "title": "Introduction",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number U2CDA050098. The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "intro.html#non-spatial-spatial-views",
+    "href": "intro.html#non-spatial-spatial-views",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.2 Non-Spatial & Spatial Views",
+    "text": "1.2 Non-Spatial & Spatial Views\nAlways inspect data when loading in. First we look at a non-spatial view.\n\nhead(Chi_tracts)\n\nSimple feature collection with 6 features and 9 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: -87.68822 ymin: 41.72902 xmax: -87.62394 ymax: 41.87455\nGeodetic CRS:  WGS84(DD)\n  commarea commarea_n countyfp10     geoid10 name10        namelsad10 notes\n1       44         44        031 17031842400   8424 Census Tract 8424  &lt;NA&gt;\n2       59         59        031 17031840300   8403 Census Tract 8403  &lt;NA&gt;\n3       34         34        031 17031841100   8411 Census Tract 8411  &lt;NA&gt;\n4       31         31        031 17031841200   8412 Census Tract 8412  &lt;NA&gt;\n5       32         32        031 17031839000   8390 Census Tract 8390  &lt;NA&gt;\n6       28         28        031 17031838200   8382 Census Tract 8382  &lt;NA&gt;\n  statefp10 tractce10                       geometry\n1        17    842400 POLYGON ((-87.62405 41.7302...\n2        17    840300 POLYGON ((-87.68608 41.8229...\n3        17    841100 POLYGON ((-87.62935 41.8528...\n4        17    841200 POLYGON ((-87.68813 41.8556...\n5        17    839000 POLYGON ((-87.63312 41.8744...\n6        17    838200 POLYGON ((-87.66782 41.8741...\n\n\nNote the last column – this is a spatially enabled column. The data is no longer a shapefile but an sf object, comprised of polygons.\nWe can use a baseR function to view the spatial dimension. The sf framework enables previews of each attribute in our spatial file.\n\nplot(Chi_tracts)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#spatial-data-structure",
+    "href": "intro.html#spatial-data-structure",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.3 Spatial Data Structure",
+    "text": "1.3 Spatial Data Structure\nCheck out the data structure of this file… What object is it?\n\nstr(Chi_tracts)\n\nClasses 'sf' and 'data.frame':  801 obs. of  10 variables:\n $ commarea  : chr  \"44\" \"59\" \"34\" \"31\" ...\n $ commarea_n: num  44 59 34 31 32 28 65 53 76 77 ...\n $ countyfp10: chr  \"031\" \"031\" \"031\" \"031\" ...\n $ geoid10   : chr  \"17031842400\" \"17031840300\" \"17031841100\" \"17031841200\" ...\n $ name10    : chr  \"8424\" \"8403\" \"8411\" \"8412\" ...\n $ namelsad10: chr  \"Census Tract 8424\" \"Census Tract 8403\" \"Census Tract 8411\" \"Census Tract 8412\" ...\n $ notes     : chr  NA NA NA NA ...\n $ statefp10 : chr  \"17\" \"17\" \"17\" \"17\" ...\n $ tractce10 : chr  \"842400\" \"840300\" \"841100\" \"841200\" ...\n $ geometry  :sfc_POLYGON of length 801; first list element: List of 1\n  ..$ : num [1:243, 1:2] -87.6 -87.6 -87.6 -87.6 -87.6 ...\n  ..- attr(*, \"class\")= chr [1:3] \"XY\" \"POLYGON\" \"sfg\"\n - attr(*, \"sf_column\")= chr \"geometry\"\n - attr(*, \"agr\")= Factor w/ 3 levels \"constant\",\"aggregate\",..: NA NA NA NA NA NA NA NA NA\n  ..- attr(*, \"names\")= chr [1:9] \"commarea\" \"commarea_n\" \"countyfp10\" \"geoid10\" ...\n\n\nCheck out the coordinate reference system. What is it? What are the units?\n\nst_crs(Chi_tracts)\n\nCoordinate Reference System:\n  User input: WGS84(DD) \n  wkt:\nGEOGCRS[\"WGS84(DD)\",\n    DATUM[\"WGS84\",\n        ELLIPSOID[\"WGS84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"longitude\",east,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"latitude\",north,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]]]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#exploring-coordinate-reference-systems",
+    "href": "intro.html#exploring-coordinate-reference-systems",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.4 Exploring Coordinate Reference Systems",
+    "text": "1.4 Exploring Coordinate Reference Systems\nLets see how switching CRS changes our object. First we’ll try the Mollweide coordinate reference system that does a good job preserving area across the globe.\nTo transform our CRS, we use the st_transform function. To plot, we use baseR again but with some paremeter updates. Finally, we check out the CRS of our new object. What are the units? Any other details to note? Will this be appropriate for our spatial analysis?\n\nChi_tracts.moll &lt;- st_transform(Chi_tracts, crs=\"ESRI:54009\")\n\nplot(st_geometry(Chi_tracts.moll), border = \"gray\", lwd = 2, main = \"Mollweide\", sub=\"preserves areas\")\n\n\n\n\n\n\n\nst_crs(Chi_tracts.moll)\n\nCoordinate Reference System:\n  User input: ESRI:54009 \n  wkt:\nPROJCRS[\"World_Mollweide\",\n    BASEGEOGCRS[\"WGS 84\",\n        DATUM[\"World Geodetic System 1984\",\n            ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433]]],\n    CONVERSION[\"World_Mollweide\",\n        METHOD[\"Mollweide\"],\n        PARAMETER[\"Longitude of natural origin\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"False easting\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"(E)\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1]],\n        AXIS[\"(N)\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1]],\n    USAGE[\n        SCOPE[\"Not known.\"],\n        AREA[\"World.\"],\n        BBOX[-90,-180,90,180]],\n    ID[\"ESRI\",54009]]\n\n\nNext, we’ll try the Winkel CRS, which is a compromise projection that facilitates minimal distortion for area, distance, and angles. We use the same approach, recyling the code with new inputs.\n\nChi_tracts.54019 = st_transform(Chi_tracts, crs=\"ESRI:54019\")\nplot(st_geometry(Chi_tracts.54019), border = \"gray\", lwd = 2, main = \"Winkel\", sub=\"minimal distortion\")\n\n\n\n\n\n\n\nst_crs(Chi_tracts.54019)\n\nCoordinate Reference System:\n  User input: ESRI:54019 \n  wkt:\nPROJCRS[\"World_Winkel_II\",\n    BASEGEOGCRS[\"WGS 84\",\n        DATUM[\"World Geodetic System 1984\",\n            ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433]]],\n    CONVERSION[\"World_Winkel_II\",\n        METHOD[\"Winkel II\"],\n        PARAMETER[\"Longitude of natural origin\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"Latitude of 1st standard parallel\",50.4597762521898,\n            ANGLEUNIT[\"Degree\",0.0174532925199433],\n            ID[\"EPSG\",8823]],\n        PARAMETER[\"False easting\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"(E)\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1]],\n        AXIS[\"(N)\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1]],\n    USAGE[\n        SCOPE[\"Not known.\"],\n        AREA[\"World.\"],\n        BBOX[-90,-180,90,180]],\n    ID[\"ESRI\",54019]]\n\n\nWe could also try a totally different projection, to see how that changes our spatial object. Let’s use the “Old Hawaiian UTM Zone 4n” projection, with the EPSG identified from an online search. How does this fare?\n\nChi_tracts.Hawaii = st_transform(Chi_tracts, crs=\"ESRI:102114\")\nplot(st_geometry(Chi_tracts.Hawaii), border = \"gray\", lwd = 2, main = \"Old Hawaiian UTM Zone 4N\", sub=\"wrong projection!\")\n\n\n\n\n\n\n\n\nFinally.. let’s choose a projection that is focused on Illinois, and uses distance as feet or meters, to make it a bit more accessible for our work. EPSG:3435 is a good fit:\n\nChi_tracts.3435 &lt;- st_transform(Chi_tracts, \"EPSG:3435\")\n# Chi_tracts.3435 &lt;- st_transform(Chi_tracts, 3435)\nst_crs(Chi_tracts.3435)\n\nCoordinate Reference System:\n  User input: EPSG:3435 \n  wkt:\nPROJCRS[\"NAD83 / Illinois East (ftUS)\",\n    BASEGEOGCRS[\"NAD83\",\n        DATUM[\"North American Datum 1983\",\n            ELLIPSOID[\"GRS 1980\",6378137,298.257222101,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        ID[\"EPSG\",4269]],\n    CONVERSION[\"SPCS83 Illinois East zone (US survey foot)\",\n        METHOD[\"Transverse Mercator\",\n            ID[\"EPSG\",9807]],\n        PARAMETER[\"Latitude of natural origin\",36.6666666666667,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8801]],\n        PARAMETER[\"Longitude of natural origin\",-88.3333333333333,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"Scale factor at natural origin\",0.999975,\n            SCALEUNIT[\"unity\",1],\n            ID[\"EPSG\",8805]],\n        PARAMETER[\"False easting\",984250,\n            LENGTHUNIT[\"US survey foot\",0.304800609601219],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"US survey foot\",0.304800609601219],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"easting (X)\",east,\n            ORDER[1],\n            LENGTHUNIT[\"US survey foot\",0.304800609601219]],\n        AXIS[\"northing (Y)\",north,\n            ORDER[2],\n            LENGTHUNIT[\"US survey foot\",0.304800609601219]],\n    USAGE[\n        SCOPE[\"Engineering survey, topographic mapping.\"],\n        AREA[\"United States (USA) - Illinois - counties of Boone; Champaign; Clark; Clay; Coles; Cook; Crawford; Cumberland; De Kalb; De Witt; Douglas; Du Page; Edgar; Edwards; Effingham; Fayette; Ford; Franklin; Gallatin; Grundy; Hamilton; Hardin; Iroquois; Jasper; Jefferson; Johnson; Kane; Kankakee; Kendall; La Salle; Lake; Lawrence; Livingston; Macon; Marion; Massac; McHenry; McLean; Moultrie; Piatt; Pope; Richland; Saline; Shelby; Vermilion; Wabash; Wayne; White; Will; Williamson.\"],\n        BBOX[37.06,-89.27,42.5,-87.02]],\n    ID[\"EPSG\",3435]]\n\nplot(st_geometry(Chi_tracts.3435), border = \"gray\", lwd = 2, main = \"NAD83 / Illinois East (ftUS)\", sub=\"topo mapping & survey use\")",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#refine-basic-map",
+    "href": "intro.html#refine-basic-map",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.5 Refine Basic Map",
+    "text": "1.5 Refine Basic Map\nNow we’ll switch to a more extensive cartographic mapping package, tmap. We approach mapping with one layer at a time. Always start with the object you want to map by calling it with the tm_shape function. Then, at least one descriptive/styling function follows. There are hundreds of variations and paramater specifications, so take your time in exploring tmap and the options.\nHere we style the tracts with some semi-transparent borders.\n\nlibrary(tmap)\n\ntm_shape(Chi_tracts) + \n  tm_borders(lwd = 0.5) \n\n\n\n\n\n\n\n\nNext we fill the tracts with a light gray, and adjust the color and transparency of borders. We also add a scale bar, positioning it to the left and having a thickness of 0.8 units, and turn off the frame. See more specifications for ‘tm_polygons’ at tmap documentations.\n\ntm_shape(Chi_tracts) + \n  tm_polygons(\n    fill = \"gray90\", #fill color\n    col = \"gray10\", #border color\n    lwd = 0.5 #line width\n    ) + \n  tm_scalebar(position = c(\"bottom\",\"left\"), lwd = 0.8) +\n  tm_layout(frame = FALSE)\n\n\n\n\n\n\n\n\nCheck out the tmap Reference manual for more ideas!",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#arrange-multiple-maps",
+    "href": "intro.html#arrange-multiple-maps",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.6 Arrange multiple maps",
+    "text": "1.6 Arrange multiple maps\nSometimes we want to look at multiple maps at once. Write your mapping function to a new variable, and then call that variable in order of desire using the tmap_arrange function. Hint: this is just one of many! ways to map multiples using tmap… see if you can uncover more in the documentation.\n\ntracts.4326 &lt;- tm_shape(Chi_tracts) + \n  tm_fill(col = \"gray90\") +\n  tm_layout(frame = FALSE, title = \"EPSG 4326\")\n\n[v3-&gt;v4] `tm_layout()`: use `tm_title()` instead of `tm_layout(title = )`\n\ntracts.54019 &lt;- tm_shape(Chi_tracts.54019) + \n  tm_fill(col = \"gray90\") +  \n  tm_layout(frame = FALSE, title = \"EPSG 54019\")\n\n[v3-&gt;v4] `tm_layout()`: use `tm_title()` instead of `tm_layout(title = )`\n\ntmap_arrange(tracts.4326, tracts.54019)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#interactive-mode",
+    "href": "intro.html#interactive-mode",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.7 Interactive Mode",
+    "text": "1.7 Interactive Mode\nSo far, we’ve been plotting static maps. We can also switch to an interactive map that uses a Leaflet widget by switching the tmap_mode() parameter specification from “plot” to “view.” It’s on “plot” as default.\n\ntmap_mode(\"view\")\n\nℹ tmap mode set to \"view\".\n\n\nMap the same map as before, and check out the interaction!\n\ntm_shape(Chi_tracts) + \n    tm_polygons(\n    fill = \"gray90\", #fill color\n    col = \"gray10\", #border color\n    lwd = 0.5 #line width\n    ) +\n  tm_scalebar(position = (\"left\"), lwd = 0.8)\n\nRegistered S3 method overwritten by 'jsonify':\n  method     from    \n  print.json jsonlite\n\n\n\n\n\n\nThe tracts are not thin enough, so we update that here. We also make the fill more transparent using the ‘alpha’ parameter. You can also click the box on the left side to try out other basemaps. See if you can find out how to add a basemap to a static/plotted map, using tmap documentation…\n\ntm_shape(Chi_tracts) + \n    tm_polygons(\n    fill = \"gray90\", #fill color\n    fill_alpha = 0.5, #fill transparency\n    col = \"gray10\", #border color\n    lwd = 0.25 #line width\n    )\n\n\n\n\n\nWe revert back to plot mode for now.\n\ntmap_mode(\"plot\")\n\nℹ tmap mode set to \"plot\".",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#overlay-zip-code-boundaries",
+    "href": "intro.html#overlay-zip-code-boundaries",
+    "title": "1  Intro to Spatial Data",
+    "section": "1.8 Overlay Zip Code Boundaries",
+    "text": "1.8 Overlay Zip Code Boundaries\nHow do census tract areas correspond to zip codes? While tracts better represent neighborhoods, often times we are stuck with zip code level scale in healh research. Here we’ll make a reference map to highlight tract distribution across each zip code.\nFirst, we read in zip code boundaries. This data was downloaded directly from the City of Chicago Data Portal as a shapefile.\n\nChi_Zips = st_read(\"data/chicago_zips1.shp\")\n\nReading layer `chicago_zips1' from data source \n  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/chicago_zips1.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 59 features and 4 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -87.94011 ymin: 41.64454 xmax: -87.52414 ymax: 42.02304\nGeodetic CRS:  +proj=longlat +ellps=WGS84 +no_defs\n\n\nNext, we layer the new shape in – on top of the tracts. We use a thicker border, and try out a new color. Experiment!\n\n## FIRST LAYER: CENSUS TRACT BOUNADRIES\ntm_shape(Chi_tracts.3435) + \n  tm_polygons(\n    fill = \"gray90\", #fill color\n    col = \"gray10\", #border color\n    lwd = 0.1 #line width\n    ) + \n\n## SECOND LAYER: ZIP CODE BOUNDARIES WITH LABEL\ntm_shape(Chi_Zips) +\n  tm_borders(lwd = 2, col = \"#0099CC\") +\n  tm_text(\"zip\", size = 0.4) +\n  \n## MORE CARTOGRAPHIC STYLE\n  tm_scalebar(position = c(\"bottom\",\"left\"), lwd = 0.8) +\n  tm_layout(frame = FALSE)",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#practice-in-sweden",
+    "href": "intro.html#practice-in-sweden",
+    "title": "1  Intro to Spatial Data",
+    "section": "Practice in Sweden",
+    "text": "Practice in Sweden\nNow practice with a new dataset! Download the DeSo file for Sweden at their official site. Scroll down to the bottom of the page, and click on “2018” for the year of reference. You can also use the file stored in this manual.\n\n1.8.1 Open Data\nOpen the dataset. It is a different spatial data format, called a geopackage, but will be understood by sf as long as you include the extension in your call.\n\n\nHint\n\ndeso &lt;- st_read(\"data/DeSO_2018.gpkg\")\n\n\n\nReading layer `DeSO_2018' from data source \n  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/DeSO_2018.gpkg' \n  using driver `GPKG'\nSimple feature collection with 5984 features and 8 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 266646.3 ymin: 6132476 xmax: 920877.4 ymax: 7671055\nProjected CRS: SWEREF99 TM\n\n\n\n\n1.8.2 Inspect Data\nInspect the data attributes. Map the data using a simple tmap function. Ensure the data is what you expected it to be across both dimensions.\n\n\nHint\n\nhead(deso) tm_shape(deso) + tm_polygons(fill = 'gray70', col = 'white', lwd=0.3)\n\n\n\nSimple feature collection with 6 features and 8 fields\nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 314985.7 ymin: 6222294 xmax: 518000.7 ymax: 6402218\nProjected CRS: SWEREF99 TM\n  objectid                      objektidentitet   desokod regsokod lanskod\n1        1 8de2583c-6a92-45b5-ad41-7f40b7a90862 1256B2010 1256R005      12\n2        2 5d108a83-8951-4345-a942-80d6f4e2d1a3 0760B3010 0760R001      07\n3        3 fea0f678-ed55-4cfc-8cf9-92c0050d102c 1082C1120 1082R001      10\n4        4 5af0864d-40f8-4599-8aa6-636d82976db3 1292A0010 1292R016      12\n5        5 3fa12a3d-7b03-40be-8633-4f8951101882 1081C1070 1081R007      10\n6     1281 d315f1e1-543c-4784-94d1-0b332839ff44 1480C2890 1480R134      14\n  kommunkod   kommunnamn version                    sp_geometry\n1      1256 Östra Göinge 2018_v2 POLYGON ((442392.5 6229549,...\n2      0760   Uppvidinge 2018_v2 POLYGON ((511578.2 6330751,...\n3      1082    Karlshamn 2018_v2 POLYGON ((490858.7 6229360,...\n4      1292    Ängelholm 2018_v2 POLYGON ((362874.8 6230834,...\n5      1081      Ronneby 2018_v2 POLYGON ((517351.8 6230866,...\n6      1480     Göteborg 2018_v2 POLYGON ((315673.9 6401327,...\n\n\n\n\n\n\n\n\n\n\n\n1.8.3 CRS Check\nInspect the coordinate reference system. Change the coordinate reference system to a different one.\n\n\nHint\n\nst_crs(deso) deso.3152 &lt;- st_transform(deso, 3152)\n\n\n\nCoordinate Reference System:\n  User input: SWEREF99 TM \n  wkt:\nPROJCRS[\"SWEREF99 TM\",\n    BASEGEOGCRS[\"SWEREF99\",\n        DATUM[\"SWEREF99\",\n            ELLIPSOID[\"GRS 1980\",6378137,298.257222101,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        ID[\"EPSG\",4619]],\n    CONVERSION[\"SWEREF99 TM\",\n        METHOD[\"Transverse Mercator\",\n            ID[\"EPSG\",9807]],\n        PARAMETER[\"Latitude of natural origin\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8801]],\n        PARAMETER[\"Longitude of natural origin\",15,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"Scale factor at natural origin\",0.9996,\n            SCALEUNIT[\"unity\",1],\n            ID[\"EPSG\",8805]],\n        PARAMETER[\"False easting\",500000,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"northing (N)\",north,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1]],\n        AXIS[\"easting (E)\",east,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1]],\n    USAGE[\n        SCOPE[\"Topographic mapping (medium and small scale).\"],\n        AREA[\"Sweden - onshore and offshore.\"],\n        BBOX[54.96,10.03,69.07,24.17]],\n    ID[\"EPSG\",3006]]",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#more-resources",
+    "href": "intro.html#more-resources",
+    "title": "1  Intro to Spatial Data",
+    "section": "More Resources",
+    "text": "More Resources\nOn spatial data basics & sf:\n\nhttps://r.geocompx.org/intro.html\nhttps://geodacenter.github.io/opioid-environment-toolkit/spatial-data-introduction.html\n\nOn projections:\n\nhttps://desktop.arcgis.com/en/arcmap/10.3/guide-books/map-projections/projection-basics-for-gis-professionals.htm\nhttps://geocompr.robinlovelace.net/reproj-geo-data.html\nhttps://datacarpentry.org/organization-geospatial/03-crs/index.html\n\nOn tmap:\n\nhttps://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html\nhttps://geocompr.robinlovelace.net/adv-map.html",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#software-basics",
+    "href": "index.html#software-basics",
+    "title": "HealthyPlacesToolkit",
+    "section": "Software Basics",
+    "text": "Software Basics\nWe assume a basic knowledge of R and coding languages for these toolkits. For most of the tutorials in this toolkit, you’ll need to have R and RStudio downloaded and installed on your system. You should be able to install packages, know how to find the address to a folder on your computer system, and have very basic familiarity with R. If you are new to R, we recommend the following intro-level tutorials provided through installation guides. You can also refer to this R for Social Scientists tutorial developed by Data Carpentry for a refresher.\nWe will work with following libraries, so please be sure to install:\n\nsf\ntmap\ntidyverse\ntidycensus\n\nThere are differing spatial ecosystems in R. We use the sf ecosystem that is compatible with the tidyverse. If you need to work between these two R spatial ecosystems, see this guide for a translation of sp to sf commands.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#author-team",
+    "href": "index.html#author-team",
+    "title": "HealthyPlacesToolkit",
+    "section": "Author Team",
+    "text": "Author Team\nThis toolkit was developed for the JCOIN Network by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.\nJCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide range of programs to develop new or improved prevention and treatment strategies for opioid addiction.",
+    "crumbs": [
+      "Introduction"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgements",
+    "href": "index.html#acknowledgements",
+    "title": "HealthyPlacesToolkit",
+    "section": "Acknowledgements",
+    "text": "Acknowledgements\nThis research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number U2CDA050098. The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.",
+    "crumbs": [
+      "Introduction"
+    ]
+  }
+]

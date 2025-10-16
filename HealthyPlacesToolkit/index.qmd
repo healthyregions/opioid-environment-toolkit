@@ -1,0 +1,28 @@
+# Introduction {.unnumbered}
+
+This toolkit provides an **introduction to GIS and spatial analysis** for opioid environment applications that will allow researchers, analysts, and practitioners to support their communities with better data analytics and visualization services.
+
+We introduce basic spatial analytic functionalities using **open source tools**, mainly in R, using applied examples for visualizing, mapping, and understanding the opioid risk environment.
+
+## Software Basics {.unnumbered}
+
+We assume a basic knowledge of R and coding languages for these toolkits. For most of the tutorials in this toolkit, you’ll need to have R and RStudio downloaded and installed on your system. You should be able to install packages, know how to find the address to a folder on your computer system, and have very basic familiarity with R. If you are new to R, we recommend the following [intro-level tutorials](https://learn.datacamp.com/courses/free-introduction-to-r) provided through [installation](https://rspatial.org/intr/1-introduction.html) guides. You can also refer to this [R for Social Scientists](https://datacarpentry.org/r-socialsci/) tutorial developed by *Data Carpentry* for a refresher.
+
+We will work with following libraries, so please be sure to install:
+
+-   sf
+-   tmap
+-   tidyverse
+-   tidycensus
+
+There are differing spatial ecosystems in R. We use the `sf` ecosystem that is compatible with the `tidyverse`. If you need to work between these two R spatial ecosystems, see [this guide](https://github.com/r-spatial/sf/wiki/Migrating) for a translation of `sp` to `sf` commands.
+
+## Author Team {.unnumbered}
+
+This toolkit was developed for the [JCOIN Network](https://heal.nih.gov/research/research-to-practice/jcoin) by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.
+
+JCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide range of programs to develop new or improved prevention and treatment strategies for opioid addiction.
+
+## Acknowledgements {.unnumbered}
+
+This research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number U2CDA050098. The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.
