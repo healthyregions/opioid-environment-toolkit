@@ -1,4 +1,4 @@
-# Introduction {.unnumbered}
+# Preface {.unnumbered}
 
 This toolkit provides an **introduction to GIS and spatial analysis** for opioid environment applications that will allow researchers, analysts, and practitioners to support their communities with better data analytics and visualization services.
 

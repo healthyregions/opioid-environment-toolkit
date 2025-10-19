@@ -2,13 +2,13 @@ project:
   type: book
 
 book:
-  title: "HealthyPlacesToolkit"
-  author: "Norah Jones"
+  title: "Health Environment R-Spatial Toolkit"
+  author: "Healthy Regions & Policies Lab"
   date: "10/16/2025"
   chapters:
     - index.qmd
     - intro.qmd
-    - summary.qmd
+    - mapping.qmd
     - references.qmd
 
 bibliography: references.bib

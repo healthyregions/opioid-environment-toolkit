@@ -1,0 +1,125 @@
+# Mapping Spatial Data
+
+## Environment Setup
+
+Now we'll switch to a more extensive cartographic mapping package, `tmap`, to map our data.
+
+## Mapping the Basics
+
+We approach mapping with one layer at a time. Always start with the object you want to map by calling it with the `tm_shape` function. Then, at least one descriptive/styling function follows. There are hundreds of variations and paramater specifications, so take your time in exploring `tmap` and the options.
+
+Here we style the tracts with some semi-transparent borders.
+
+```{r }
+library(sf)
+library(tmap)
+
+Chi_tracts <- st_read("ChiTracts-3435.gpkg")
+
+tm_shape(Chi_tracts) + 
+  tm_borders(lwd = 0.5) 
+```
+
+Next we fill the tracts with a light gray, and adjust the color and transparency of borders. We also add a scale bar, positioning it to the left and having a thickness of 0.8 units, and turn off the frame. See more specifications for 'tm_polygons' at [tmap documentations](https://r-tmap.github.io/tmap/reference/tm_polygons.html?q=tm_polygons#null).
+
+```{r }
+tm_shape(Chi_tracts) + 
+  tm_polygons(
+    fill = "gray90", #fill color
+    col = "gray10", #border color
+    lwd = 0.5 #line width
+    ) + 
+  tm_scalebar(position = c("bottom","left"), lwd = 0.8) +
+  tm_layout(frame = FALSE)
+```
+
+Check out the [tmap Reference manual](https://r-tmap.github.io/tmap/reference) for more ideas!
+
+### Arrange multiple maps
+
+Sometimes we want to look at multiple maps at once. Write your mapping function to a new variable, and then call that variable in order of desire using the `tmap_arrange` function. Hint: this is just one of many! ways to map multiples using `tmap`... see if you can uncover more in the documentation.
+
+```{r }
+tracts.4326 <- tm_shape(Chi_tracts) + 
+  tm_fill(col = "gray90") +
+  tm_layout(frame = FALSE, title = "EPSG 4326")
+
+tracts.54019 <- tm_shape(Chi_tracts.54019) + 
+  tm_fill(col = "gray90") +  
+  tm_layout(frame = FALSE, title = "EPSG 54019")
+
+tmap_arrange(tracts.4326, tracts.54019)
+```
+
+### Interactive Mode
+
+So far, we've been plotting static maps. We can also switch to an interactive map that uses a Leaflet widget by switching the `tmap_mode()` parameter specification from "plot" to "view." It's on "plot" as default.
+
+```{r warning=FALSE}
+tmap_mode("view")
+```
+
+Map the same map as before, and check out the interaction!
+
+```{r warning=FALSE}
+tm_shape(Chi_tracts) + 
+    tm_polygons(
+    fill = "gray90", #fill color
+    col = "gray10", #border color
+    lwd = 0.5 #line width
+    ) +
+  tm_scalebar(position = ("left"), lwd = 0.8)
+```
+
+The tracts are not thin enough, so we update that here. We also make the fill more transparent using the 'alpha' parameter. You can also click the box on the left side to try out other basemaps. See if you can find out how to add a basemap to a static/plotted map, using `tmap` documentation...
+
+```{r warning=FALSE}
+tm_shape(Chi_tracts) + 
+    tm_polygons(
+    fill = "gray90", #fill color
+    fill_alpha = 0.5, #fill transparency
+    col = "gray10", #border color
+    lwd = 0.25 #line width
+    )
+```
+
+We revert back to `plot` mode for now.
+
+```{r }
+tmap_mode("plot")
+```
+
+### Overlay Data
+
+How do census tract areas correspond to zip codes? While tracts better represent neighborhoods, often times we are stuck with zip code level scale in healh research. Here we'll make a reference map to highlight tract distribution across each zip code.
+
+First, we read in zip code boundaries. This data was downloaded directly from the *City of Chicago Data Portal* as a shapefile.
+
+```{r }
+Chi_Zips = st_read("data/chicago_zips1.shp")
+
+```
+
+Next, we layer the new shape in -- on top of the tracts. We use a thicker border, and try out a new color. Experiment!
+
+```{r }
+
+## FIRST LAYER: CENSUS TRACT BOUNADRIES
+tm_shape(Chi_tracts.3435) + 
+  tm_polygons(
+    fill = "gray90", #fill color
+    col = "gray10", #border color
+    lwd = 0.1 #line width
+    ) + 
+
+## SECOND LAYER: ZIP CODE BOUNDARIES WITH LABEL
+tm_shape(Chi_Zips) +
+  tm_borders(lwd = 2, col = "#0099CC") +
+  tm_text("zip", size = 0.4) +
+  
+## MORE CARTOGRAPHIC STYLE
+  tm_scalebar(position = c("bottom","left"), lwd = 0.8) +
+  tm_layout(frame = FALSE)
+```
+
+## Choropleth Mapping
