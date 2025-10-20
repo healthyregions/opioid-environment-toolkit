@@ -1,14 +1,26 @@
-# Load Spatial Data {#intro}
+# Intro to Spatial Data {#intro}
 
-First load in the shapefile. Remember, this type of data is actually comprised of multiple files. All need to be present in order to read correctly.
+## Overview {#GA-research-question}
+
+We start our analysis with loading in our base data. Using Census tract boundaries downloaded from the City of Chicago data portal, we'll do the following:
+
+-   Read in a shapefile with the `sf` library & convert to a `sf` spatial object
+
+-   Inspect the spatial *and* non-spatial dimensions of the data
+
+-   Inspect and transform the coordinate reference system
+
+-   Write the data to a new spatial data format for future use
+
+-   Map the data using basics of the `tmap` library.
+
+## Data Input
+
+First we load in the shapefile containing the census tract data information and geographic boundaries. Remember, this type of data (a shapefile) is actually comprised of multiple files. All need to be present in order to read correctly.
 
 ```{r}
 library(sf) 
 
-Chi_tracts = st_read("data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp")
-```
-
-``` r
 Chi_tracts = st_read("data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp")
 ```
 
@@ -39,10 +51,9 @@ str(Chi_tracts)
 
 Check out the coordinate reference system. What is it? What are the units?
 
-\`\`\`{r}
+```{r}
 st_crs(Chi_tracts)
-
-\`\`\`
+```
 
 ## Exploring Coordinate Reference Systems
 
@@ -87,7 +98,7 @@ plot(st_geometry(Chi_tracts.3435), border = "gray", lwd = 2, main = "NAD83 / Ill
 
 We transformed our Chicago tract spatial dataset to a coordinate reference system that is appropriate for Illinois-specific analysis, using a distance measure that is interpretable for our purposes. Let's write that file to our directory.
 
-We'll write to a new, elegant spatial data format, the *geopackage*.
+We'll write to a new, elegant spatial data format, the *geopackage*. Uncomment the line, and run.
 
 ```{r}
 #st_write(Chi_tracts.3435, "ChiTracts-3435.gpkg")
@@ -102,10 +113,7 @@ We approach mapping with one layer at a time. Always start with the object you w
 Here we style the tracts with some semi-transparent borders.
 
 ```{r }
-#library(sf)
 library(tmap)
-
-#Chi_tracts <- st_read("ChiTracts-3435.gpkg")
 
 tm_shape(Chi_tracts.3435) + 
   tm_borders(lwd = 0.5) 

@@ -7,14 +7,22 @@ book:
   date: "10/16/2025"
   chapters:
     - index.qmd
+    - orientation.qmd
     - intro.qmd
-    - mapping.qmd
+    - geocoding.qmd
+    - buffers.qmd
+    - linking.qmd
     - references.qmd
+  
+ 
 
 bibliography: references.bib
 
+prefer-html: true
+  
 format:
   html:
+    embed-resources: true
     theme: cosmo
   pdf:
     documentclass: scrreprt
