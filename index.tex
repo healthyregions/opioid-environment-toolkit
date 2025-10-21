@@ -226,28 +226,35 @@
 \markboth{Preface}{Preface}
 
 This toolkit provides an \textbf{introduction to GIS and spatial
-analysis} for opioid environment applications that will allow
-researchers, analysts, and practitioners to support their communities
-with better data analytics and visualization services.
+analysis} for health applications that will allow researchers, analysts,
+and practitioners to support their communities with better data
+analytics and visualization services.
 
 We introduce basic spatial analytic functionalities using \textbf{open
 source tools}, mainly in R, using applied examples for visualizing,
-mapping, and understanding the opioid risk environment.
+mapping, and understanding the community environment. As a project of
+the Justice Community Overdose Innovation network, applications covered
+consider the opioid and overdose risk environment.
+
+The
+\href{https://geodacenter.github.io/opioid-environment-toolkit/index.html}{original}
+toolkit version was published in 2020. This version was updated in 2025
+and will continue to be expanded through the end of 2029.
 
 \section*{Software Basics}\label{software-basics}
 \addcontentsline{toc}{section}{Software Basics}
 
 \markright{Software Basics}
 
-We assume a basic knowledge of R and coding languages for these
-toolkits. For most of the tutorials in this toolkit, you'll need to have
-R and RStudio downloaded and installed on your system. You should be
-able to install packages, know how to find the address to a folder on
-your computer system, and have very basic familiarity with R. If you are
-new to R, we recommend the following
-\href{https://learn.datacamp.com/courses/free-introduction-to-r}{intro-level
+We assume a basic knowledge of R and coding languages for most sections.
+For most of the tutorials in this toolkit, you'll need to have R and
+RStudio downloaded and installed on your system. You should be able to
+install packages, know how to find the address to a folder on your
+computer system, and have very basic familiarity with R. If you are new
+to R, we recommend the following
+\href{https://support.posit.co/hc/en-us/articles/201141096-Getting-Started-with-R}{intro-level
 tutorials} provided through
-\href{https://rspatial.org/intr/1-introduction.html}{installation}
+\href{https://rstudio-education.github.io/hopr/starting.html}{installation}
 guides. You can also refer to this
 \href{https://datacarpentry.org/r-socialsci/}{R for Social Scientists}
 tutorial developed by \emph{Data Carpentry} for a refresher.
@@ -257,13 +264,17 @@ We will work with following libraries, so please be sure to install:
 \begin{itemize}
 \tightlist
 \item
+  tidyverse
+\item
   sf
 \item
   tmap
 \item
-  tidyverse
+  tidygeocoder
 \item
   tidycensus
+\item
+  units
 \end{itemize}
 
 There are differing spatial ecosystems in R. We use the \texttt{sf}
@@ -297,10 +308,15 @@ strategies for opioid addiction.
 \markright{Acknowledgements}
 
 This research was supported by the National Institutes of Health through
-the NIH HEAL Initiative under award number U2CDA050098. The contents of
-this publication are solely the responsibility of the authors and do not
-necessarily represent the official views of the NIH, the NIH HEAL
-Initiative, or the participating sites.
+the NIH HEAL Initiative under award number
+\href{https://reporter.nih.gov/search/3wdLGk3ipEyheDa26AEwDA/project-details/9882805\#description}{1U2CDA050098-01}
+and
+\href{https://reporter.nih.gov/project-details/11129703\#description}{5UM1DA050098-03}.
+The contents of this publication are solely the responsibility of the
+authors and do not necessarily represent the official views of the NIH,
+the NIH HEAL Initiative, or the participating sites.
+
+\includegraphics[width=5in,height=\textheight,keepaspectratio]{img/JCOIN-logo-web.jpg}
 
 \bookmarksetup{startatroot}
 
@@ -472,7 +488,7 @@ Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
 \end{Shaded}
 
 \begin{verbatim}
-Reading layer `geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e' from data source `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp' 
+Reading layer `geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e' from data source `/Users/maryniakolak/Code/opioid-environment-toolkit/data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 801 features and 9 fields
 Geometry type: POLYGON
@@ -1066,7 +1082,7 @@ Passing 1 address to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 1.5 seconds
+Query completed in: 1.6 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1163,7 +1179,7 @@ Passing 27 addresses to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 36.9 seconds
+Query completed in: 34.3 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1220,7 +1236,7 @@ Passing 27 addresses to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 31.2 seconds
+Query completed in: 34.1 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1461,7 +1477,7 @@ Load in the MOUD resources shapefile.
 
 \begin{verbatim}
 Reading layer `methadone_clinics' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/methadone_clinics.shp' 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/methadone_clinics.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 27 features and 8 fields
 Geometry type: POINT
@@ -1483,7 +1499,7 @@ boundaries directly through the Census via R in a later tutorial.
 
 \begin{verbatim}
 Reading layer `chicago_zips' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/chicago_zips.shp' 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/chicago_zips.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 85 features and 9 fields
 Geometry type: MULTIPOLYGON
@@ -1500,7 +1516,7 @@ Geodetic CRS:  WGS 84
 
 \begin{verbatim}
 Reading layer `boundaries_chicago' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/boundaries_chicago.geojson' 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/boundaries_chicago.geojson' 
   using driver `GeoJSON'
 Simple feature collection with 1 feature and 4 fields
 Geometry type: MULTIPOLYGON
@@ -2021,7 +2037,7 @@ First we'll load the shapefiles.
 
 \begin{verbatim}
 Reading layer `chicago_zips' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/chicago_zips.shp' 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/chicago_zips.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 85 features and 9 fields
 Geometry type: MULTIPOLYGON
@@ -2038,7 +2054,7 @@ Geodetic CRS:  WGS 84
 
 \begin{verbatim}
 Reading layer `methadone_clinics' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/methadone_clinics.shp' 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/methadone_clinics.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 27 features and 8 fields
 Geometry type: POINT
@@ -2055,7 +2071,7 @@ Geodetic CRS:  WGS 84
 
 \begin{verbatim}
 Reading layer `methadoneClinics_1mi' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/HealthyPlacesToolkit/data/methadoneClinics_1mi.shp' 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/methadoneClinics_1mi.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 1 feature and 1 field
 Geometry type: MULTIPOLYGON
