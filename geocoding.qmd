@@ -18,7 +18,7 @@ To replicate the code & functions illustrated in this tutorial, you’ll need to
 
 ### Input/Output {#GA-i-o}
 
-Our input will be a **CSV** file that include addresses of our resources. This files can be found [here](https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data).
+Our input will be a **CSV** file that include addresses of our resources. This file can be found [here](https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data).
 
 -   Chicago Methadone Clinics, `chicago_methadone.csv`
 
@@ -32,9 +32,9 @@ We will use the following packages in this tutorial:
 -   `tmap`: to visualize and create maps
 -   `tidygeocoder`: to convert addresses to geographic coordinates
 
-Then load the libraries for use. *Note:* The messages you see about GEOS, GDAL, and PROJ refer to software libraries that allow you to work with spatial data.
+Then load the libraries for use.
 
-```{r warning = FALSE, messages=FALSE}
+```{r message=FALSE}
 library(sf)
 library(tidygeocoder)
 library(tmap)

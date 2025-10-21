@@ -22,7 +22,7 @@ Our inputs include multiple CSV and SHP files, all of which can be found [here](
 
 -   Chicago Methadone Clinics, `methadone_clinics.shp`
 -   1-mile buffer zone of Clinics, `methadoneClinics_1mi.shp`
--   Chicago Zip Codes, `chicago_zips.shp`
+-   Chicago Zip Codes, `Chicago_Zips.shp`
 -   Chicago COVID case data by Zip, `COVID-19_Cases__Tests__and_Deaths_by_ZIP_Code.csv`
 
 We will calculate the minimum distance between the resources and the centroids of the zip codes, then save the results as a shapefile and as a CSV. Our final result will be a shapefile/CSV with the minimum distance value for each zip.
@@ -37,7 +37,7 @@ We will use the following packages in this tutorial:
 
 Load the libraries for use.
 
-```{r load, warning = FALSE, messages=FALSE}
+```{r load, warning = FALSE, message=FALSE}
 library(sf)
 library(tmap)
 ```

@@ -35,7 +35,7 @@ We will use the following packages in this tutorial:
 
 First, load the required libraries.
 
-```{r warning = FALSE, messages=FALSE}
+```{r warning = FALSE, message=FALSE}
 library(sf)
 library(tmap)
 ```
