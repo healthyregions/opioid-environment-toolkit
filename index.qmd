@@ -4,7 +4,7 @@ This toolkit provides an **introduction to GIS and spatial analysis** for health
 
 We introduce basic spatial analytic functionalities using **open source tools**, mainly in R, using applied examples for visualizing, mapping, and understanding the community environment. As a project of the Justice Community Overdose Innovation network, applications covered consider the opioid and overdose risk environment.
 
-The [original](https://geodacenter.github.io/opioid-environment-toolkit/index.html) toolkit version was published in 2020. This version was updated in 2025 and will continue to be expanded through the end of 2029. 
+The [original](https://geodacenter.github.io/opioid-environment-toolkit/index.html) toolkit version was published in 2020. This version was updated in 2025 and will continue to be expanded through the end of 2029.
 
 ## Software Basics {.unnumbered}
 
@@ -12,26 +12,25 @@ We assume a basic knowledge of R and coding languages for most sections. For mos
 
 We will work with following libraries, so please be sure to install:
 
--   tidyverse
--   sf
--   tmap
--   tidygeocoder
--   tidycensus
--   units
+-   `tidyverse` or `dplyr`
+-   `sf`
+-   `tmap`
+-   `tidygeocoder`
+-   `tidycensus`
+
+To install a package in R, input `install.packages("dplyr")` in your console. You generally only need to install a library once, but you'll call it every time you work with a new R session.
 
 There are differing spatial ecosystems in R. We use the `sf` ecosystem that is compatible with the `tidyverse`. If you need to work between these two R spatial ecosystems, see [this guide](https://github.com/r-spatial/sf/wiki/Migrating) for a translation of `sp` to `sf` commands.
 
 ## Author Team {.unnumbered}
 
-This toolkit was developed for the [JCOIN Network](https://heal.nih.gov/research/research-to-practice/jcoin) by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.
+This toolkit was developed for the [JCOIN Network](https://heal.nih.gov/research/research-to-practice/jcoin) by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). Susan Paykin and Yilin Liu have contributed substantially as workshop facilitators. The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.
 
 JCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide range of programs to develop new or improved prevention and treatment strategies for opioid addiction.
 
 ## Acknowledgements {.unnumbered}
 
 This research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number [1U2CDA050098-01](https://reporter.nih.gov/search/3wdLGk3ipEyheDa26AEwDA/project-details/9882805#description) and [5UM1DA050098-03](https://reporter.nih.gov/project-details/11129703#description). The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.
-
-
 
 ```{r, echo=F}
 

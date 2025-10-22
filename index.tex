@@ -280,18 +280,20 @@ We will work with following libraries, so please be sure to install:
 \begin{itemize}
 \tightlist
 \item
-  tidyverse
+  \texttt{tidyverse} or \texttt{dplyr}
 \item
-  sf
+  \texttt{sf}
 \item
-  tmap
+  \texttt{tmap}
 \item
-  tidygeocoder
+  \texttt{tidygeocoder}
 \item
-  tidycensus
-\item
-  units
+  \texttt{tidycensus}
 \end{itemize}
+
+To install a package in R, input \texttt{install.packages("dplyr")} in
+your console. You generally only need to install a library once, but
+you'll call it every time you work with a new R session.
 
 There are differing spatial ecosystems in R. We use the \texttt{sf}
 ecosystem that is compatible with the \texttt{tidyverse}. If you need to
@@ -308,10 +310,11 @@ This toolkit was developed for the
 \href{https://heal.nih.gov/research/research-to-practice/jcoin}{JCOIN
 Network} by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li
 at the Healthy Regions \& Policies Lab as part of the Methodology and
-Advanced Analytics Resource Center (MAARC). The Healthy Regions Lab is
-based out the University of Illinois at Urbana-Champaign, and serves as
-the Geospatial Core home of the MAARC, which is situated at the
-University of Chicago.
+Advanced Analytics Resource Center (MAARC). Susan Paykin and Yilin Liu
+have contributed substantially as workshop facilitators. The Healthy
+Regions Lab is based out the University of Illinois at Urbana-Champaign,
+and serves as the Geospatial Core home of the MAARC, which is situated
+at the University of Chicago.
 
 JCOIN is part of the of the NIH HEAL Initiative. The Helping to End
 Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide
@@ -1127,7 +1130,7 @@ Google Maps API and ESRI Geocoding service are additional high-quality
 geocoding services with varying cost associated, both within and outside
 this package.
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-important-color}{\faExclamation}\hspace{0.5em}{Is your data private?}, bottomtitle=1mm, rightrule=.15mm, bottomrule=.15mm, breakable, colbacktitle=quarto-callout-important-color!10!white, opacitybacktitle=0.6, coltitle=black, toprule=.15mm, leftrule=.75mm, opacityback=0, toptitle=1mm, titlerule=0mm, colback=white, arc=.35mm, left=2mm, colframe=quarto-callout-important-color-frame]
+\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-important-color-frame, bottomtitle=1mm, bottomrule=.15mm, colback=white, arc=.35mm, titlerule=0mm, colbacktitle=quarto-callout-important-color!10!white, coltitle=black, title=\textcolor{quarto-callout-important-color}{\faExclamation}\hspace{0.5em}{Is your data private?}, opacitybacktitle=0.6, leftrule=.75mm, breakable, opacityback=0, left=2mm, rightrule=.15mm, toprule=.15mm, toptitle=1mm]
 
 If you are working with private data that has additional protections,
 you should not use a geocoding service that is connected to the
@@ -1163,7 +1166,7 @@ Passing 1 address to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 1.2 seconds
+Query completed in: 1.4 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1262,7 +1265,7 @@ Passing 27 addresses to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 29.6 seconds
+Query completed in: 32.5 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1288,7 +1291,7 @@ Query completed in: 29.6 seconds
 # i 17 more rows
 \end{verbatim}
 
-\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Nulls in your data?}, bottomtitle=1mm, rightrule=.15mm, bottomrule=.15mm, breakable, colbacktitle=quarto-callout-tip-color!10!white, opacitybacktitle=0.6, coltitle=black, toprule=.15mm, leftrule=.75mm, opacityback=0, toptitle=1mm, titlerule=0mm, colback=white, arc=.35mm, left=2mm, colframe=quarto-callout-tip-color-frame]
+\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-tip-color-frame, bottomtitle=1mm, bottomrule=.15mm, colback=white, arc=.35mm, titlerule=0mm, colbacktitle=quarto-callout-tip-color!10!white, coltitle=black, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Nulls in your data?}, opacitybacktitle=0.6, leftrule=.75mm, breakable, opacityback=0, left=2mm, rightrule=.15mm, toprule=.15mm, toptitle=1mm]
 
 At this stage, you'll want to check for any null values. If there are
 any NAs in your dataset due to faulty address location information
@@ -2443,14 +2446,6 @@ We save our newly merged ZCTA level data for future analysis.
 \end{Highlighting}
 \end{Shaded}
 
-\bookmarksetup{startatroot}
-
-\chapter*{References}\label{references}
-\addcontentsline{toc}{chapter}{References}
-
-\markboth{References}{References}
-
-\phantomsection\label{refs}
 
 
 

@@ -12,9 +12,7 @@ book:
     - geocoding.qmd
     - buffers.qmd
     - linking.qmd
-    - references.qmd
-  
- 
+
 bibliography: references.bib
 
 prefer-html: true
