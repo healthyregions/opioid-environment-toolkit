@@ -19,6 +19,7 @@ prefer-html: true
   
 format:
   html:
+    self-contained: true
     embed-resources: true
     theme: cosmo
   pdf:

@@ -3807,6 +3807,13 @@ vertical-align: -.125em;
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script>const link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css';
+link.type = 'text/css';
+const head = document.getElementsByTagName('head')[0];
+head.appendChild(link);
+</script>
 
 
 </head>
@@ -3840,7 +3847,7 @@ vertical-align: -.125em;
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
-        <div id="quarto-search" class title="Search"></div>
+        <div id="quarto-search" class="" title="Search"></div>
         </div>
         </div>
     <div class="sidebar-menu-container"> 
@@ -3854,31 +3861,31 @@ vertical-align: -.125em;
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./orientation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>  <span class="chapter-title">Spatial Orientation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>  <span class="chapter-title">Intro to Spatial Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./geocoding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>  <span class="chapter-title">Geocoding Locations</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./buffers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>  <span class="chapter-title">Buffer Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Buffer Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./linking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>  <span class="chapter-title">Link Community Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Link Community Data</span></span></a>
   </div>
 </li>
     </ul>
@@ -3893,6 +3900,7 @@ vertical-align: -.125em;
   <ul>
   <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
   <ul class="collapse">
+  <li><a href="#what-youll-need" id="toc-what-youll-need" class="nav-link" data-scroll-target="#what-youll-need">What You’ll Need</a></li>
   <li><a href="#software-basics" id="toc-software-basics" class="nav-link" data-scroll-target="#software-basics">Software Basics</a></li>
   <li><a href="#author-team" id="toc-author-team" class="nav-link" data-scroll-target="#author-team">Author Team</a></li>
   <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
@@ -3939,6 +3947,17 @@ vertical-align: -.125em;
 <p>This toolkit provides an <strong>introduction to GIS and spatial analysis</strong> for health applications that will allow researchers, analysts, and practitioners to support their communities with better data analytics and visualization services.</p>
 <p>We introduce basic spatial analytic functionalities using <strong>open source tools</strong>, mainly in R, using applied examples for visualizing, mapping, and understanding the community environment. As a project of the Justice Community Overdose Innovation network, applications covered consider the opioid and overdose risk environment.</p>
 <p>The <a href="https://geodacenter.github.io/opioid-environment-toolkit/index.html">original</a> toolkit version was published in 2020. This version was updated in 2025 and will continue to be expanded through the end of 2029.</p>
+<section id="what-youll-need" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="what-youll-need">What You’ll Need</h2>
+<p>In addition to this workbook, you’ll need a working instance of R and the data. You can also clone the <a href="https://github.com/healthyregions/opioid-environment-toolkit">Github repository</a> that hosts this workbook to get direct access to all the working code, <a href="https://github.com/healthyregions/opioid-environment-toolkit/tree/master/data">data</a>, and additional items.</p>
+<div class="cell">
+<div class="cell-output-display">
+<a href="https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip">
+<button class="btn btn-primary"><i class="fa fa-save"></i> Download Workshop Data</button>
+</a>
+</div>
+</div>
+</section>
 <section id="software-basics" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="software-basics">Software Basics</h2>
 <p>We assume a basic knowledge of R and coding languages for most sections. For most of the tutorials in this toolkit, you’ll need to have R and RStudio downloaded and installed on your system. You should be able to install packages, know how to find the address to a folder on your computer system, and have very basic familiarity with R. If you are new to R, we recommend the following <a href="https://support.posit.co/hc/en-us/articles/201141096-Getting-Started-with-R">intro-level tutorials</a> provided through <a href="https://rstudio-education.github.io/hopr/starting.html">installation</a> guides. You can also refer to this <a href="https://datacarpentry.org/r-socialsci/">R for Social Scientists</a> tutorial developed by <em>Data Carpentry</em> for a refresher.</p>
@@ -3950,7 +3969,20 @@ vertical-align: -.125em;
 <li><code>tidygeocoder</code></li>
 <li><code>tidycensus</code></li>
 </ul>
-<p>To install a package in R, input <code>install.packages(&quot;dplyr&quot;)</code> in your console. You generally only need to install a library once, but you’ll call it every time you work with a new R session.</p>
+<p>To install a package in R, input <code>install.packages("dplyr")</code> in your console. You generally only need to install a library once, but you’ll call it every time you work with a new R session.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Setting up your environment
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We recommend setting up your working directory as soon as you can! Create a new folder called “data” to put all the data you’ve downloaded for the workshop.</p>
+</div>
+</div>
 <p>There are differing spatial ecosystems in R. We use the <code>sf</code> ecosystem that is compatible with the <code>tidyverse</code>. If you need to work between these two R spatial ecosystems, see <a href="https://github.com/r-spatial/sf/wiki/Migrating">this guide</a> for a translation of <code>sp</code> to <code>sf</code> commands.</p>
 </section>
 <section id="author-team" class="level2 unnumbered">
@@ -4380,7 +4412,7 @@ vertical-align: -.125em;
   </div>
   <div class="nav-page nav-page-next">
       <a href="./orientation.html" class="pagination-link" aria-label="Spatial Orientation">
-        <span class="nav-page-text"><span class="chapter-number">1</span>  <span class="chapter-title">Spatial Orientation</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

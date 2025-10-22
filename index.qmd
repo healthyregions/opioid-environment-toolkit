@@ -6,6 +6,24 @@ We introduce basic spatial analytic functionalities using **open source tools**,
 
 The [original](https://geodacenter.github.io/opioid-environment-toolkit/index.html) toolkit version was published in 2020. This version was updated in 2025 and will continue to be expanded through the end of 2029.
 
+## What You'll Need {.unnumbered}
+
+In addition to this workbook, you'll need a working instance of R and the data. You can also clone the [Github repository](https://github.com/healthyregions/opioid-environment-toolkit) that hosts this workbook to get direct access to all the working code, [data](https://github.com/healthyregions/opioid-environment-toolkit/tree/master/data), and additional items.
+
+```{r echo=FALSE}
+
+library(downloadthis)
+
+download_link(
+  link = "https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip",
+  button_label = "Download Workshop Data",
+  button_type = "primary",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
+```
+
 ## Software Basics {.unnumbered}
 
 We assume a basic knowledge of R and coding languages for most sections. For most of the tutorials in this toolkit, you’ll need to have R and RStudio downloaded and installed on your system. You should be able to install packages, know how to find the address to a folder on your computer system, and have very basic familiarity with R. If you are new to R, we recommend the following [intro-level tutorials](https://support.posit.co/hc/en-us/articles/201141096-Getting-Started-with-R) provided through [installation](https://rstudio-education.github.io/hopr/starting.html) guides. You can also refer to this [R for Social Scientists](https://datacarpentry.org/r-socialsci/) tutorial developed by *Data Carpentry* for a refresher.
@@ -19,6 +37,12 @@ We will work with following libraries, so please be sure to install:
 -   `tidycensus`
 
 To install a package in R, input `install.packages("dplyr")` in your console. You generally only need to install a library once, but you'll call it every time you work with a new R session.
+
+::: callout-tip
+## Setting up your environment
+
+We recommend setting up your working directory as soon as you can! Create a new folder called "data" to put all the data you've downloaded for the workshop.
+:::
 
 There are differing spatial ecosystems in R. We use the `sf` ecosystem that is compatible with the `tidyverse`. If you need to work between these two R spatial ecosystems, see [this guide](https://github.com/r-spatial/sf/wiki/Migrating) for a translation of `sp` to `sf` commands.
 
