@@ -59,9 +59,17 @@ Before geocoding, perform an initial quality check on the data. Note that the ad
 
 ### Selecting Geocoding Service
 
-To get a geographic coordinate for each site, we'll need to geocode. There are a number of geocoding options in R; here we use we the `tidygeocoder` package. It uses mutliple geocoding services, providing the user with an option to choose. It also provides the option to use a `cascade` method which queries other geocoding services incase the default method fails to provide coordinates.
+To get a geographic coordinate for each site, we'll need to geocode. There are a number of geocoding options in R; here we use we the `tidygeocoder` package. It uses [mutliple geocoding services](https://jessecambon.github.io/tidygeocoder/articles/geocoder_services.html), providing the user with an option to choose. It also provides the option to use a `osm` method which uses the Nominatum service, allowing 1 query per second. More powerful services are available that are even more effective for batch geocoding (i.e. larger volume of addresses). Many will require an API key, necessitating registration and additional funds to purchase access in some cases.
 
-When considering which geocoding service to use, consider scale and potential geocoding errors. Some geocoding services are more accurate than others, so if your coordinates were not coded precisely, try a different service. If you have thousands of addresses to geocode, you may require more complex data pipelines. The default method used here is via [US Census geocoder](https://geocoding.geo.census.gov/), which allows around 10,000 addresses to be geocoded at once. Others have varying daily limits. The Google Maps API and ESRI Geocoding service are additional high-quality geocoding services with varying cost associated.
+When considering which geocoding service to use, consider scale and potential geocoding errors. Some geocoding services are more accurate than others, so if your coordinates were not coded precisely, try a different service. If you have thousands of addresses to geocode, you may require more complex data pipelines. For an open option with no API key required, you can try the [US Census geocoder](https://geocoding.geo.census.gov/) (or `census` method in this package), which allows around 10,000 addresses to be geocoded at once. Others have varying daily limits. Google Maps API and ESRI Geocoding service are additional high-quality geocoding services with varying cost associated, both within and outside this package.
+
+::: callout-important
+## Is your data private?
+
+If you are working with private data that has additional protections, you should not use a geocoding service that is connected to the internet. Because addresses are being passed through a web service, it is not considered protected. That includes the geocoding services presented in `tidygeocoder`!
+
+For protected data, you must use a HIPAA-compliant geocoding service that works offline. You can build one through Nominatum (see example [here](https://mapscaping.com/open%E2%80%91source-geocoding-with-nominatim-and-geopy/)), use an ESRI partner product (see example [here](https://www.esri.com/partners/spatialitics-a2Tf20000056o9TEAQ/healthcare-geocoder-a2df2000004MiL4AAK)), or check out additional options.
+:::
 
 ### Test Geocoding Service
 
@@ -69,6 +77,7 @@ Before geocoding your entire dataset, first review the documentation for the geo
 
 ```{r}
 sample <- geo("4545 North Broadway St. Chicago, IL", lat = latitude, long = longitude, method = 'osm')
+
 sample
 ```
 
@@ -99,26 +108,17 @@ Now we are ready to geocode the addresses. The "tibble" data structure below sho
 ```{r geocode}
 geoCodedClinics <- methadoneClinics %>% 
                             geocode(address = 'fullAdd', 
-                                    lat = latitude, long = longitude, method = 'osm')
+                                    lat = latitude, 
+                                    long = longitude, 
+                                    method = 'osm')
 geoCodedClinics
 ```
 
-The code worked for all addresses except the first two. We already resolved the `4545 North Broadway St.`address above but here in the dataframe we get NAs. It is pointing to some issue with the string input. These were missed in the previous quality check, but give us a clue to the types of errors we could see if geocoding more addresses. Unfortunately, such quirks are common across geocoding services in R and we just have to handle them. We manually update the full address strings to get apprpriate coordinates.
+::: callout-tip
+## Nulls in your data?
 
-```{r}
-
-methadoneClinics[1,'fullAdd'] <- '4453 North Broadway St.,Chicago IL 60640'
-methadoneClinics[2,'fullAdd'] <- '4545 North Broadway St.,Chicago IL 60640'
-```
-
-Now we can geocode the full suite of addresses with success:
-
-```{r}
-geoCodedClinics <- methadoneClinics %>% 
-                            geocode(address = 'fullAdd', 
-                                    lat = latitude, long = longitude, method = 'osm')
-geoCodedClinics
-```
+At this stage, you'll want to check for any null values. If there are any NAs in your dataset due to faulty address location information and/or unsuccessful geocoding, you will need to correct and/or remove the nulls before proceeding.
+:::
 
 ## Convert to Spatial Data {#GA-spatial-dataframe}
 
@@ -134,7 +134,7 @@ Next we convert our dataframe to a spatial data frame using the `st_as_sf()` fun
 
 *Please note longitude is entered as first column rather than the latitude. It is a very common mistake.* The X, Y field actually refers to longitude, latitude.
 
-```{r spatialdf}
+```{r spatial-df}
 methadoneSf <- st_as_sf(geoCodedClinics, 
                         coords = c("longitude", "latitude"),
                         crs = 4326)
@@ -147,16 +147,10 @@ Note that this is a data frame, but that it has a final column called “geometr
 
 We can now plot the location of the methadone clinics with base R. This is a recommended step to confirm that you translated your coordinates correctly. A common mistake is switching the lat/long values, so your points could plot across the globe. If that happens, repeat the step above with flipped long/lat values.
 
-First we switch the `tmap` mode to view so we can look at the points with a live basemap layer. Uncomment, and run the code locally.
+We plot our points as dots, and add the basemap. It is plotting in Chicago as expected!
 
-```{r view}
-#tmap_mode("view")
-```
-
-Next, we plot our points as dots, and add the basemap. Uncomment, and run the code locally.
-
-```{r plot}
-#tm_shape(methadoneSf) + tm_dots() + tm_basemap("OpenStreetMap")
+```{r plot-points}
+tm_shape(methadoneSf) + tm_dots() + tm_basemap("OpenStreetMap")
 ```
 
 ### Save Data

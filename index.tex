@@ -148,6 +148,22 @@
 
 \KOMAoption{captions}{tableheading}
 \makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\@ifpackageloaded{fontawesome5}{}{\usepackage{fontawesome5}}
+\definecolor{quarto-callout-color}{HTML}{909090}
+\definecolor{quarto-callout-note-color}{HTML}{0758E5}
+\definecolor{quarto-callout-important-color}{HTML}{CC1914}
+\definecolor{quarto-callout-warning-color}{HTML}{EB9113}
+\definecolor{quarto-callout-tip-color}{HTML}{00A047}
+\definecolor{quarto-callout-caution-color}{HTML}{FC5300}
+\definecolor{quarto-callout-color-frame}{HTML}{acacac}
+\definecolor{quarto-callout-note-color-frame}{HTML}{4582ec}
+\definecolor{quarto-callout-important-color-frame}{HTML}{d9534f}
+\definecolor{quarto-callout-warning-color-frame}{HTML}{f0ad4e}
+\definecolor{quarto-callout-tip-color-frame}{HTML}{02b875}
+\definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
+\makeatother
+\makeatletter
 \@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
 \makeatother
 \makeatletter
@@ -195,7 +211,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Health Environment R-Spatial Toolkit},
+  pdftitle={Opioid Environment Toolkit for R-Spatial},
   pdfauthor={Healthy Regions \& Policies Lab},
   colorlinks=true,
   linkcolor={blue},
@@ -205,7 +221,7 @@
   pdfcreator={LaTeX via pandoc}}
 
 
-\title{Health Environment R-Spatial Toolkit}
+\title{Opioid Environment Toolkit for R-Spatial}
 \author{Healthy Regions \& Policies Lab}
 \date{2025-10-16}
 \begin{document}
@@ -444,13 +460,14 @@ available for learning and honing R \& spatial analysis skills.
 
 \chapter{Intro to Spatial Data}\label{intro}
 
-\section{Overview}\label{GA-research-question}
+\section{Overview}\label{overview}
 
 We start our analysis with loading in our base data. Using Census tract
 boundaries downloaded from the City of Chicago data portal, we'll do the
 following:
 
 \begin{itemize}
+\tightlist
 \item
   Read in a shapefile with the \texttt{sf} library \& convert to a
   \texttt{sf} spatial object
@@ -464,16 +481,47 @@ following:
   Map the data using basics of the \texttt{tmap} library.
 \end{itemize}
 
-\section{Data Input}\label{data-input}
+\section{Environment Setup}\label{BA-setup}
 
-First we load in the shapefile containing the census tract data
-information and geographic boundaries. Remember, this type of data (a
-shapefile) is actually comprised of multiple files. All need to be
-present in order to read correctly.
+To replicate the code \& functions illustrated in this tutorial, you'll
+need to have R and RStudio downloaded and installed on your system. This
+tutorial assumes some familiarity with the R programming language.
+
+\subsection{Input/Output}\label{BA-i-o}
+
+Our input will be a shapefile of Chicago census tracts, as downloaded
+from the City of Chicago data portal in the early 2020s. Note that at
+least four files are required (.dbf, .prj, .shp, and .shx) to consitute
+a shapefile.
+
+\begin{itemize}
+\tightlist
+\item
+  Chicago Census tracts, \texttt{Chicago\_Tracts.shp}
+\end{itemize}
+
+We will output a tract dataset geopackage (.gpkg) in a different
+coordinate reference system that can be used for future analyses.
+
+\subsection{Load Libraries}\label{load-libraries}
+
+We will use the following packages in this tutorial:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{sf}: to manipulate spatial data
+\item
+  \texttt{tmap}: to visualize and create maps
+\end{itemize}
+
+First, load the required libraries. \emph{Note:} You may see messages
+about GEOS, GDAL, and PROJ. These refer to software libraries that allow
+you to work with spatial data.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(sf) }
+\FunctionTok{library}\NormalTok{(sf)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -483,12 +531,24 @@ Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{Chi\_tracts }\OtherTok{=} \FunctionTok{st\_read}\NormalTok{(}\StringTok{"data/geo\_export\_aae47441{-}adab{-}4aca{-}8cb0{-}2e0c0114096e.shp"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(tmap)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Load Data}\label{load-data}
+
+First we load in the shapefile containing the census tract data
+information and geographic boundaries.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Chi\_tracts }\OtherTok{=} \FunctionTok{st\_read}\NormalTok{(}\StringTok{"data/Chicago\_Tracts.shp"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-Reading layer `geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e' from data source `/Users/maryniakolak/Code/opioid-environment-toolkit/data/geo_export_aae47441-adab-4aca-8cb0-2e0c0114096e.shp' 
+Reading layer `Chicago_Tracts' from data source 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/Chicago_Tracts.shp' 
   using driver `ESRI Shapefile'
 Simple feature collection with 801 features and 9 fields
 Geometry type: POLYGON
@@ -497,10 +557,13 @@ Bounding box:  xmin: -87.94025 ymin: 41.64429 xmax: -87.52366 ymax: 42.02392
 Geodetic CRS:  WGS84(DD)
 \end{verbatim}
 
-\section{Non-Spatial \& Spatial Views}\label{non-spatial-spatial-views}
+\section{Data Inspection}\label{data-inspection}
 
-Always inspect data when loading in. First we look at a non-spatial
-view.
+Always inspect data when loading in.
+
+\subsection{Non-Spatial View}\label{non-spatial-view}
+
+First we look at a non-spatial view.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -530,11 +593,16 @@ Geodetic CRS:  WGS84(DD)
 6        17    838200 POLYGON ((-87.66782 41.8741...
 \end{verbatim}
 
+Try alternative view functions from the \texttt{tidyverse} like
+glimpse().
+
 Note the last column; this is a spatially enabled column. The data is no
 longer a \texttt{shapefile} but an \texttt{sf} object, comprised of
 polygons.
 
-We can use a \emph{baseR} function to view the spatial dimension. The
+\subsection{Spatial View}\label{spatial-view}
+
+We can use a \emph{baseR} function to inspect the spatial dimension. The
 \texttt{sf} framework enables previews of each attribute in our spatial
 file.
 
@@ -546,7 +614,7 @@ file.
 
 \pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/spatial-view-1.pdf}}
 
-\section{Spatial Data Structure}\label{spatial-data-structure}
+\subsection{Structure Inspection}\label{structure-inspection}
 
 Check out the data structure of this file\ldots{} What object is it?
 
@@ -574,6 +642,8 @@ Classes 'sf' and 'data.frame':  801 obs. of  10 variables:
  - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA NA NA
   ..- attr(*, "names")= chr [1:9] "commarea" "commarea_n" "countyfp10" "geoid10" ...
 \end{verbatim}
+
+\subsection{CRS Inspection}\label{crs-inspection}
 
 Check out the coordinate reference system. What is it? What are the
 units?
@@ -604,15 +674,16 @@ GEOGCRS["WGS84(DD)",
             ANGLEUNIT["degree",0.0174532925199433]]]
 \end{verbatim}
 
-\section{Exploring Coordinate Reference
-Systems}\label{exploring-coordinate-reference-systems}
+\section{Explore Projections}\label{explore-projections}
 
 Lets see how switching CRS changes our object. First we'll try the
 Mollweide coordinate reference system that does a good job preserving
 area across the globe.
 
+\subsection{Transform CRS}\label{transform-crs}
+
 To transform our CRS, we use the \texttt{st\_transform} function. To
-plot, we use baseR again but with some paremeter updates. Finally, we
+plot, we use baseR again but with some parameter updates. Finally, we
 check out the CRS of our new object. What are the units? Any other
 details to note? Will this be appropriate for our spatial analysis?
 
@@ -624,7 +695,7 @@ details to note? Will this be appropriate for our spatial analysis?
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-3-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/mollweide-crs-1.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -679,7 +750,7 @@ the same approach, recyling the code with new inputs.
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-4-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/winkel-crs-1.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -738,7 +809,7 @@ this fare?
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-5-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/hawaii-crs-1.pdf}}
 
 Finally.. let's choose a projection that is focused on Illinois, and
 uses distance as feet or meters, to make it a bit more accessible for
@@ -802,7 +873,7 @@ PROJCRS["NAD83 / Illinois East (ftUS)",
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-6-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/3435-crs-1.pdf}}
 
 \section{Write Data}\label{write-data}
 
@@ -816,14 +887,14 @@ We'll write to a new, elegant spatial data format, the
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#st\_write(Chi\_tracts.3435, "ChiTracts{-}3435.gpkg")}
+\CommentTok{\#st\_write(Chi\_tracts.3435, "data/ChiTracts{-}3435.gpkg")}
 \end{Highlighting}
 \end{Shaded}
 
 Now we'll switch to a more extensive cartographic mapping package,
 \texttt{tmap}, to map our data.
 
-\section{Mapping the Basics}\label{mapping-the-basics}
+\section{Map the Basics}\label{map-the-basics}
 
 We approach mapping with one layer at a time. Always start with the
 object you want to map by calling it with the \texttt{tm\_shape}
@@ -835,14 +906,12 @@ Here we style the tracts with some semi-transparent borders.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(tmap)}
-
 \FunctionTok{tm\_shape}\NormalTok{(Chi\_tracts}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} 
   \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{lwd =} \FloatTok{0.5}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-8-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-2-1.pdf}}
 
 Next we fill the tracts with a light gray, and adjust the color and
 transparency of borders. We also add a scale bar, positioning it to the
@@ -864,12 +933,10 @@ documentations}.
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-9-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{intro_files/figure-pdf/unnamed-chunk-3-1.pdf}}
 
 Check out the \href{https://r-tmap.github.io/tmap/reference}{tmap
 Reference manual} for more ideas!
-
-\subsection{}\label{section}
 
 \section*{More Resources}\label{more-resources}
 \addcontentsline{toc}{section}{More Resources}
@@ -948,7 +1015,7 @@ tutorial assumes some familiarity with the R programming language.
 \subsection{Input/Output}\label{GA-i-o}
 
 Our input will be a \textbf{CSV} file that include addresses of our
-resources. This files can be found
+resources. This file can be found
 \href{https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data}{here}.
 
 \begin{itemize}
@@ -976,28 +1043,17 @@ We will use the following packages in this tutorial:
   \texttt{tidygeocoder}: to convert addresses to geographic coordinates
 \end{itemize}
 
-Then load the libraries for use. \emph{Note:} The messages you see about
-GEOS, GDAL, and PROJ refer to software libraries that allow you to work
-with spatial data.
+Then load the libraries for use.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(sf)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(tidygeocoder)}
 \FunctionTok{library}\NormalTok{(tmap)}
 \end{Highlighting}
 \end{Shaded}
 
-\subsection{Load Data}\label{load-data}
+\subsection{Load Data}\label{load-data-1}
 
 We will use a CSV that includes methadone clinic addresses in Chicago as
 an example. We start with a small dataset to test our geocoding
@@ -1048,20 +1104,45 @@ Service}\label{selecting-geocoding-service}
 
 To get a geographic coordinate for each site, we'll need to geocode.
 There are a number of geocoding options in R; here we use we the
-\texttt{tidygeocoder} package. It uses mutliple geocoding services,
-providing the user with an option to choose. It also provides the option
-to use a \texttt{cascade} method which queries other geocoding services
-incase the default method fails to provide coordinates.
+\texttt{tidygeocoder} package. It uses
+\href{https://jessecambon.github.io/tidygeocoder/articles/geocoder_services.html}{mutliple
+geocoding services}, providing the user with an option to choose. It
+also provides the option to use a \texttt{osm} method which uses the
+Nominatum service, allowing 1 query per second. More powerful services
+are available that are even more effective for batch geocoding
+(i.e.~larger volume of addresses). Many will require an API key,
+necessitating registration and additional funds to purchase access in
+some cases.
 
 When considering which geocoding service to use, consider scale and
 potential geocoding errors. Some geocoding services are more accurate
 than others, so if your coordinates were not coded precisely, try a
 different service. If you have thousands of addresses to geocode, you
-may require more complex data pipelines. The default method used here is
-via \href{https://geocoding.geo.census.gov/}{US Census geocoder}, which
-allows around 10,000 addresses to be geocoded at once. Others have
-varying daily limits. The Google Maps API and ESRI Geocoding service are
-additional high-quality geocoding services with varying cost associated.
+may require more complex data pipelines. For an open option with no API
+key required, you can try the
+\href{https://geocoding.geo.census.gov/}{US Census geocoder} (or
+\texttt{census} method in this package), which allows around 10,000
+addresses to be geocoded at once. Others have varying daily limits.
+Google Maps API and ESRI Geocoding service are additional high-quality
+geocoding services with varying cost associated, both within and outside
+this package.
+
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-important-color}{\faExclamation}\hspace{0.5em}{Is your data private?}, bottomtitle=1mm, rightrule=.15mm, bottomrule=.15mm, breakable, colbacktitle=quarto-callout-important-color!10!white, opacitybacktitle=0.6, coltitle=black, toprule=.15mm, leftrule=.75mm, opacityback=0, toptitle=1mm, titlerule=0mm, colback=white, arc=.35mm, left=2mm, colframe=quarto-callout-important-color-frame]
+
+If you are working with private data that has additional protections,
+you should not use a geocoding service that is connected to the
+internet. Because addresses are being passed through a web service, it
+is not considered protected. That includes the geocoding services
+presented in \texttt{tidygeocoder}!
+
+For protected data, you must use a HIPAA-compliant geocoding service
+that works offline. You can build one through Nominatum (see example
+\href{https://mapscaping.com/open\%E2\%80\%91source-geocoding-with-nominatim-and-geopy/}{here}),
+use an ESRI partner product (see example
+\href{https://www.esri.com/partners/spatialitics-a2Tf20000056o9TEAQ/healthcare-geocoder-a2df2000004MiL4AAK}{here}),
+or check out additional options.
+
+\end{tcolorbox}
 
 \subsection{Test Geocoding Service}\label{test-geocoding-service}
 
@@ -1082,7 +1163,7 @@ Passing 1 address to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 1.6 seconds
+Query completed in: 1.2 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1170,7 +1251,9 @@ time, so patience is required.
 \begin{Highlighting}[]
 \NormalTok{geoCodedClinics }\OtherTok{\textless{}{-}}\NormalTok{ methadoneClinics }\SpecialCharTok{\%\textgreater{}\%} 
                             \FunctionTok{geocode}\NormalTok{(}\AttributeTok{address =} \StringTok{\textquotesingle{}fullAdd\textquotesingle{}}\NormalTok{, }
-                                    \AttributeTok{lat =}\NormalTok{ latitude, }\AttributeTok{long =}\NormalTok{ longitude, }\AttributeTok{method =} \StringTok{\textquotesingle{}osm\textquotesingle{}}\NormalTok{)}
+                                    \AttributeTok{lat =}\NormalTok{ latitude, }
+                                    \AttributeTok{long =}\NormalTok{ longitude, }
+                                    \AttributeTok{method =} \StringTok{\textquotesingle{}osm\textquotesingle{}}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1179,7 +1262,7 @@ Passing 27 addresses to the Nominatim single address geocoder
 \end{verbatim}
 
 \begin{verbatim}
-Query completed in: 34.3 seconds
+Query completed in: 29.6 seconds
 \end{verbatim}
 
 \begin{Shaded}
@@ -1205,62 +1288,14 @@ Query completed in: 34.3 seconds
 # i 17 more rows
 \end{verbatim}
 
-The code worked for all addresses except the first two. We already
-resolved the \texttt{4545\ North\ Broadway\ St.}address above but here
-in the dataframe we get NAs. It is pointing to some issue with the
-string input. These were missed in the previous quality check, but give
-us a clue to the types of errors we could see if geocoding more
-addresses. Unfortunately, such quirks are common across geocoding
-services in R and we just have to handle them. We manually update the
-full address strings to get apprpriate coordinates.
+\begin{tcolorbox}[enhanced jigsaw, title=\textcolor{quarto-callout-tip-color}{\faLightbulb}\hspace{0.5em}{Nulls in your data?}, bottomtitle=1mm, rightrule=.15mm, bottomrule=.15mm, breakable, colbacktitle=quarto-callout-tip-color!10!white, opacitybacktitle=0.6, coltitle=black, toprule=.15mm, leftrule=.75mm, opacityback=0, toptitle=1mm, titlerule=0mm, colback=white, arc=.35mm, left=2mm, colframe=quarto-callout-tip-color-frame]
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{methadoneClinics[}\DecValTok{1}\NormalTok{,}\StringTok{\textquotesingle{}fullAdd\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \StringTok{\textquotesingle{}4453 North Broadway St.,Chicago IL 60640\textquotesingle{}}
-\NormalTok{methadoneClinics[}\DecValTok{2}\NormalTok{,}\StringTok{\textquotesingle{}fullAdd\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \StringTok{\textquotesingle{}4545 North Broadway St.,Chicago IL 60640\textquotesingle{}}
-\end{Highlighting}
-\end{Shaded}
+At this stage, you'll want to check for any null values. If there are
+any NAs in your dataset due to faulty address location information
+and/or unsuccessful geocoding, you will need to correct and/or remove
+the nulls before proceeding.
 
-Now we can geocode the full suite of addresses with success:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{geoCodedClinics }\OtherTok{\textless{}{-}}\NormalTok{ methadoneClinics }\SpecialCharTok{\%\textgreater{}\%} 
-                            \FunctionTok{geocode}\NormalTok{(}\AttributeTok{address =} \StringTok{\textquotesingle{}fullAdd\textquotesingle{}}\NormalTok{, }
-                                    \AttributeTok{lat =}\NormalTok{ latitude, }\AttributeTok{long =}\NormalTok{ longitude, }\AttributeTok{method =} \StringTok{\textquotesingle{}osm\textquotesingle{}}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Passing 27 addresses to the Nominatim single address geocoder
-\end{verbatim}
-
-\begin{verbatim}
-Query completed in: 34.1 seconds
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{geoCodedClinics}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-# A tibble: 27 x 9
-       X Name               Address City  State   Zip fullAdd latitude longitude
-   <int> <chr>              <chr>   <chr> <chr> <int> <chr>      <dbl>     <dbl>
- 1     1 "Chicago Treatmen~ 4453 N~ Chic~ IL    60640 4453 N~     42.0     -87.7
- 2     2 "Sundace Methadon~ 4545 N~ Chic~ IL    60640 4545 N~     42.0     -87.7
- 3     3 "Soft Landing Int~ 3934 N~ Chic~ IL    60613 3934 N~     42.0     -87.7
- 4     4 "PDSSC - Chicago,~ 2260 N~ Chic~ IL    60614 2260 N~     41.9     -87.7
- 5     5 "Center for Addic~ 609 N.~ Chic~ IL    60654 609 N.~     41.9     -87.6
- 6     6 "Family Guidance ~ 310 W.~ Chic~ IL    60654 310 W.~     41.9     -87.6
- 7     7 "A Rincon Family ~ 3809 W~ Chic~ IL    60651 3809 W~     41.9     -87.7
- 8     8 "*"                140 N.~ Chic~ IL    60607 140 N.~     41.9     -87.7
- 9     9 "Healthcare Alter~ 210 N.~ Chic~ IL    60607 210 N.~     41.9     -87.7
-10    10 "Specialized Assi~ 2630 S~ Chic~ IL    60616 2630 S~     41.8     -87.6
-# i 17 more rows
-\end{verbatim}
+\end{tcolorbox}
 
 \section{Convert to Spatial Data}\label{GA-spatial-dataframe}
 
@@ -1322,8 +1357,8 @@ to longitude, latitude.
 5        609 N. Wells St. Chicago    IL 60654
 6     310 W. Chicago Ave. Chicago    IL 60654
                                    fullAdd                   geometry
-1 4453 North Broadway St.,Chicago IL 60640 POINT (-87.65987 41.97492)
-2 4545 North Broadway St.,Chicago IL 60640 POINT (-87.65987 41.97492)
+1 4453 North Broadway st. Chicago IL 60640 POINT (-87.65987 41.97492)
+2 4545 North Broadway St. Chicago IL 60640 POINT (-87.65987 41.97492)
 3    3934 N. Lincoln Ave. Chicago IL 60613 POINT (-87.67844 41.95327)
 4     2260 N. Elston Ave. Chicago IL 60614 POINT (-87.67425 41.92263)
 5        609 N. Wells St. Chicago IL 60654 POINT (-87.63379 41.89271)
@@ -1341,23 +1376,16 @@ correctly. A common mistake is switching the lat/long values, so your
 points could plot across the globe. If that happens, repeat the step
 above with flipped long/lat values.
 
-First we switch the \texttt{tmap} mode to view so we can look at the
-points with a live basemap layer. Uncomment, and run the code locally.
+We plot our points as dots, and add the basemap. It is plotting in
+Chicago as expected!
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#tmap\_mode("view")}
+\FunctionTok{tm\_shape}\NormalTok{(methadoneSf) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{tm\_basemap}\NormalTok{(}\StringTok{"OpenStreetMap"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-Next, we plot our points as dots, and add the basemap. Uncomment, and
-run the code locally.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#tm\_shape(methadoneSf) + tm\_dots() + tm\_basemap("OpenStreetMap")}
-\end{Highlighting}
-\end{Shaded}
+\pandocbounded{\includegraphics[keepaspectratio]{geocoding_files/figure-pdf/plot-points-1.pdf}}
 
 \subsection{Save Data}\label{save-data}
 
@@ -1452,15 +1480,6 @@ First, load the required libraries.
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(sf)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(tmap)}
 \end{Highlighting}
 \end{Shaded}
@@ -1498,14 +1517,14 @@ boundaries directly through the Census via R in a later tutorial.
 \end{Shaded}
 
 \begin{verbatim}
-Reading layer `chicago_zips' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/chicago_zips.shp' 
+Reading layer `Chicago_Zips' from data source 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/Chicago_Zips.shp' 
   using driver `ESRI Shapefile'
-Simple feature collection with 85 features and 9 fields
+Simple feature collection with 61 features and 4 fields
 Geometry type: MULTIPOLYGON
 Dimension:     XY
-Bounding box:  xmin: -88.06058 ymin: 41.58152 xmax: -87.52366 ymax: 42.06504
-Geodetic CRS:  WGS 84
+Bounding box:  xmin: -87.94011 ymin: 41.64454 xmax: -87.52414 ymax: 42.02304
+Geodetic CRS:  WGS84(DD)
 \end{verbatim}
 
 \begin{Shaded}
@@ -1536,25 +1555,18 @@ forth).
 \end{Shaded}
 
 \begin{verbatim}
-Simple feature collection with 6 features and 9 fields
+Simple feature collection with 6 features and 4 fields
 Geometry type: MULTIPOLYGON
 Dimension:     XY
-Bounding box:  xmin: -88.06058 ymin: 41.73452 xmax: -87.58209 ymax: 42.04052
-Geodetic CRS:  WGS 84
-  ZCTA5CE10 GEOID10 CLASSFP10 MTFCC10 FUNCSTAT10  ALAND10 AWATER10  INTPTLAT10
-1     60501   60501        B5   G6350          S 12532295   974360 +41.7802209
-2     60007   60007        B5   G6350          S 36493383   917560 +42.0086000
-3     60651   60651        B5   G6350          S  9052862        0 +41.9020934
-4     60652   60652        B5   G6350          S 12987857        0 +41.7479319
-5     60653   60653        B5   G6350          S  6041418  1696670 +41.8199645
-6     60654   60654        B5   G6350          S  1464813   113471 +41.8918225
-    INTPTLON10                       geometry
-1 -087.8232440 MULTIPOLYGON (((-87.86289 4...
-2 -087.9973398 MULTIPOLYGON (((-88.06058 4...
-3 -087.7408565 MULTIPOLYGON (((-87.77559 4...
-4 -087.7147951 MULTIPOLYGON (((-87.74205 4...
-5 -087.6059654 MULTIPOLYGON (((-87.62623 4...
-6 -087.6383036 MULTIPOLYGON (((-87.64775 4...
+Bounding box:  xmin: -87.80649 ymin: 41.88747 xmax: -87.59852 ymax: 41.93228
+Geodetic CRS:  WGS84(DD)
+  objectid shape_area shape_len   zip                       geometry
+1       33  106052287  42720.04 60647 MULTIPOLYGON (((-87.67762 4...
+2       34  127476051  48103.78 60639 MULTIPOLYGON (((-87.72683 4...
+3       35   45069038  27288.61 60707 MULTIPOLYGON (((-87.785 41....
+4       36   70853834  42527.99 60622 MULTIPOLYGON (((-87.66707 4...
+5       37   99039621  47970.14 60651 MULTIPOLYGON (((-87.70656 4...
+6       38   23506056  34689.35 60611 MULTIPOLYGON (((-87.61401 4...
 \end{verbatim}
 
 \section{Simple Overlay Map}\label{simple-overlay-map}
@@ -1587,19 +1599,14 @@ i tmap mode set to "plot".
 \begin{Shaded}
 \begin{Highlighting}[]
 \DocumentationTok{\#\# 1st layer (gets plotted first)}
-\FunctionTok{tm\_shape}\NormalTok{(areas) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.4}\NormalTok{) }\SpecialCharTok{+} 
+\FunctionTok{tm\_shape}\NormalTok{(areas) }\SpecialCharTok{+} \FunctionTok{tm\_polygons}\NormalTok{() }\SpecialCharTok{+}
   
   \DocumentationTok{\#\# 2nd layer (overlay)}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinics) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.4}\NormalTok{, }\AttributeTok{col=}\StringTok{"red"}\NormalTok{) }
+  \FunctionTok{tm\_shape}\NormalTok{(metClinics) }\SpecialCharTok{+} \FunctionTok{tm\_symbols}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.5}\NormalTok{, }
+                                    \AttributeTok{col=} \StringTok{"darkblue"}\NormalTok{, }\CommentTok{\#border color}
+                                    \AttributeTok{fill=}\StringTok{"cornflowerblue"}\NormalTok{) }\CommentTok{\#fill color}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-
--- tmap v3 code detected -------------------------------------------------------
-[v3->v4] `tm_borders()`: use 'fill' for the fill color of polygons/symbols
-(instead of 'col'), and 'col' for the outlines (instead of 'border.col').[v3->v4] `tm_borders()`: use `fill_alpha` instead of `alpha`.
-\end{verbatim}
 
 \pandocbounded{\includegraphics[keepaspectratio]{buffers_files/figure-pdf/unnamed-chunk-6-1.pdf}}
 
@@ -1644,22 +1651,22 @@ GEOGCRS["WGS 84",
 
 \begin{verbatim}
 Coordinate Reference System:
-  User input: WGS 84 
+  User input: WGS84(DD) 
   wkt:
-GEOGCRS["WGS 84",
-    DATUM["World Geodetic System 1984",
-        ELLIPSOID["WGS 84",6378137,298.257223563,
-            LENGTHUNIT["metre",1]]],
+GEOGCRS["WGS84(DD)",
+    DATUM["WGS84",
+        ELLIPSOID["WGS84",6378137,298.257223563,
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]]],
     PRIMEM["Greenwich",0,
         ANGLEUNIT["degree",0.0174532925199433]],
     CS[ellipsoidal,2],
-        AXIS["latitude",north,
+        AXIS["longitude",east,
             ORDER[1],
             ANGLEUNIT["degree",0.0174532925199433]],
-        AXIS["longitude",east,
+        AXIS["latitude",north,
             ORDER[2],
-            ANGLEUNIT["degree",0.0174532925199433]],
-    ID["EPSG",4326]]
+            ANGLEUNIT["degree",0.0174532925199433]]]
 \end{verbatim}
 
 We can see that while both have a code of 4326 and appear to both be
@@ -1680,7 +1687,7 @@ analysis we require.
 Thus, our next goal is to transform both spatial data files into a new,
 standardized CRS.
 
-\subsection{Transform CRS}\label{transform-crs}
+\subsection{Transform CRS}\label{transform-crs-1}
 
 To calculate buffers, we will need to convert to a different CRS that
 preserves distance. Trying using a search engine like Google with search
@@ -1743,24 +1750,19 @@ expected, it's often a case of mistaken CRS or projection. Retransform
 your data, and try again.
 
 We use \texttt{tmap} again, in the static plot mode. We layer our zip
-code areas, then providers, and then finally the buffers. We use red to
-color clinics, and blue to color buffers.
+code areas, then providers, and then finally the buffers. We use a
+cornflower blue to color clinic locations (with dark blue borders), and
+include the borders only of our buffers.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{tmap\_mode}\NormalTok{(}\StringTok{"plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+  \FunctionTok{tm\_shape}\NormalTok{(areas}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_polygons}\NormalTok{() }\SpecialCharTok{+}
 
-\begin{verbatim}
-i tmap mode set to "plot".
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{tm\_shape}\NormalTok{(areas}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{() }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"red"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"blue"}\NormalTok{) }
+  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{() }\SpecialCharTok{+} 
+  
+    \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_symbols}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.5}\NormalTok{, }
+                                    \AttributeTok{col=} \StringTok{"darkblue"}\NormalTok{, }
+                                    \AttributeTok{fill=}\StringTok{"cornflowerblue"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1774,24 +1776,18 @@ the points.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Map Housing Buffers}
-\FunctionTok{tm\_shape}\NormalTok{(areas) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_buffers) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"red"}\NormalTok{,  }\AttributeTok{size =} \FloatTok{0.2}\NormalTok{) }
+\FunctionTok{tm\_basemap}\NormalTok{(}\StringTok{"CartoDB.VoyagerNoLabels"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Add Basemap}
+  
+  \FunctionTok{tm\_shape}\NormalTok{(areas}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{() }\SpecialCharTok{+} \CommentTok{\#Include Borders only from Areas}
+
+  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{, }\CommentTok{\#Slightly transparent }
+                                           \AttributeTok{lwd =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Reduce line weight}
+  
+    \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_symbols}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.5}\NormalTok{, }
+                                    \AttributeTok{col=} \StringTok{"darkblue"}\NormalTok{, }
+                                    \AttributeTok{fill=}\StringTok{"cornflowerblue"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-\end{verbatim}
-
-\begin{verbatim}
--- tmap v3 code detected -------------------------------------------------------
-\end{verbatim}
-
-\begin{verbatim}
-[v3->v4] `tm_borders()`: use `fill_alpha` instead of `alpha`.
-[v3->v4] `tm_polygons()`: use `fill_alpha` instead of `alpha`.
-\end{verbatim}
 
 \pandocbounded{\includegraphics[keepaspectratio]{buffers_files/figure-pdf/unnamed-chunk-13-1.pdf}}
 
@@ -1816,22 +1812,18 @@ Finally, we map the buffer union.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{tm\_shape}\NormalTok{(areas) }\SpecialCharTok{+}  \FunctionTok{tm\_borders}\NormalTok{()}\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(unionBuffers) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"red"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.4}\NormalTok{) }
+\FunctionTok{tm\_basemap}\NormalTok{(}\StringTok{"CartoDB.VoyagerNoLabels"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Add Basemap}
+  
+  \FunctionTok{tm\_shape}\NormalTok{(areas}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{() }\SpecialCharTok{+} \CommentTok{\#Include Borders only from Areas}
+
+  \FunctionTok{tm\_shape}\NormalTok{(unionBuffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.8}\NormalTok{, }\CommentTok{\#Less transparent }
+                                           \AttributeTok{lwd =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Reduce line weight}
+  
+    \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_symbols}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.5}\NormalTok{, }
+                                    \AttributeTok{col=} \StringTok{"darkblue"}\NormalTok{, }
+                                    \AttributeTok{fill=}\StringTok{"cornflowerblue"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-\end{verbatim}
-
-\begin{verbatim}
--- tmap v3 code detected -------------------------------------------------------
-\end{verbatim}
-
-\begin{verbatim}
-[v3->v4] `tm_polygons()`: use `fill_alpha` instead of `alpha`.
-\end{verbatim}
 
 \pandocbounded{\includegraphics[keepaspectratio]{buffers_files/figure-pdf/unnamed-chunk-15-1.pdf}}
 
@@ -1860,77 +1852,81 @@ We generate a two-mile buffer to add:
 \end{Highlighting}
 \end{Shaded}
 
-And then leverage tmap parameter specifications to further customize the
-a map showing multiple buffers. Here, we add the City of Chicago
-boundary and soften the zip code boundaries. We add a bounding box for
-the first zip code layer, so that the whole map is centered around the
-city boundary (even those the zip codes are layered first). We adjust
-the transparency of the buffer fills, use different colors, and adjust
-borders to make the visuals pop. We use the \texttt{tmap\_layout}
-function to take away the frame, add and position a title. Explore the
-\texttt{tmap} documentation further to find additional options for
-legends and more. To find color options in R, there are multiple guides
-online (like
+\subsection{Explore Cartographic
+Styles}\label{explore-cartographic-styles}
+
+And then, leverage tmap parameter specifications to further customize
+the a map showing multiple buffers. We adjust the transparency of the
+buffer fills, use different colors, and adjust borders to make the
+visuals pop. Have fun in trying out new combinations!
+
+We use the \texttt{tmap\_layout} function to take away the frame, add
+and position a title. Explore the \texttt{tmap} documentation further to
+find additional options for legends and more. To find color options in
+R, there are multiple guides online (like
 \href{https://bookdown.org/hneth/ds4psy/D-2-apx-colors-essentials.html}{this}
 one).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{tmap\_mode}\NormalTok{(}\StringTok{"plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+  \FunctionTok{tm\_shape}\NormalTok{(areas}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{() }\SpecialCharTok{+} 
 
-\begin{verbatim}
-i tmap mode set to "plot".
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{tm\_shape}\NormalTok{(areas, }\AttributeTok{bbox=}\NormalTok{cityBoundary) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(cityBoundary) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{lwd =} \FloatTok{1.5}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_2mbuffers) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{col =} \StringTok{"gray10"}\NormalTok{, }\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"dimgray"}\NormalTok{, }\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_buffers) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{col =} \StringTok{"gray90"}\NormalTok{, }\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"darkslategray"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"red"}\NormalTok{,  }\AttributeTok{size =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}   
-  \FunctionTok{tm\_layout}\NormalTok{(}\AttributeTok{main.title =} \StringTok{"Methadone Clinic Service Areas in Chicago"}\NormalTok{,}
+  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_2mbuffers) }\SpecialCharTok{+} \FunctionTok{tm\_polygons}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{,  }
+                                           \AttributeTok{fill =} \StringTok{"darkgray"}\NormalTok{,}
+                                           \AttributeTok{lwd =} \FloatTok{0.1}\NormalTok{) }\SpecialCharTok{+}
+  
+  \FunctionTok{tm\_shape}\NormalTok{(metClinic\_buffers) }\SpecialCharTok{+} \FunctionTok{tm\_polygons}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{, }
+                                            \AttributeTok{fill =} \StringTok{"snow3"}\NormalTok{,}
+                                           \AttributeTok{lwd =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Reduce line weight + }
+  
+    \FunctionTok{tm\_shape}\NormalTok{(metClinics}\FloatTok{.3435}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_symbols}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.6}\NormalTok{, }
+                                    \AttributeTok{col =} \StringTok{"aquamarine"}\NormalTok{,}
+                                    \AttributeTok{fill=}\StringTok{"cornflowerblue"}\NormalTok{) }\SpecialCharTok{+} 
+  
+  \FunctionTok{tm\_layout}\NormalTok{(}\AttributeTok{main.title =} \StringTok{"Methadone Clinic Service Areas"}\NormalTok{,}
             \AttributeTok{main.title.position =} \StringTok{"center"}\NormalTok{,}
-            \AttributeTok{main.title.size =} \DecValTok{1}\NormalTok{,}
             \AttributeTok{frame =} \ConstantTok{FALSE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-
--- tmap v3 code detected -------------------------------------------------------
-[v3->v4] `tm_borders()`: use `fill_alpha` instead of `alpha`.[v3->v4] `tm_polygons()`: use `fill_alpha` instead of `alpha`.[v3->v4] `tm_borders()`: use `fill_alpha` instead of `alpha`.[v3->v4] `tm_polygons()`: use `fill_alpha` instead of `alpha`.[v3->v4] `tm_layout()`: use `tm_title()` instead of `tm_layout(main.title = )`[plot mode] fit legend/component: Some legend items or map compoments do not
-fit well, and are therefore rescaled.
-i Set the tmap option `component.autoscale = FALSE` to disable rescaling.
-\end{verbatim}
 
 \pandocbounded{\includegraphics[keepaspectratio]{buffers_files/figure-pdf/unnamed-chunk-18-1.pdf}}
 
 Next, we'll try an interactive map to better explore the data that we
 have. We switch the \texttt{tmap\_mode} to ``view'' and focus on our
-merged 1-mile buffer service areas. We add labels for zip codes using
-the \texttt{tm\_text} parameter, and adjust the size. The resulting map
-lets us zoom and out to explore the data. Clicking on a point will give
+buffer service areas, trying out a new color palette. We add labels for
+zip codes using the \texttt{tm\_text} parameter. The resulting map lets
+us zoom and out to explore the data. Clicking on a point will give
 additional details about the Methadone provider.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\#tmap\_mode("view")}
 
-\CommentTok{\#tm\_shape(areas) +  tm\_borders(alpha = 0.5, col="gray")+ tm\_text\#("GEOID10", size = 0.7) +}
-\CommentTok{\#  tm\_shape(cityBoundary) + tm\_borders() +}
-\CommentTok{\#  tm\_shape(unionBuffers) + tm\_fill(col = "blue", alpha = .2) + \#tm\_borders(col = "blue") +}
-\CommentTok{\#  tm\_shape(metClinics.3435) + tm\_dots(col = "red") }
+\CommentTok{\#tm\_shape(areas.3435) + tm\_borders() + tm\_labels(text="zip") + }
+  
+\CommentTok{\#  tm\_shape(metClinic\_2mbuffers) + tm\_polygons(col = "darkmagenta",}
+\CommentTok{\#                                              alpha = 0.2, lwd = 0) + }
+  
+\CommentTok{\#    tm\_shape(metClinic\_buffers) + tm\_polygons(col = "darkorchid4",}
+\CommentTok{\#                                              alpha = 0.5, lwd = 0) +}
+  
+\CommentTok{\#    tm\_shape(metClinics.3435) + tm\_symbols(size = 0.5, fill="aquamarine3")}
 \end{Highlighting}
 \end{Shaded}
+
+Which zip codes are within two miles walking distance to providers?
+Which areas have the best coverage, versus the most challenging? In
+future workshops, we'll learn how to take this visualization to the next
+stage, by operationalizing a new variable per area. That could mean
+calculating total buffer intersections per area, distance from the zip
+code's center to the nearest resource, calculating area covered by
+buffers, and more.
 
 \bookmarksetup{startatroot}
 
 \chapter{Link Community Data}\label{link-community-data}
 
-\section{Overview}\label{overview}
+\section{Overview}\label{overview-1}
 
 Geographic location can serve as a ``key'' that links different datasets
 together. By referencing each dataset and enabling its spatial location,
@@ -1982,7 +1978,7 @@ constitute a shapefile.
 \item
   1-mile buffer zone of Clinics, \texttt{methadoneClinics\_1mi.shp}
 \item
-  Chicago Zip Codes, \texttt{chicago\_zips.shp}
+  Chicago Zip Codes, \texttt{Chicago\_Zips.shp}
 \item
   Chicago COVID case data by Zip,
   \texttt{COVID-19\_Cases\_\_Tests\_\_and\_Deaths\_by\_ZIP\_Code.csv}
@@ -1993,7 +1989,7 @@ centroids of the zip codes, then save the results as a shapefile and as
 a CSV. Our final result will be a shapefile/CSV with the minimum
 distance value for each zip.
 
-\subsection{Load Libraries}\label{load-libraries}
+\subsection{Load Libraries}\label{load-libraries-1}
 
 We will use the following packages in this tutorial:
 
@@ -2012,38 +2008,29 @@ Load the libraries for use.
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(sf)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(tmap)}
 \end{Highlighting}
 \end{Shaded}
 
-\subsection{Load data}\label{load-data-1}
+\subsection{Load data}\label{load-data-2}
 
 First we'll load the shapefiles.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{chicagoZips }\OtherTok{\textless{}{-}} \FunctionTok{st\_read}\NormalTok{(}\StringTok{"data/chicago\_zips.shp"}\NormalTok{)}
+\NormalTok{chicagoZips }\OtherTok{\textless{}{-}} \FunctionTok{st\_read}\NormalTok{(}\StringTok{"data/Chicago\_Zips.shp"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-Reading layer `chicago_zips' from data source 
-  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/chicago_zips.shp' 
+Reading layer `Chicago_Zips' from data source 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/Chicago_Zips.shp' 
   using driver `ESRI Shapefile'
-Simple feature collection with 85 features and 9 fields
+Simple feature collection with 61 features and 4 fields
 Geometry type: MULTIPOLYGON
 Dimension:     XY
-Bounding box:  xmin: -88.06058 ymin: 41.58152 xmax: -87.52366 ymax: 42.06504
-Geodetic CRS:  WGS 84
+Bounding box:  xmin: -87.94011 ymin: 41.64454 xmax: -87.52414 ymax: 42.02304
+Geodetic CRS:  WGS84(DD)
 \end{verbatim}
 
 \begin{Shaded}
@@ -2092,9 +2079,41 @@ We'll load in a CSV and inspect the data:
 \end{Highlighting}
 \end{Shaded}
 
-\section{Clean \& Merge Data}\label{clean-merge-data}
+\section{Inspect Data}\label{inspect-data}
 
-First, let's inspect COVID case data. What information do we need from
+\subsection{Identify Geographic Key}\label{identify-geographic-key}
+
+The spatial zip dataset will be our primary file. We we need to first
+identify the \textbf{geographic identifier} we would like to merge on.
+What is the main key of interest that we will merge our data on?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(chicagoZips)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Simple feature collection with 6 features and 4 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -87.80649 ymin: 41.88747 xmax: -87.59852 ymax: 41.93228
+Geodetic CRS:  WGS84(DD)
+  objectid shape_area shape_len   zip                       geometry
+1       33  106052287  42720.04 60647 MULTIPOLYGON (((-87.67762 4...
+2       34  127476051  48103.78 60639 MULTIPOLYGON (((-87.72683 4...
+3       35   45069038  27288.61 60707 MULTIPOLYGON (((-87.785 41....
+4       36   70853834  42527.99 60622 MULTIPOLYGON (((-87.66707 4...
+5       37   99039621  47970.14 60651 MULTIPOLYGON (((-87.70656 4...
+6       38   23506056  34689.35 60611 MULTIPOLYGON (((-87.61401 4...
+\end{verbatim}
+
+In this dataset, we can see that the column showing our geographic key
+is ``zip.''
+
+\subsection{Inspect Case Data}\label{inspect-case-data}
+
+Next, let's inspect COVID case data. What information do we need from
 this file? We may not need everything, so consider just identifying the
 field with the geographic identifier and main variable(s) of interest.
 
@@ -2193,70 +2212,56 @@ your data to confirm it was pulled correctly.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{COVID.sub }\OtherTok{\textless{}{-}}\NormalTok{ COVID[, }\FunctionTok{c}\NormalTok{(}\StringTok{"ZIP.Code"}\NormalTok{, }\StringTok{"Case.Rate...Cumulative"}\NormalTok{)]}
-\FunctionTok{head}\NormalTok{(COVID.sub)}
+\FunctionTok{library}\NormalTok{(dplyr)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-  ZIP.Code Case.Rate...Cumulative
-1    60603                 1107.3
-2    60604                 3964.2
-3    60611                  222.0
-4    60611                  197.4
-5    60615                     NA
-6    60603                     NA
+
+Attaching package: 'dplyr'
 \end{verbatim}
 
-\subsection{Identify Geographic Key}\label{identify-geographic-key}
+\begin{verbatim}
+The following objects are masked from 'package:stats':
 
-Before merging, we need to first identify the \textbf{geographic
-identifier} we would like to merge on. It is the field ``ZIP.Code'' in
-our subset. What about the zip code file, which we will be merging to?
+    filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union
+\end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{head}\NormalTok{(chicagoZips)}
+\NormalTok{COVID.sub19 }\OtherTok{\textless{}{-}}\NormalTok{ COVID }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{filter}\NormalTok{(Week.Number }\SpecialCharTok{==} \DecValTok{19}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{select}\NormalTok{(ZIP.Code,Case.Rate...Cumulative)}
+
+\NormalTok{COVID.sub39 }\OtherTok{\textless{}{-}}\NormalTok{ COVID }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{filter}\NormalTok{(Week.Number }\SpecialCharTok{==} \DecValTok{39}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{select}\NormalTok{(ZIP.Code,Case.Rate...Cumulative)}
+
+\FunctionTok{glimpse}\NormalTok{(COVID.sub19)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-Simple feature collection with 6 features and 9 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: -88.06058 ymin: 41.73452 xmax: -87.58209 ymax: 42.04052
-Geodetic CRS:  WGS 84
-  ZCTA5CE10 GEOID10 CLASSFP10 MTFCC10 FUNCSTAT10  ALAND10 AWATER10  INTPTLAT10
-1     60501   60501        B5   G6350          S 12532295   974360 +41.7802209
-2     60007   60007        B5   G6350          S 36493383   917560 +42.0086000
-3     60651   60651        B5   G6350          S  9052862        0 +41.9020934
-4     60652   60652        B5   G6350          S 12987857        0 +41.7479319
-5     60653   60653        B5   G6350          S  6041418  1696670 +41.8199645
-6     60654   60654        B5   G6350          S  1464813   113471 +41.8918225
-    INTPTLON10                       geometry
-1 -087.8232440 MULTIPOLYGON (((-87.86289 4...
-2 -087.9973398 MULTIPOLYGON (((-88.06058 4...
-3 -087.7408565 MULTIPOLYGON (((-87.77559 4...
-4 -087.7147951 MULTIPOLYGON (((-87.74205 4...
-5 -087.6059654 MULTIPOLYGON (((-87.62623 4...
-6 -087.6383036 MULTIPOLYGON (((-87.64775 4...
+Rows: 60
+Columns: 2
+$ ZIP.Code               <chr> "60604", "60601", "60612", "60613", "60615", "6~
+$ Case.Rate...Cumulative <dbl> 1790.3, 429.3, 1468.9, 628.6, 659.2, 541.4, 175~
 \end{verbatim}
-
-Aha -- in this dataset, the zip is identified as either the ZCTA5CE10
-field or GEOID10 field. Not that we are actually working with 5-digit
-ZCTA fields, not 9-digit ZIP codes\ldots{} We decide to merge on the
-GEOID10 field. To make our lives easier, we'll generate a duplicate
-field in our subset with a new name, GEOID10, to match. We also convert
-from the factor structure to a character field to match the data
-structure of the master zip file.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{COVID.sub}\SpecialCharTok{$}\NormalTok{GEOID10}\OtherTok{\textless{}{-}} \FunctionTok{as.character}\NormalTok{(COVID.sub}\SpecialCharTok{$}\NormalTok{ZIP.Code)}
+\FunctionTok{colnames}\NormalTok{(COVID.sub19) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"zip"}\NormalTok{, }\StringTok{"CaseRtWk19"}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(COVID.sub39) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"zip"}\NormalTok{, }\StringTok{"CaseRtWk39"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\subsection{Merge Data}\label{merge-data}
+\section{Merge Data}\label{merge-data}
 
 Let's merge the data using the zip code geographic identifier, ``ZIP
 Code'' field, to bring in the the Percent Tested Positive - Cumalative
@@ -2264,31 +2269,64 @@ dataset. Inspect the data to confirm it merged correctly!
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{zipsMerged }\OtherTok{\textless{}{-}} \FunctionTok{merge}\NormalTok{(chicagoZips, COVID.sub, }\AttributeTok{by =} \StringTok{"GEOID10"}\NormalTok{)}
+\FunctionTok{dim}\NormalTok{(chicagoZips)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 61  5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{zipsMerged }\OtherTok{\textless{}{-}} \FunctionTok{merge}\NormalTok{(chicagoZips, COVID.sub19, }\AttributeTok{by =} \StringTok{"zip"}\NormalTok{, }\AttributeTok{all.x =} \ConstantTok{TRUE}\NormalTok{)}
+
 \FunctionTok{head}\NormalTok{(zipsMerged)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-Simple feature collection with 6 features and 11 fields
+Simple feature collection with 6 features and 5 fields
 Geometry type: MULTIPOLYGON
 Dimension:     XY
-Bounding box:  xmin: -87.63396 ymin: 41.88083 xmax: -87.6129 ymax: 41.88893
-Geodetic CRS:  WGS 84
-  GEOID10 ZCTA5CE10 CLASSFP10 MTFCC10 FUNCSTAT10 ALAND10 AWATER10  INTPTLAT10
-1   60601     60601        B5   G6350          S  934226    60682 +41.8856419
-2   60601     60601        B5   G6350          S  934226    60682 +41.8856419
-3   60601     60601        B5   G6350          S  934226    60682 +41.8856419
-4   60601     60601        B5   G6350          S  934226    60682 +41.8856419
-5   60601     60601        B5   G6350          S  934226    60682 +41.8856419
-6   60601     60601        B5   G6350          S  934226    60682 +41.8856419
-    INTPTLON10 ZIP.Code Case.Rate...Cumulative                       geometry
-1 -087.6215226    60601                 1451.4 MULTIPOLYGON (((-87.63396 4...
-2 -087.6215226    60601                  872.2 MULTIPOLYGON (((-87.63396 4...
-3 -087.6215226    60601                  919.9 MULTIPOLYGON (((-87.63396 4...
-4 -087.6215226    60601                  558.8 MULTIPOLYGON (((-87.63396 4...
-5 -087.6215226    60601                  156.7 MULTIPOLYGON (((-87.63396 4...
-6 -087.6215226    60601                  477.0 MULTIPOLYGON (((-87.63396 4...
+Bounding box:  xmin: -87.63999 ymin: 41.85317 xmax: -87.60246 ymax: 41.88913
+Geodetic CRS:  WGS84(DD)
+    zip objectid shape_area shape_len CaseRtWk19                       geometry
+1 60601       27    9166246  19804.58      429.3 MULTIPOLYGON (((-87.62271 4...
+2 60602       26    4847125  14448.17      643.1 MULTIPOLYGON (((-87.60997 4...
+3 60603       19    4560229  13672.68         NA MULTIPOLYGON (((-87.61633 4...
+4 60604       48    4294902  12245.81     1790.3 MULTIPOLYGON (((-87.63376 4...
+5 60605       20   36301276  37973.35      541.4 MULTIPOLYGON (((-87.62064 4...
+6 60606       31    6766411  12040.44      612.7 MULTIPOLYGON (((-87.63397 4...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{zipsMerged }\OtherTok{\textless{}{-}} \FunctionTok{merge}\NormalTok{(zipsMerged, COVID.sub39, }\AttributeTok{by =} \StringTok{"zip"}\NormalTok{, }\AttributeTok{all.x =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{head}\NormalTok{(zipsMerged)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Simple feature collection with 6 features and 6 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -87.63999 ymin: 41.85317 xmax: -87.60246 ymax: 41.88913
+Geodetic CRS:  WGS84(DD)
+    zip objectid shape_area shape_len CaseRtWk19 CaseRtWk39
+1 60601       27    9166246  19804.58      429.3     1451.4
+2 60602       26    4847125  14448.17      643.1     1688.1
+3 60603       19    4560229  13672.68         NA     1107.3
+4 60604       48    4294902  12245.81     1790.3     3964.2
+5 60605       20   36301276  37973.35      541.4     1420.8
+6 60606       31    6766411  12040.44      612.7     2289.6
+                        geometry
+1 MULTIPOLYGON (((-87.62271 4...
+2 MULTIPOLYGON (((-87.60997 4...
+3 MULTIPOLYGON (((-87.61633 4...
+4 MULTIPOLYGON (((-87.63376 4...
+5 MULTIPOLYGON (((-87.62064 4...
+6 MULTIPOLYGON (((-87.63397 4...
 \end{verbatim}
 
 \section{Visualize Data}\label{visualize-data}
@@ -2303,34 +2341,40 @@ overlay the buffers and clincal providers.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{tmap\_mode}\NormalTok{(}\StringTok{"plot"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-i tmap mode set to "plot".
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{tm\_shape}\NormalTok{(zipsMerged) }\SpecialCharTok{+}
-  \FunctionTok{tm\_polygons}\NormalTok{(}\StringTok{"Case.Rate...Cumulative"}\NormalTok{, }\AttributeTok{style=}\StringTok{"quantile"}\NormalTok{, }\AttributeTok{pal=}\StringTok{"BuPu"}\NormalTok{,}
+  \FunctionTok{tm\_polygons}\NormalTok{(}\AttributeTok{col =} \StringTok{"CaseRtWk39"}\NormalTok{, }
+              \AttributeTok{palette =}\StringTok{"BuPu"}\NormalTok{,}
+              \AttributeTok{style =} \StringTok{"jenks"}\NormalTok{,}
               \AttributeTok{title =} \StringTok{"COVID Case Rate"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(methadoneSf) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.2}\NormalTok{) }
+  
+  \FunctionTok{tm\_shape}\NormalTok{(buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{tm\_shape}\NormalTok{(methadoneSf) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{size =} \FloatTok{0.3}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-
--- tmap v3 code detected -------------------------------------------------------
-[v3->v4] `tm_polygons()`: instead of `style = "quantile"`, use fill.scale =
-`tm_scale_intervals()`.
-i Migrate the argument(s) 'style' to 'tm_scale_intervals(<HERE>)'[v3->v4] `tm_polygons()`: migrate the argument(s) related to the legend of the
-visual variable `fill` namely 'title' to 'fill.legend = tm_legend(<HERE>)'[tm_polygons()] Argument `pal` unknown.
 \end{verbatim}
 
-\pandocbounded{\includegraphics[keepaspectratio]{linking_files/figure-pdf/unnamed-chunk-9-1.pdf}}
+\begin{verbatim}
+-- tmap v3 code detected -------------------------------------------------------
+\end{verbatim}
+
+\begin{verbatim}
+[v3->v4] `tm_polygons()`: instead of `style = "jenks"`, use fill.scale =
+`tm_scale_intervals()`.
+i Migrate the argument(s) 'style', 'palette' (rename to 'values') to
+  'tm_scale_intervals(<HERE>)'
+[v3->v4] `tm_polygons()`: use 'fill' for the fill color of polygons/symbols
+(instead of 'col'), and 'col' for the outlines (instead of 'border.col').
+[v3->v4] `tm_polygons()`: migrate the argument(s) related to the legend of the
+visual variable `fill` namely 'title' to 'fill.legend = tm_legend(<HERE>)'
+[cols4all] color palettes: use palettes from the R package cols4all. Run
+`cols4all::c4a_gui()` to explore them. The old palette name "BuPu" is named
+"brewer.bu_pu"
+Multiple palettes called "bu_pu" found: "brewer.bu_pu", "matplotlib.bu_pu". The first one, "brewer.bu_pu", is returned.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{linking_files/figure-pdf/unnamed-chunk-8-1.pdf}}
 
 Already we can generate some insight. Areas on the far West side of the
 city have some of the highest case rates, but are outside a walkable
@@ -2347,44 +2391,42 @@ the \texttt{lwd} parameter.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{tm\_shape}\NormalTok{(zipsMerged) }\SpecialCharTok{+}
-  \FunctionTok{tm\_fill}\NormalTok{(}\StringTok{"Case.Rate...Cumulative"}\NormalTok{, }\AttributeTok{style=}\StringTok{"quantile"}\NormalTok{, }\AttributeTok{n=}\DecValTok{6}\NormalTok{, }\AttributeTok{pal=}\StringTok{"{-}RdYlGn"}\NormalTok{,}
-              \AttributeTok{title =} \StringTok{"COVID Case Rate"}\NormalTok{,}\AttributeTok{alpha =} \FloatTok{0.8}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{lwd =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+} 
-  \FunctionTok{tm\_shape}\NormalTok{(buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"gray"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_shape}\NormalTok{(methadoneSf) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"black"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.1}\NormalTok{) }\SpecialCharTok{+}
-  \FunctionTok{tm\_layout}\NormalTok{(}\AttributeTok{main.title =} \StringTok{"Walkable Methadone Service Areas"}\NormalTok{,}
+\NormalTok{wk19 }\OtherTok{=} \FunctionTok{tm\_shape}\NormalTok{(zipsMerged) }\SpecialCharTok{+}
+  \FunctionTok{tm\_polygons}\NormalTok{(}\AttributeTok{col =} \StringTok{"CaseRtWk19"}\NormalTok{, }
+              \AttributeTok{palette =}\StringTok{"BuPu"}\NormalTok{,}
+              \AttributeTok{breaks =} \FunctionTok{c}\NormalTok{(}\DecValTok{1000}\NormalTok{,}\DecValTok{2000}\NormalTok{,}\DecValTok{3000}\NormalTok{,}\DecValTok{4000}\NormalTok{,}\DecValTok{5000}\NormalTok{),}
+              \AttributeTok{title =} \StringTok{"COVID Case Rate"}\NormalTok{) }\SpecialCharTok{+}
+
+  \FunctionTok{tm\_shape}\NormalTok{(buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{tm\_shape}\NormalTok{(methadoneSf) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"white"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{tm\_layout}\NormalTok{(}\AttributeTok{scale =} \FloatTok{0.7}\NormalTok{,}
+            \AttributeTok{main.title =} \StringTok{"Walkable Methadone Service Areas in Week 19"}\NormalTok{,}
             \AttributeTok{main.title.position =} \StringTok{"center"}\NormalTok{,}
             \AttributeTok{main.title.size =} \DecValTok{1}\NormalTok{,}
-            \AttributeTok{frame =} \ConstantTok{FALSE}\NormalTok{)}
+            \AttributeTok{frame.lwd =} \DecValTok{0}\NormalTok{)}
+
+\NormalTok{wk39 }\OtherTok{\textless{}{-}} \FunctionTok{tm\_shape}\NormalTok{(zipsMerged) }\SpecialCharTok{+}
+  \FunctionTok{tm\_polygons}\NormalTok{(}\AttributeTok{col =} \StringTok{"CaseRtWk39"}\NormalTok{, }
+              \AttributeTok{palette =}\StringTok{"BuPu"}\NormalTok{,}
+              \AttributeTok{breaks =} \FunctionTok{c}\NormalTok{(}\DecValTok{1000}\NormalTok{,}\DecValTok{2000}\NormalTok{,}\DecValTok{3000}\NormalTok{,}\DecValTok{4000}\NormalTok{,}\DecValTok{5000}\NormalTok{),}
+              \AttributeTok{title =} \StringTok{"COVID Case Rate"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{lwd =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{tm\_shape}\NormalTok{(buffers) }\SpecialCharTok{+} \FunctionTok{tm\_borders}\NormalTok{(}\AttributeTok{col =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{tm\_fill}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{tm\_shape}\NormalTok{(methadoneSf) }\SpecialCharTok{+} \FunctionTok{tm\_dots}\NormalTok{(}\AttributeTok{col =} \StringTok{"white"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{tm\_legend}\NormalTok{(}\AttributeTok{orientation =} \StringTok{"landscape"}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{tm\_layout}\NormalTok{(}\AttributeTok{main.title =} \StringTok{"Walkable Methadone Service Areas in Week 39"}\NormalTok{,}
+            \AttributeTok{main.title.position =} \StringTok{"center"}\NormalTok{,}
+            \AttributeTok{main.title.size =} \DecValTok{1}\NormalTok{,}
+            \AttributeTok{frame.alpha =} \FloatTok{0.5}\NormalTok{)}
+
+\FunctionTok{tmap\_arrange}\NormalTok{(wk19,wk39)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-\end{verbatim}
+\pandocbounded{\includegraphics[keepaspectratio]{linking_files/figure-pdf/unnamed-chunk-9-1.pdf}}
 
-\begin{verbatim}
--- tmap v3 code detected -------------------------------------------------------
-\end{verbatim}
-
-\begin{verbatim}
-[v3->v4] `tm_fill()`: instead of `style = "quantile"`, use fill.scale =
-`tm_scale_intervals()`.
-i Migrate the argument(s) 'style', 'n' to 'tm_scale_intervals(<HERE>)'
-[v3->v4] `tm_fill()`: use `fill_alpha` instead of `alpha`.
-[v3->v4] `tm_fill()`: migrate the argument(s) related to the legend of the
-visual variable `fill` namely 'title' to 'fill.legend = tm_legend(<HERE>)'
-[tm_fill()] Argument `pal` unknown.
-[v3->v4] `tm_polygons()`: use 'fill' for the fill color of polygons/symbols
-(instead of 'col'), and 'col' for the outlines (instead of 'border.col').
-[v3->v4] `tm_polygons()`: use `fill_alpha` instead of `alpha`.
-[v3->v4] `tm_layout()`: use `tm_title()` instead of `tm_layout(main.title = )`
-[plot mode] fit legend/component: Some legend items or map compoments do not
-fit well, and are therefore rescaled.
-i Set the tmap option `component.autoscale = FALSE` to disable rescaling.
-\end{verbatim}
-
-\pandocbounded{\includegraphics[keepaspectratio]{linking_files/figure-pdf/unnamed-chunk-10-1.pdf}}
+Run the same code with a dynamic map! As done previously, change the
+\texttt{tmap\_mode} to ``view'' and zoom in to view specific zip codes.
 
 Using this approach, it's clear that the zip codes on the West Side most
 vulnerable are 60651, 60644, 60632, 60629, and 60608. By updating the
@@ -2397,7 +2439,7 @@ We save our newly merged ZCTA level data for future analysis.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#write\_sf(zipsMerged, "data/chizips\_COVID.shp")}
+\CommentTok{\#write\_sf(zipsMerged, "data/chizips\_COVID.gpkg")}
 \end{Highlighting}
 \end{Shaded}
 

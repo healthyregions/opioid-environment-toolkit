@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "Health Environment R-Spatial Toolkit"
+  title: "Opioid Environment Toolkit for R-Spatial"
   author: "Healthy Regions & Policies Lab"
   date: "10/16/2025"
   chapters:
@@ -15,7 +15,6 @@ book:
     - references.qmd
   
  
-
 bibliography: references.bib
 
 prefer-html: true
@@ -29,3 +28,5 @@ format:
 
 editor: visual
 
+comments:
+  hypothesis: true

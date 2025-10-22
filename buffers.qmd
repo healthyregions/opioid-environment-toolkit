@@ -76,10 +76,12 @@ We use the tmap "plot" view mode to view the data in a static format.
 tmap_mode("plot")
 
 ## 1st layer (gets plotted first)
-tm_shape(areas) + tm_borders(alpha = 0.4) + 
+tm_shape(areas) + tm_polygons() +
   
   ## 2nd layer (overlay)
-  tm_shape(metClinics) + tm_dots(size = 0.4, col="red") 
+  tm_shape(metClinics) + tm_symbols(size = 0.5, 
+                                    col= "darkblue", #border color
+                                    fill="cornflowerblue") #fill color
 ```
 
 ## Spatial Transformation
@@ -137,23 +139,33 @@ Inspect the structure of the object you just created. Note that this is a *new* 
 
 Always visualize a spatial object when calculating one, to confirm it worked correctly. If your buffers are much larger or smaller than expected, it's often a case of mistaken CRS or projection. Retransform your data, and try again.
 
-We use `tmap` again, in the static plot mode. We layer our zip code areas, then providers, and then finally the buffers. We use red to color clinics, and blue to color buffers.
+We use `tmap` again, in the static plot mode. We layer our zip code areas, then providers, and then finally the buffers. We use a cornflower blue to color clinic locations (with dark blue borders), and include the borders only of our buffers.
 
-```{r}
-tmap_mode("plot")
+```{r message=FALSE}
 
-tm_shape(areas.3435) + tm_borders() +
-  tm_shape(metClinics.3435) + tm_dots(col = "red") +
-  tm_shape(metClinic_buffers) + tm_borders(col = "blue") 
+  tm_shape(areas.3435) + tm_polygons() +
+
+  tm_shape(metClinic_buffers) + tm_borders() + 
+  
+    tm_shape(metClinics.3435) + tm_symbols(size = 0.5, 
+                                    col= "darkblue", 
+                                    fill="cornflowerblue")
+  
 ```
 
 While this map shows our buffers were calculated correctly, the default settings make it difficult to view. To improve aesthetics we change the transparency of zip code boundaries by adjusting the alpha level. We add a fill to the buffers, and make it transparent. We increase the size of the points.
 
-```{r}
-# Map Housing Buffers
-tm_shape(areas) + tm_borders(alpha = 0.6) +
-  tm_shape(metClinic_buffers) + tm_fill(col = "blue", alpha = .4) + tm_borders(col = "blue") +
-  tm_shape(metClinics.3435) + tm_dots(col = "red",  size = 0.2) 
+```{r message=FALSE}
+tm_basemap("CartoDB.VoyagerNoLabels") + #Add Basemap
+  
+  tm_shape(areas.3435) + tm_borders() + #Include Borders only from Areas
+
+  tm_shape(metClinic_buffers) + tm_borders(alpha = 0.5, #Slightly transparent 
+                                           lwd = 0.5) + #Reduce line weight
+  
+    tm_shape(metClinics.3435) + tm_symbols(size = 0.5, 
+                                    col= "darkblue", 
+                                    fill="cornflowerblue")
 ```
 
 ### Buffer union
@@ -168,17 +180,24 @@ Inspect the data structures of `metClinic_buffers` and `union.buffers` to see wh
 
 Finally, we map the buffer union.
 
-```{r}
-tm_shape(areas) +  tm_borders()+
-  tm_shape(unionBuffers) + tm_fill(col = "blue", alpha = .2) + tm_borders(col = "blue") +
-  tm_shape(metClinics.3435) + tm_dots(col = "red", size = 0.4) 
+```{r message=FALSE}
+tm_basemap("CartoDB.VoyagerNoLabels") + #Add Basemap
+  
+  tm_shape(areas.3435) + tm_borders() + #Include Borders only from Areas
+
+  tm_shape(unionBuffers) + tm_borders(alpha = 0.8, #Less transparent 
+                                           lwd = 0.5) + #Reduce line weight
+  
+    tm_shape(metClinics.3435) + tm_symbols(size = 0.5, 
+                                    col= "darkblue", 
+                                    fill="cornflowerblue")
 ```
 
 ### Save Data
 
 We will save the merged 1-mile buffers to bring into maps for future analysis. The `st_write` function does the trick. Uncomment, and run on your system!
 
-```{r}
+```{r message=FALSE}
 #st_write(unionBuffers, "data/methadoneClinics_1mi.shp")
 ```
 
@@ -188,33 +207,52 @@ From here, we can generate additional buffers to compare access associations and
 
 We generate a two-mile buffer to add:
 
-```{r}
+```{r message=FALSE}
 metClinic_2mbuffers <- st_buffer(metClinics.3435, 10560)
 ```
 
-And then leverage tmap parameter specifications to further customize the a map showing multiple buffers. Here, we add the City of Chicago boundary and soften the zip code boundaries. We add a bounding box for the first zip code layer, so that the whole map is centered around the city boundary (even those the zip codes are layered first). We adjust the transparency of the buffer fills, use different colors, and adjust borders to make the visuals pop. We use the `tmap_layout` function to take away the frame, add and position a title. Explore the `tmap` documentation further to find additional options for legends and more. To find color options in R, there are multiple guides online (like [this](https://bookdown.org/hneth/ds4psy/D-2-apx-colors-essentials.html) one).
+### Explore Cartographic Styles
 
-```{r}
-tmap_mode("plot")
-tm_shape(areas, bbox=cityBoundary) + tm_borders(alpha = 0.2) +
-  tm_shape(cityBoundary) + tm_borders(lwd = 1.5) +
-  tm_shape(metClinic_2mbuffers) + tm_fill(col = "gray10", alpha = .4) + tm_borders(col = "dimgray", alpha = .4) +
-  tm_shape(metClinic_buffers) + tm_fill(col = "gray90", alpha = .4) + tm_borders(col = "darkslategray") +
-  tm_shape(metClinics.3435) + tm_dots(col = "red",  size = 0.2) +   
-  tm_layout(main.title = "Methadone Clinic Service Areas in Chicago",
+And then, leverage tmap parameter specifications to further customize the a map showing multiple buffers. We adjust the transparency of the buffer fills, use different colors, and adjust borders to make the visuals pop. Have fun in trying out new combinations!
+
+We use the `tmap_layout` function to take away the frame, add and position a title. Explore the `tmap` documentation further to find additional options for legends and more. To find color options in R, there are multiple guides online (like [this](https://bookdown.org/hneth/ds4psy/D-2-apx-colors-essentials.html) one).
+
+```{r message=FALSE}
+  
+  tm_shape(areas.3435) + tm_borders() + 
+
+  tm_shape(metClinic_2mbuffers) + tm_polygons(alpha = 0.2,  
+                                           fill = "darkgray",
+                                           lwd = 0.1) +
+  
+  tm_shape(metClinic_buffers) + tm_polygons(alpha = 0.5, 
+                                            fill = "snow3",
+                                           lwd = 0.2) + #Reduce line weight + 
+  
+    tm_shape(metClinics.3435) + tm_symbols(size = 0.6, 
+                                    col = "aquamarine",
+                                    fill="cornflowerblue") + 
+  
+  tm_layout(main.title = "Methadone Clinic Service Areas",
             main.title.position = "center",
-            main.title.size = 1,
             frame = FALSE)
 ```
 
-Next, we'll try an interactive map to better explore the data that we have. We switch the `tmap_mode` to "view" and focus on our merged 1-mile buffer service areas. We add labels for zip codes using the `tm_text` parameter, and adjust the size. The resulting map lets us zoom and out to explore the data. Clicking on a point will give additional details about the Methadone provider.
+Next, we'll try an interactive map to better explore the data that we have. We switch the `tmap_mode` to "view" and focus on our buffer service areas, trying out a new color palette. We add labels for zip codes using the `tm_text` parameter. The resulting map lets us zoom and out to explore the data. Clicking on a point will give additional details about the Methadone provider.
 
-```{r warning = FALSE, messages=FALSE}
+```{r warning = FALSE, message=FALSE}
 
 #tmap_mode("view")
 
-#tm_shape(areas) +  tm_borders(alpha = 0.5, col="gray")+ tm_text#("GEOID10", size = 0.7) +
-#  tm_shape(cityBoundary) + tm_borders() +
-#  tm_shape(unionBuffers) + tm_fill(col = "blue", alpha = .2) + #tm_borders(col = "blue") +
-#  tm_shape(metClinics.3435) + tm_dots(col = "red") 
+#tm_shape(areas.3435) + tm_borders() + tm_labels(text="zip") + 
+  
+#  tm_shape(metClinic_2mbuffers) + tm_polygons(col = "darkmagenta",
+#                                              alpha = 0.2, lwd = 0) + 
+  
+#    tm_shape(metClinic_buffers) + tm_polygons(col = "darkorchid4",
+#                                              alpha = 0.5, lwd = 0) +
+  
+#    tm_shape(metClinics.3435) + tm_symbols(size = 0.5, fill="aquamarine3")
 ```
+
+Which zip codes are within two miles walking distance to providers? Which areas have the best coverage, versus the most challenging? In future workshops, we'll learn how to take this visualization to the next stage, by operationalizing a new variable per area. That could mean calculating total buffer intersections per area, distance from the zip code's center to the nearest resource, calculating area covered by buffers, and more.
