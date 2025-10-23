@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Intro to Spatial Data – Opioid Environment Toolkit for R-Spatial</title>
+<title>1&nbsp; Intro to Spatial Data – Opioid Environment Toolkit for R-Spatial</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -3854,7 +3854,7 @@ vertical-align: -.125em;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro.html">PART 1</a></li><li class="breadcrumb-item"><a href="./intro.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -3888,33 +3888,44 @@ vertical-align: -.125em;
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./orientation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></span></a>
+ <span class="menu-text">Orientation</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PART 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intro.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./geocoding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./buffers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Buffer Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Buffer Analysis</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./linking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Link Community Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Link Community Data</span></span></a>
   </div>
 </li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -3925,26 +3936,26 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">2.1</span> Overview</a></li>
-  <li><a href="#BA-setup" id="toc-BA-setup" class="nav-link" data-scroll-target="#BA-setup"><span class="header-section-number">2.2</span> Environment Setup</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">1.1</span> Overview</a></li>
+  <li><a href="#BA-setup" id="toc-BA-setup" class="nav-link" data-scroll-target="#BA-setup"><span class="header-section-number">1.2</span> Environment Setup</a>
   <ul class="collapse">
-  <li><a href="#BA-i-o" id="toc-BA-i-o" class="nav-link" data-scroll-target="#BA-i-o"><span class="header-section-number">2.2.1</span> Input/Output</a></li>
-  <li><a href="#load-libraries" id="toc-load-libraries" class="nav-link" data-scroll-target="#load-libraries"><span class="header-section-number">2.2.2</span> Load Libraries</a></li>
-  <li><a href="#load-data" id="toc-load-data" class="nav-link" data-scroll-target="#load-data"><span class="header-section-number">2.2.3</span> Load Data</a></li>
+  <li><a href="#BA-i-o" id="toc-BA-i-o" class="nav-link" data-scroll-target="#BA-i-o"><span class="header-section-number">1.2.1</span> Input/Output</a></li>
+  <li><a href="#load-libraries" id="toc-load-libraries" class="nav-link" data-scroll-target="#load-libraries"><span class="header-section-number">1.2.2</span> Load Libraries</a></li>
+  <li><a href="#load-data" id="toc-load-data" class="nav-link" data-scroll-target="#load-data"><span class="header-section-number">1.2.3</span> Load Data</a></li>
   </ul></li>
-  <li><a href="#data-inspection" id="toc-data-inspection" class="nav-link" data-scroll-target="#data-inspection"><span class="header-section-number">2.3</span> Data Inspection</a>
+  <li><a href="#data-inspection" id="toc-data-inspection" class="nav-link" data-scroll-target="#data-inspection"><span class="header-section-number">1.3</span> Data Inspection</a>
   <ul class="collapse">
-  <li><a href="#non-spatial-view" id="toc-non-spatial-view" class="nav-link" data-scroll-target="#non-spatial-view"><span class="header-section-number">2.3.1</span> Non-Spatial View</a></li>
-  <li><a href="#spatial-view" id="toc-spatial-view" class="nav-link" data-scroll-target="#spatial-view"><span class="header-section-number">2.3.2</span> Spatial View</a></li>
-  <li><a href="#structure-inspection" id="toc-structure-inspection" class="nav-link" data-scroll-target="#structure-inspection"><span class="header-section-number">2.3.3</span> Structure Inspection</a></li>
-  <li><a href="#crs-inspection" id="toc-crs-inspection" class="nav-link" data-scroll-target="#crs-inspection"><span class="header-section-number">2.3.4</span> CRS Inspection</a></li>
+  <li><a href="#non-spatial-view" id="toc-non-spatial-view" class="nav-link" data-scroll-target="#non-spatial-view"><span class="header-section-number">1.3.1</span> Non-Spatial View</a></li>
+  <li><a href="#spatial-view" id="toc-spatial-view" class="nav-link" data-scroll-target="#spatial-view"><span class="header-section-number">1.3.2</span> Spatial View</a></li>
+  <li><a href="#structure-inspection" id="toc-structure-inspection" class="nav-link" data-scroll-target="#structure-inspection"><span class="header-section-number">1.3.3</span> Structure Inspection</a></li>
+  <li><a href="#crs-inspection" id="toc-crs-inspection" class="nav-link" data-scroll-target="#crs-inspection"><span class="header-section-number">1.3.4</span> CRS Inspection</a></li>
   </ul></li>
-  <li><a href="#explore-projections" id="toc-explore-projections" class="nav-link" data-scroll-target="#explore-projections"><span class="header-section-number">2.4</span> Explore Projections</a>
+  <li><a href="#explore-projections" id="toc-explore-projections" class="nav-link" data-scroll-target="#explore-projections"><span class="header-section-number">1.4</span> Explore Projections</a>
   <ul class="collapse">
-  <li><a href="#transform-crs" id="toc-transform-crs" class="nav-link" data-scroll-target="#transform-crs"><span class="header-section-number">2.4.1</span> Transform CRS</a></li>
+  <li><a href="#transform-crs" id="toc-transform-crs" class="nav-link" data-scroll-target="#transform-crs"><span class="header-section-number">1.4.1</span> Transform CRS</a></li>
   </ul></li>
-  <li><a href="#write-data" id="toc-write-data" class="nav-link" data-scroll-target="#write-data"><span class="header-section-number">2.5</span> Write Data</a></li>
-  <li><a href="#map-the-basics" id="toc-map-the-basics" class="nav-link" data-scroll-target="#map-the-basics"><span class="header-section-number">2.6</span> Map the Basics</a></li>
+  <li><a href="#write-data" id="toc-write-data" class="nav-link" data-scroll-target="#write-data"><span class="header-section-number">1.5</span> Write Data</a></li>
+  <li><a href="#map-the-basics" id="toc-map-the-basics" class="nav-link" data-scroll-target="#map-the-basics"><span class="header-section-number">1.6</span> Map the Basics</a></li>
   <li><a href="#more-resources" id="toc-more-resources" class="nav-link" data-scroll-target="#more-resources">More Resources</a></li>
   </ul>
 </nav>
@@ -3952,9 +3963,9 @@ vertical-align: -.125em;
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./intro.html">PART 1</a></li><li class="breadcrumb-item"><a href="./intro.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="intro" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></h1>
+<h1 class="title"><span id="intro" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></h1>
 </div>
 
 
@@ -3971,8 +3982,8 @@ vertical-align: -.125em;
 </header>
 
 
-<section id="overview" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">2.1</span> Overview</h2>
+<section id="overview" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">1.1</span> Overview</h2>
 <p>We start our analysis with loading in our base data. Using Census tract boundaries downloaded from the City of Chicago data portal, we’ll do the following:</p>
 <ul>
 <li>Read in a shapefile with the <code>sf</code> library &amp; convert to a <code>sf</code> spatial object</li>
@@ -3982,19 +3993,19 @@ vertical-align: -.125em;
 <li>Map the data using basics of the <code>tmap</code> library.</li>
 </ul>
 </section>
-<section id="BA-setup" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="BA-setup"><span class="header-section-number">2.2</span> Environment Setup</h2>
+<section id="BA-setup" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="BA-setup"><span class="header-section-number">1.2</span> Environment Setup</h2>
 <p>To replicate the code &amp; functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language.</p>
-<section id="BA-i-o" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="BA-i-o"><span class="header-section-number">2.2.1</span> Input/Output</h3>
+<section id="BA-i-o" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="BA-i-o"><span class="header-section-number">1.2.1</span> Input/Output</h3>
 <p>Our input will be a shapefile of Chicago census tracts, as downloaded from the City of Chicago data portal in the early 2020s. Note that at least four files are required (.dbf, .prj, .shp, and .shx) to consitute a shapefile.</p>
 <ul>
 <li>Chicago Census tracts, <code>Chicago_Tracts.shp</code></li>
 </ul>
 <p>We will output a tract dataset geopackage (.gpkg) in a different coordinate reference system that can be used for future analyses.</p>
 </section>
-<section id="load-libraries" class="level3" data-number="2.2.2">
-<h3 data-number="2.2.2" class="anchored" data-anchor-id="load-libraries"><span class="header-section-number">2.2.2</span> Load Libraries</h3>
+<section id="load-libraries" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="load-libraries"><span class="header-section-number">1.2.2</span> Load Libraries</h3>
 <p>We will use the following packages in this tutorial:</p>
 <ul>
 <li><code>sf</code>: to manipulate spatial data</li>
@@ -4009,8 +4020,8 @@ vertical-align: -.125em;
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="load-data" class="level3" data-number="2.2.3">
-<h3 data-number="2.2.3" class="anchored" data-anchor-id="load-data"><span class="header-section-number">2.2.3</span> Load Data</h3>
+<section id="load-data" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="load-data"><span class="header-section-number">1.2.3</span> Load Data</h3>
 <p>First we load in the shapefile containing the census tract data information and geographic boundaries.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>Chi_tracts <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"data/Chicago_Tracts.shp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4027,11 +4038,11 @@ Geodetic CRS:  WGS84(DD)</code></pre>
 </div>
 </section>
 </section>
-<section id="data-inspection" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="data-inspection"><span class="header-section-number">2.3</span> Data Inspection</h2>
+<section id="data-inspection" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="data-inspection"><span class="header-section-number">1.3</span> Data Inspection</h2>
 <p>Always inspect data when loading in.</p>
-<section id="non-spatial-view" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="non-spatial-view"><span class="header-section-number">2.3.1</span> Non-Spatial View</h3>
+<section id="non-spatial-view" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="non-spatial-view"><span class="header-section-number">1.3.1</span> Non-Spatial View</h3>
 <p>First we look at a non-spatial view.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Chi_tracts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4060,8 +4071,8 @@ Geodetic CRS:  WGS84(DD)
 <p>Try alternative view functions from the <code>tidyverse</code> like glimpse().</p>
 <p>Note the last column; this is a spatially enabled column. The data is no longer a <code>shapefile</code> but an <code>sf</code> object, comprised of polygons.</p>
 </section>
-<section id="spatial-view" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="spatial-view"><span class="header-section-number">2.3.2</span> Spatial View</h3>
+<section id="spatial-view" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="spatial-view"><span class="header-section-number">1.3.2</span> Spatial View</h3>
 <p>We can use a <em>baseR</em> function to inspect the spatial dimension. The <code>sf</code> framework enables previews of each attribute in our spatial file.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Chi_tracts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4074,8 +4085,8 @@ Geodetic CRS:  WGS84(DD)
 </div>
 </div>
 </section>
-<section id="structure-inspection" class="level3" data-number="2.3.3">
-<h3 data-number="2.3.3" class="anchored" data-anchor-id="structure-inspection"><span class="header-section-number">2.3.3</span> Structure Inspection</h3>
+<section id="structure-inspection" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="structure-inspection"><span class="header-section-number">1.3.3</span> Structure Inspection</h3>
 <p>Check out the data structure of this file… What object is it?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Chi_tracts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4099,8 +4110,8 @@ Geodetic CRS:  WGS84(DD)
 </div>
 </div>
 </section>
-<section id="crs-inspection" class="level3" data-number="2.3.4">
-<h3 data-number="2.3.4" class="anchored" data-anchor-id="crs-inspection"><span class="header-section-number">2.3.4</span> CRS Inspection</h3>
+<section id="crs-inspection" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="crs-inspection"><span class="header-section-number">1.3.4</span> CRS Inspection</h3>
 <p>Check out the coordinate reference system. What is it? What are the units?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(Chi_tracts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4126,11 +4137,11 @@ GEOGCRS["WGS84(DD)",
 </div>
 </section>
 </section>
-<section id="explore-projections" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="explore-projections"><span class="header-section-number">2.4</span> Explore Projections</h2>
+<section id="explore-projections" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="explore-projections"><span class="header-section-number">1.4</span> Explore Projections</h2>
 <p>Lets see how switching CRS changes our object. First we’ll try the Mollweide coordinate reference system that does a good job preserving area across the globe.</p>
-<section id="transform-crs" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="transform-crs"><span class="header-section-number">2.4.1</span> Transform CRS</h3>
+<section id="transform-crs" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="transform-crs"><span class="header-section-number">1.4.1</span> Transform CRS</h3>
 <p>To transform our CRS, we use the <code>st_transform</code> function. To plot, we use baseR again but with some parameter updates. Finally, we check out the CRS of our new object. What are the units? Any other details to note? Will this be appropriate for our spatial analysis?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Chi_tracts.moll <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(Chi_tracts, <span class="at">crs=</span><span class="st">"ESRI:54009"</span>)</span>
@@ -4302,8 +4313,8 @@ PROJCRS["NAD83 / Illinois East (ftUS)",
 </div>
 </section>
 </section>
-<section id="write-data" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="write-data"><span class="header-section-number">2.5</span> Write Data</h2>
+<section id="write-data" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="write-data"><span class="header-section-number">1.5</span> Write Data</h2>
 <p>We transformed our Chicago tract spatial dataset to a coordinate reference system that is appropriate for Illinois-specific analysis, using a distance measure that is interpretable for our purposes. Let’s write that file to our directory.</p>
 <p>We’ll write to a new, elegant spatial data format, the <em>geopackage</em>. Uncomment the line, and run.</p>
 <div class="cell">
@@ -4311,8 +4322,8 @@ PROJCRS["NAD83 / Illinois East (ftUS)",
 </div>
 <p>Now we’ll switch to a more extensive cartographic mapping package, <code>tmap</code>, to map our data.</p>
 </section>
-<section id="map-the-basics" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="map-the-basics"><span class="header-section-number">2.6</span> Map the Basics</h2>
+<section id="map-the-basics" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="map-the-basics"><span class="header-section-number">1.6</span> Map the Basics</h2>
 <p>We approach mapping with one layer at a time. Always start with the object you want to map by calling it with the <code>tm_shape</code> function. Then, at least one descriptive/styling function follows. There are hundreds of variations and paramater specifications, so take your time in exploring <code>tmap</code> and the options.</p>
 <p>Here we style the tracts with some semi-transparent borders.</p>
 <div class="cell">
@@ -4770,13 +4781,13 @@ PROJCRS["NAD83 / Illinois East (ftUS)",
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./orientation.html" class="pagination-link" aria-label="Spatial Orientation">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></span>
+      <a href="./orientation.html" class="pagination-link" aria-label="Orientation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Orientation</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./geocoding.html" class="pagination-link" aria-label="Geocoding Locations">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

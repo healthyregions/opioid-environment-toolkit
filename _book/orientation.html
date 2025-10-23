@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Spatial Orientation – Opioid Environment Toolkit for R-Spatial</title>
+<title>Orientation – Opioid Environment Toolkit for R-Spatial</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -3819,7 +3819,7 @@ vertical-align: -.125em;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./orientation.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./orientation.html">Orientation</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -3853,33 +3853,44 @@ vertical-align: -.125em;
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./orientation.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></span></a>
+ <span class="menu-text">Orientation</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">PART 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./geocoding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./buffers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Buffer Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Buffer Analysis</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
+          <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./linking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Link Community Data</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Link Community Data</span></span></a>
   </div>
 </li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -3890,13 +3901,13 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#SD-spatial-data" id="toc-SD-spatial-data" class="nav-link active" data-scroll-target="#SD-spatial-data"><span class="header-section-number">1.1</span> Defining spatial data</a></li>
-  <li><a href="#SD-vector-data" id="toc-SD-vector-data" class="nav-link" data-scroll-target="#SD-vector-data"><span class="header-section-number">1.2</span> Spatial data formats</a>
+  <li><a href="#SD-spatial-data" id="toc-SD-spatial-data" class="nav-link active" data-scroll-target="#SD-spatial-data">Defining spatial data</a></li>
+  <li><a href="#SD-vector-data" id="toc-SD-vector-data" class="nav-link" data-scroll-target="#SD-vector-data">Spatial data formats</a>
   <ul class="collapse">
-  <li><a href="#simple-features" id="toc-simple-features" class="nav-link" data-scroll-target="#simple-features"><span class="header-section-number">1.2.1</span> Simple features</a></li>
+  <li><a href="#simple-features" id="toc-simple-features" class="nav-link" data-scroll-target="#simple-features">Simple features</a></li>
   </ul></li>
-  <li><a href="#spatial-data-types" id="toc-spatial-data-types" class="nav-link" data-scroll-target="#spatial-data-types"><span class="header-section-number">1.3</span> Spatial data types</a></li>
-  <li><a href="#SD-crs" id="toc-SD-crs" class="nav-link" data-scroll-target="#SD-crs"><span class="header-section-number">1.4</span> Coordinate Reference System</a></li>
+  <li><a href="#spatial-data-types" id="toc-spatial-data-types" class="nav-link" data-scroll-target="#spatial-data-types">Spatial data types</a></li>
+  <li><a href="#SD-crs" id="toc-SD-crs" class="nav-link" data-scroll-target="#SD-crs">Coordinate Reference System</a></li>
   <li><a href="#SD-appendix" id="toc-SD-appendix" class="nav-link" data-scroll-target="#SD-appendix">Further resources</a></li>
   </ul>
 </nav>
@@ -3906,7 +3917,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Orientation</span></h1>
+<h1 class="title">Orientation</h1>
 </div>
 
 
@@ -3923,24 +3934,24 @@ vertical-align: -.125em;
 </header>
 
 
-<section id="SD-spatial-data" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="SD-spatial-data"><span class="header-section-number">1.1</span> Defining spatial data</h2>
+<section id="SD-spatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="SD-spatial-data">Defining spatial data</h2>
 <p>Spatial data refers to data that contain information about specific locations, and the information content of the data may change with location. In other words, “information” and “location” are two important elements in spatial data. On some occasions, spatial data may only include “location.” But without “location,” the data is no longer spatial anymore. For example, a spatial data that describes the resource distribution of Medications for Opioid Overuse Disorder (MOUDs) must contain <em>and enable</em> location information of these MOUD resources, otherwise the data becomes a non-spatial list of those resources.</p>
 <p>For the purpose of this tutorial, we will only briefly introduce some important concepts in spatial data. See <em>Further Resources</em> if you would like to learn more about these concepts.</p>
 </section>
-<section id="SD-vector-data" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="SD-vector-data"><span class="header-section-number">1.2</span> Spatial data formats</h2>
+<section id="SD-vector-data" class="level2">
+<h2 class="anchored" data-anchor-id="SD-vector-data">Spatial data formats</h2>
 <p>Spatial data can be stored in a text file like comma-separated value (CSV) files. However, the text file needs to have essential location columns with latitude and longitude to represent the coordinate location of a spatial object. Furthermore, a CSV file with lat/long columns is only a flat/non-spatial file, until the spatial location context is enabled as a new spatial data format.</p>
 <p>A common spatial data format is the shapefile, which comes from ESRI/ArcGIS proprietary software. The shapefile file format (.shp for short) includes a minimum of 4 files, with a common prefix and different filename extensions <code>.shp</code>, <code>.shx</code>, <code>.dbf</code>, and <code>.prj</code>. In order to work with the spatial data, we need all these four components of the shapefile stored in the same directory, so that the software (such as R) can know how to project spatial objects onto a geographic or coordinate space (i.e., spatial location context is enabled). Other common spatial data formats include the GeoJSON, KML, and geopackage.</p>
-<section id="simple-features" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="simple-features"><span class="header-section-number">1.2.1</span> Simple features</h3>
+<section id="simple-features" class="level3">
+<h3 class="anchored" data-anchor-id="simple-features">Simple features</h3>
 <p><a href="https://r-spatial.github.io/sf/articles/sf1.html">Simple features</a> refers to an international standard (ISO 19125-1:2004) that describes how real-world objects, and their spatial geometries, are represented in computers. This standard is enabled in ESRI/ArcGIS architecture, POSTGIS (a spatial extension for PostGresSQL), the GDAL libraries that serve as underpinnings to most GIS work, and GeoJSONs. The <code>sf</code> R ecoystem makes simple features even more accessible within R, so that simple feature objects in spatial data are also stored in a data frame, with one vector/column containing geographic data (usually named “geometry” or “geom”).</p>
 <p>Why should you care about these computational components of spatial systems architecture? Spatial analysis often requires troubleshooting, and spatial formats can be complicated.</p>
 <p>We recommend using the <code>str</code> function in R to familiarize yourself with data objects as you go, and to explore the data files as well. For example: a <code>shapefile</code> includes (at least) four components, separating the data as a <code>.dbf</code> file and projection information as a <code>.prj</code> file. In contrast, the <code>sf</code> spatial file loaded in your R environment is one unified object, has the spatial information recorded as a geometry field, and projection stored as metadata.</p>
 </section>
 </section>
-<section id="spatial-data-types" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="spatial-data-types"><span class="header-section-number">1.3</span> Spatial data types</h2>
+<section id="spatial-data-types" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-data-types">Spatial data types</h2>
 <p>Two common formats of spatial data are vector and raster data. Vector data represents the world surface using <strong>points, lines, and polygons</strong> whereas raster data can be satellite imagery or other pixelated surface. The figure below demonstrates how vector and raster data models represent geographic space differently, where points, lines, and polygons consist of the essential basis of the vector data model.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -3965,8 +3976,8 @@ vertical-align: -.125em;
 </div>
 <p>Read more regarding vector and raster data from <a href="https://geocompr.robinlovelace.net/spatial-class.html#intro-sf">Chapter 2 Geographic data in R</a> of the Lovelace et al 2019 text, <a href="https://geocompr.robinlovelace.net/">Geocomputation with R</a>. This opensource text is an incredible resource for those who are interested in learning more details regarding geographic data analysis, visualization, and modeling, and represents one of dozens of resources available for learning and honing R &amp; spatial analysis skills.</p>
 </section>
-<section id="SD-crs" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="SD-crs"><span class="header-section-number">1.4</span> Coordinate Reference System</h2>
+<section id="SD-crs" class="level2">
+<h2 class="anchored" data-anchor-id="SD-crs">Coordinate Reference System</h2>
 <p>As noted before, the most fundamental element of a spatial data is “location.” A <strong>Coordinate Reference System (CRS)</strong> communicates what method should be used to flatten or project the Earth’s surface onto a 2-dimensional map.</p>
 <p>Importantly, different CRS implies different ways of projections and generates substantially different visualizations. For example, following are some world maps using different projections. (Check out <a href="https://futuremaps.com/blogs/news/top-10-world-map-projections">here</a> for more different world map projections.)</p>
 <div class="cell">
@@ -4421,7 +4432,7 @@ vertical-align: -.125em;
   </div>
   <div class="nav-page nav-page-next">
       <a href="./intro.html" class="pagination-link" aria-label="Intro to Spatial Data">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

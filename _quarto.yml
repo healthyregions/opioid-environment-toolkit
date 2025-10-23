@@ -8,10 +8,12 @@ book:
   chapters:
     - index.qmd
     - orientation.qmd
-    - intro.qmd
-    - geocoding.qmd
-    - buffers.qmd
-    - linking.qmd
+    - part: "PART 1"
+      chapters:
+      - intro.qmd
+      - geocoding.qmd
+      - buffers.qmd
+      - linking.qmd
 
 bibliography: references.bib
 

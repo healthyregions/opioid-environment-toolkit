@@ -1,4 +1,4 @@
-# Spatial Orientation
+# Orientation {-}
 
 ## Defining spatial data {#SD-spatial-data}
 

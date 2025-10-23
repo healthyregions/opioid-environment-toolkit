@@ -18,28 +18,29 @@ To replicate the codes & functions illustrated in this tutorial, you’ll need t
 
 ### Input/Output {#BA-i-o}
 
-Our inputs include multiple CSV and SHP files, all of which can be found [here](https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data), though the providers point file was generated in the Geocoding tutorial. Note that all four files are required (.dbf, .prj, .shp, and .shx) to constitute a shapefile.
+Our inputs include multiple CSV and SHP files, all of which can be found [here](https://github.com/HealthyRegions/opioid-environment-toolkit/tree/master/data), though the providers point file was generated in the Geocoding tutorial. Note that all four files are required (.dbf, .prj, .shp, and .shx) to constitute a shapefile.
 
 -   Chicago Methadone Clinics, `methadone_clinics.shp`
 -   1-mile buffer zone of Clinics, `methadoneClinics_1mi.shp`
 -   Chicago Zip Codes, `Chicago_Zips.shp`
 -   Chicago COVID case data by Zip, `COVID-19_Cases__Tests__and_Deaths_by_ZIP_Code.csv`
 
-We will calculate the minimum distance between the resources and the centroids of the zip codes, then save the results as a shapefile and as a CSV. Our final result will be a shapefile/CSV with the minimum distance value for each zip.
+We will link COVID cumulative case rate data for two weekly time periods in 2020 with a master Zip Code file, and save as a new dataset. Then, we can overlay buffers of health providers we are interested in to identify areas that have varying access to medications during a time of contagion.
 
 ### Load Libraries
 
 We will use the following packages in this tutorial:
 
+-   `dplyr`: to wrangle non-spatial data (or, use `tidyverse`)
 -   `sf`: to manipulate spatial data
 -   `tmap`: to visualize and create maps
--   `units`: to convert units within spatial data
 
 Load the libraries for use.
 
 ```{r load, warning = FALSE, message=FALSE}
 library(sf)
 library(tmap)
+library(dplyr)
 ```
 
 ### Load data
@@ -62,7 +63,7 @@ COVID <- read.csv("data/COVID-19_Cases__Tests__and_Deaths_by_ZIP_Code.csv")
 
 ### Identify Geographic Key
 
-The spatial zip dataset will be our primary file. We we need to first identify the **geographic identifier** we would like to merge on. What is the main key of interest that we will merge our data on?
+The spatial Zip dataset will be our primary file. We we need to first identify the **geographic identifier** we would like to merge on. What is the main key of interest that we will merge our data on?
 
 ```{r}
 head(chicagoZips)
@@ -78,104 +79,210 @@ Next, let's inspect COVID case data. What information do we need from this file?
 head(COVID)
 ```
 
-From this we can assess the need for the following variables: ZIP Code and Percent Tested Positive - Cumulative. Let's subset the data accordingly. Because this data file has extremely long header names (common in the epi world), let's use the `colnames` function to get exactly what we need.
+We would like to subset the data to include "Case Rate - Cumulative." The *key* we'll need to join data on will be "ZIP.Code."
+
+### Long vs. Wide Data Formats
+
+Upon closer inspection, we can see that there are *multiple* zip codes (i.e. 60611) incldued as separate observations. The data is in long form, and could be considered "tidy" – each variable is included as a different column. Because each week is recorded as a separate observation, we see zip codes showing up numerous times. While this data format is tidy, it is problematic for merging with spatial data.
+
+Spatial data needs to be in *wide* format when mapping and doing some spatial analyses, so that each row corresponds to a single spatial object. Thus a zip code should only show up once, as a single observation
+
+## Data Subsetting
+
+There are many ways to reshape data in R. Check out options to `melt` or `gather` in dplyr, for example! For our work, we'll just subset two cleaned data products corresponding weeks 19 and 39. Then, we'll merge with the master zip code dataset.
+
+### Identify column dames
+
+Because this data file has extremely long header names (common in the epi world), let's use the `colnames` function to get exactly what we need.
 
 ```{r}
 colnames(COVID)
 ```
 
-### Subset Data
+We will gather data for "Case.Rate...Cumulative".
 
-We can now subset to just include the fields we need. There are many different ways to subset in R -- we just use one example here! Inspect your data to confirm it was pulled correctly.
+### Fiilter & Subset Data
+
+Next, we'll use `dplyr` and piping to:
+
+-   filter data to the week of interest
+-   subset to only the zip code and case rate data we want
+-   renaming variables to our desired names.
+
+Since the zip code dataset uses "zip" as its geographic identifier, we'll rename the corresponding field to that here.
 
 ```{r}
-library(dplyr)
-
 COVID.sub19 <- COVID %>%
     filter(Week.Number == 19) %>%
-    select(ZIP.Code,Case.Rate...Cumulative)
+    select(zip = ZIP.Code,
+           CaseRtWk19 = Case.Rate...Cumulative)
 
 COVID.sub39 <- COVID %>%
     filter(Week.Number == 39) %>%
-    select(ZIP.Code,Case.Rate...Cumulative)
+    select(zip = ZIP.Code,
+           CaseRtWk39 = Case.Rate...Cumulative)
 
-glimpse(COVID.sub19)
+head(COVID.sub19)
+head(COVID.sub39)
 
-colnames(COVID.sub19) <- c("zip", "CaseRtWk19")
-colnames(COVID.sub39) <- c("zip", "CaseRtWk39")
+```
 
+As usual, we'll inspect the data to confirm we did what we hoped.
+
+### Check Dimensions
+
+We have about 60 zip codes in Chicago. Let's make sure our final, subset of data is similar!
+
+```{r}
+dim(COVID.sub19)
+dim(COVID.sub39)
 ```
 
 ## Merge Data
 
-Let's merge the data using the zip code geographic identifier, "ZIP Code" field, to bring in the the Percent Tested Positive - Cumalative dataset. Inspect the data to confirm it merged correctly!
+Let's merge the data using the zip code geographic identifier. Inspect the data to confirm it merged correctly!
 
 ```{r}
-dim(chicagoZips)
 zipsMerged <- merge(chicagoZips, COVID.sub19, by = "zip", all.x = TRUE)
-
 head(zipsMerged)
 
 zipsMerged <- merge(zipsMerged, COVID.sub39, by = "zip", all.x = TRUE)
 head(zipsMerged)
 ```
 
+Above, we first merged Week 19 data to the master zip dataset. We inspect the data to confirm it merged correctly. Then, we merge Week 39 data.
+
+We include all "x" values, meaning we retain all the zip codes for our master dataset. This corresponds to a left join. It can be helpful to inspect dimensions after a merge to ensure you have retained all the data you expected!
+
+There are many ways to reshape and merge data. Try your favorite R approaches here!
+
 ## Visualize Data
 
-Now we are ready to visualize our data! First we'll make a simple map. We generate a choropleth map of case rate data using quantile bins, and the Blue-Purple color palette. You can find an R color cheatsheet useful for identifying palette codes [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf). (More details on thematic mapping are in tutorials that follow!) We overlay the buffers and clincal providers.
+Now we are ready to inspect our data spatially! First, we'll make a simple map.
 
-```{r warning = FALSE, messages=FALSE}
+### Choropleth Map Basics
+
+We generate a choropleth map (or statistical map) of case rate data using quantile bins for week 39 with six bins, and use a Blue-Purple color palette.
+
+You can find an R color cheatsheet useful for identifying palette codes [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf). (More details on thematic mapping are in tutorials that follow!) We overlay the buffers and clincal providers.
+
+```{r warning = FALSE, message=FALSE}
 
 tm_shape(zipsMerged) +
-  tm_polygons(col = "CaseRtWk39", 
-              palette ="BuPu",
-              style = "jenks",
-              title = "COVID Case Rate") +
-  
+  tm_polygons(
+    
+    fill = "CaseRtWk39",
+
+    fill.scale = tm_scale_intervals(
+      style = "quantile",    
+      n = 6,
+      values = "BuPu"),      
+       
+    fill.legend = tm_legend( 
+                title = "COVID Case rate",
+                title.size = 0.7,
+                text.size = 0.5,
+                show = TRUE,
+                frame = FALSE,
+                position = c("left","bottom"))) +
+    
   tm_shape(buffers) + tm_borders() +
-  tm_shape(methadoneSf) + tm_dots(size = 0.3) 
+  tm_shape(methadoneSf) + tm_dots(size = 0.3) +
+  tm_title("Walkable Methadone Service Areas in Week 39")
 ```
 
 Already we can generate some insight. Areas on the far West side of the city have some of the highest case rates, but are outside a walkable distance to Methadone providers. For individuals with opioid use disorder requiring medication access in these locales, they may be especially vulnerable during the pandemic.
 
-Next, we adjust some `tmap` parameters to improve our map. Now we switch to a red-yellow-green palette, and specify six bins for our quantile map. We flip the direction of the palette using a negative sign, so that red corresponds to areas with higher rates. We adjust transparency using an `alpha` parameter, and line thickness using the `lwd` parameter.
+### Fixed Breaks
+
+If we generate a quantile map for each time period, we'll see different breaks or data classifications for each, as case rates grew from week 19 to 39. If we wanted to generate a comparable map, we may need to generate comparable breaks in the data.
+
+For practice, we'll use breaks of 1,000 - 5,000, following trends in Week 39. First, let's see see what that looks like for just one time period.
 
 ```{r warning = FALSE, message=FALSE}
 
-wk19 = tm_shape(zipsMerged) +
-  tm_polygons(col = "CaseRtWk19", 
-              palette ="BuPu",
-              breaks = c(1000,2000,3000,4000,5000),
-              title = "COVID Case Rate") +
+tm_shape(zipsMerged) +
 
-  tm_shape(buffers) + tm_borders(col = "white") + tm_fill(alpha=0.5) +
-  tm_shape(methadoneSf) + tm_dots(col = "white", size = 0.3) +
-  tm_layout(scale = 0.7,
-            main.title = "Walkable Methadone Service Areas in Week 19",
-            main.title.position = "center",
-            main.title.size = 1,
-            frame.lwd = 0)
+    tm_polygons(fill = "CaseRtWk39", 
+        
+              fill.scale = tm_scale_intervals(
+                breaks = c(1000,2000,3000,4000,5000),
+                values ="BuPu"),
+                
+              fill.legend = tm_legend( 
+                title = "COVID Case rate",
+                title.size = 0.7,
+                text.size = 0.5,
+                show = TRUE,
+                frame = FALSE,
+                position = c("left","bottom"))) +
+  
+    tm_shape(buffers) + tm_polygons(alpha=0.2) +
+    tm_shape(methadoneSf) + tm_symbols(fill = "black",size = 0.3) +
+    tm_layout(main.title = "Walkable Methadone Service Areas in Week 39",
+              main.title.position = "center",
+              main.title.size = 1,
+              frame.alpha = 0.5)
+```
+
+Next, we'll write each map to it's own object. Then we can use `tmap_arrange` to generate a map panel of both maps. We keep standard formatting so the legends remain outside of the map. In future tutorials, we can customize things further. For now, it will be enough to get an idea of trends!
+
+```{r warning = FALSE, message=FALSE}
+
+wk19 <- tm_shape(zipsMerged) +
+
+    tm_polygons(fill = "CaseRtWk19", 
+        
+              fill.scale = tm_scale_intervals(
+                breaks = c(1000,2000,3000,4000,5000),
+                values ="BuPu"),
+                
+              fill.legend = tm_legend( 
+                title = "COVID Case rate",
+                title.size = 0.7,
+                text.size = 0.5,
+                show = TRUE,
+                frame = FALSE,
+                position = c("left","bottom"))) +
+  
+    tm_shape(buffers) + tm_polygons(alpha=0.2) +
+    tm_shape(methadoneSf) + tm_symbols(fill = "black",size = 0.3) +
+    tm_layout(main.title = "Walkable Methadone Service Areas in Week 19",
+              main.title.position = "center",
+              main.title.size = 1,
+              frame.alpha = 0.5)
+
+
+
 
 wk39 <- tm_shape(zipsMerged) +
-  tm_polygons(col = "CaseRtWk39", 
-              palette ="BuPu",
-              breaks = c(1000,2000,3000,4000,5000),
-              title = "COVID Case Rate") +
-  tm_borders(lwd = 0) + 
-  tm_shape(buffers) + tm_borders(col = "white") + tm_fill(alpha=0.5) +
-  tm_shape(methadoneSf) + tm_dots(col = "white", size = 0.3) +
-  tm_legend(orientation = "landscape") + 
-  tm_layout(main.title = "Walkable Methadone Service Areas in Week 39",
-            main.title.position = "center",
-            main.title.size = 1,
-            frame.alpha = 0.5)
+
+    tm_polygons(fill = "CaseRtWk39", 
+        
+              fill.scale = tm_scale_intervals(
+                breaks = c(1000,2000,3000,4000,5000),
+                values ="BuPu"),
+                
+              fill.legend = tm_legend( 
+                title = "COVID Case rate",
+                title.size = 0.7,
+                text.size = 0.5,
+                show = TRUE,
+                frame = FALSE,
+                position = c("left","bottom"))) +
+  
+    tm_shape(buffers) + tm_polygons(alpha=0.2) +
+    tm_shape(methadoneSf) + tm_symbols(fill = "black",size = 0.3) +
+    tm_layout(main.title = "Walkable Methadone Service Areas in Week 39",
+              main.title.position = "center",
+              main.title.size = 1,
+              frame.alpha = 0.5)
+
+
+
 
 tmap_arrange(wk19,wk39)
 ```
-
-Run the same code with a dynamic map! As done previously, change the `tmap_mode` to "view" and zoom in to view specific zip codes.
-
-Using this approach, it's clear that the zip codes on the West Side most vulnerable are 60651, 60644, 60632, 60629, and 60608. By updating the thresholds and parameters further, these can shift as well to be more or less conservative based on our assumptions.
 
 ### Save Data
 
