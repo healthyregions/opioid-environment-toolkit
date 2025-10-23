@@ -20,9 +20,8 @@ Our inputs will be two shapefiles, and a geojson (all spatial file formats). The
 
 -   Chicago Methadone Clinics, `methadone_clinics.shp`
 -   Chicago Zip Codes, `chicago_zips.shp`
--   Chicago City Boundary, `boundaries_chicago.geojson`
 
-We will generate a 1-mile buffer around each point, and generate maps with the zip code areas for context. We will also export the final buffer areas as another shapefile for future use. Finally, we'll generate a more beautiful map by including the city boundary.
+We will generate a 1-mile buffer around each point, and generate maps with the zip code areas for context. We will also export the final buffer areas as another shapefile for future use.
 
 If you don't have a shapefile of your data, but already have geographic coordinates as two columns in your CSV file, you can still use this tutorial. A reminder of how to transform your CSV with coordinates into a spatial data frame in R can be found [here](http://geodacenter.github.io/opioid-environment-toolkit/geocodingAddress-tutorial.html#GA-spatial-dataframe).
 
@@ -54,10 +53,6 @@ Next, we load a shapefile of Chicago zip codes. You can often find shapefiles (o
 areas <- st_read("data/chicago_zips.shp")
 ```
 
-```{r}
-cityBoundary <- st_read("data/boundaries_chicago.geojson")
-```
-
 Quickly view the first few rows of the zip codes and clinics using your favorite function (`head`, `glimpse`, `str`, and so forth).
 
 ```{r}
@@ -80,8 +75,8 @@ tm_shape(areas) + tm_polygons() +
   
   ## 2nd layer (overlay)
   tm_shape(metClinics) + tm_symbols(size = 0.5, 
-                                    col= "darkblue", #border color
-                                    fill="cornflowerblue") #fill color
+                                    border.col= "darkblue", #border color
+                                    col="cornflowerblue") #fill color
 ```
 
 ## Spatial Transformation
@@ -148,8 +143,8 @@ We use `tmap` again, in the static plot mode. We layer our zip code areas, then 
   tm_shape(metClinic_buffers) + tm_borders() + 
   
     tm_shape(metClinics.3435) + tm_symbols(size = 0.5, 
-                                    col= "darkblue", 
-                                    fill="cornflowerblue")
+                                    border.col= "darkblue", 
+                                    col="cornflowerblue")
   
 ```
 
@@ -164,8 +159,8 @@ tm_basemap("CartoDB.VoyagerNoLabels") + #Add Basemap
                                            lwd = 0.5) + #Reduce line weight
   
     tm_shape(metClinics.3435) + tm_symbols(size = 0.5, 
-                                    col= "darkblue", 
-                                    fill="cornflowerblue")
+                                    border.col= "darkblue", 
+                                    col="cornflowerblue")
 ```
 
 ### Buffer union
@@ -189,8 +184,8 @@ tm_basemap("CartoDB.VoyagerNoLabels") + #Add Basemap
                                            lwd = 0.5) + #Reduce line weight
   
     tm_shape(metClinics.3435) + tm_symbols(size = 0.5, 
-                                    col= "darkblue", 
-                                    fill="cornflowerblue")
+                                    border.col= "darkblue", 
+                                    col="cornflowerblue")
 ```
 
 ### Save Data
@@ -230,8 +225,8 @@ We use the `tmap_layout` function to take away the frame, add and position a tit
                                            lwd = 0.2) + #Reduce line weight + 
   
     tm_shape(metClinics.3435) + tm_symbols(size = 0.6, 
-                                    col = "aquamarine",
-                                    fill="cornflowerblue") + 
+                                    border.col = "darkblue",
+                                    col="cornflowerblue") + 
   
   tm_layout(main.title = "Methadone Clinic Service Areas",
             main.title.position = "center",
