@@ -245,17 +245,17 @@ Next, we'll try an interactive map to better explore the data that we have. We s
 
 ```{r warning = FALSE, message=FALSE}
 
-#tmap_mode("view")
+tmap_mode("view")
 
-#tm_shape(areas.3435) + tm_borders() + tm_labels(text="zip") + 
+  tm_shape(metClinic_2mbuffers) + tm_polygons(col = "darkmagenta",
+                                              alpha = 0.2, lwd = 0) + 
   
-#  tm_shape(metClinic_2mbuffers) + tm_polygons(col = "darkmagenta",
-#                                              alpha = 0.2, lwd = 0) + 
+    tm_shape(metClinic_buffers) + tm_polygons(col = "darkorchid4",
+                                              alpha = 0.4, lwd = 0) +
   
-#    tm_shape(metClinic_buffers) + tm_polygons(col = "darkorchid4",
-#                                              alpha = 0.5, lwd = 0) +
-  
-#    tm_shape(metClinics.3435) + tm_symbols(size = 0.5, fill="aquamarine3")
+    tm_shape(areas.3435) + tm_borders() + tm_text("zip") + 
+
+    tm_shape(metClinics.3435) + tm_symbols(size = 0.5, col ="black")
 ```
 
 Which zip codes are within two miles walking distance to providers? Which areas have the best coverage, versus the most challenging? In future workshops, we'll learn how to take this visualization to the next stage, by operationalizing a new variable per area. That could mean calculating total buffer intersections per area, distance from the zip code's center to the nearest resource, calculating area covered by buffers, and more.
