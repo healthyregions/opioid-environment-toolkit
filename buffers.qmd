@@ -63,7 +63,7 @@ head(areas)
 
 We can plot these quickly using the `tmap` library to ensure they are overlaying correctly. If they are, our coordinate systems are working correctly.
 
-When using `tmap` the first parameter references the spatial file we'd like to map (`tm_shape`), and the next parameter(s) indicate how we want to style the data. For polygons, we can style `tm_borders` to have a slightly transparent boundary. For the point data, we will use red dots that are sized appropriately using the `tm_dots` parameter. When working with `tmap` or any other library for the first time, it's helpful to review the [documentation]() and related tutorials for more tips on usability.
+When using `tmap` the first parameter references the spatial file we'd like to map (`tm_shape`), and the next parameter(s) indicate how we want to style the data. For polygons, we can style `tm_borders` to have a slightly transparent boundary. For the point data, we will use red dots that are sized appropriately using the `tm_symbols` parameter. When working with `tmap` or any other library for the first time, it's helpful to review the [documentation]() and related tutorials for more tips on usability.
 
 We use the tmap "plot" view mode to view the data in a static format.
 
@@ -78,6 +78,12 @@ tm_shape(areas) + tm_polygons() +
                                     border.col= "darkblue", #border color
                                     col="cornflowerblue") #fill color
 ```
+
+::: callout-warning
+## Funny message about tmap?
+
+If you got a note that `tmap v3 code` was detected, don't worry. It happens. Open source packages are always being updated (that's a feature, not a bug!) and sometimes you'll need to look up new ways of doing things. In this case we may get a message due to how the points were styles, not an error that prevents us from mapping, so we march on.
+:::
 
 ## Spatial Transformation
 
@@ -214,6 +220,8 @@ We use the `tmap_layout` function to take away the frame, add and position a tit
 
 ```{r message=FALSE}
   
+tm_basemap("CartoDB.VoyagerNoLabels") + #Add Basemap
+
   tm_shape(areas.3435) + tm_borders() + 
 
   tm_shape(metClinic_2mbuffers) + tm_polygons(alpha = 0.2,  
