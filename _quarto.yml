@@ -14,6 +14,12 @@ book:
       - geocoding.qmd
       - buffers.qmd
       - linking.qmd
+    - part: "PART 2"
+      chapters:
+      - census.qmd
+      - oeps.qmd
+      - sdohplace.qmd
+      - otherdata.qmd
 
 bibliography: references.bib
 
