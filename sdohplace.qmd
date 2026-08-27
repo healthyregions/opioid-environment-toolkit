@@ -728,8 +728,7 @@ ggplot(cook_disadvantage) +
 The resulting map displays one polygon for each census tract.\
 \
 
-{r, echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/GCCP%20County%20Map.png")
+knitr::include_graphics("img/GCCP County Map.png")
 
 
 Higher values of `DISADVANTAGE` represent greater neighborhood disadvantage according to the NaNDA index.
@@ -802,8 +801,7 @@ ggplot(conus_disadvantage) +
 
 This produces a tract-level map focused on the 48 contiguous states and the District of Columbia.
 
-{r, echo=FALSE, out.width="100%"}
-knitr::include_graphics("img/GCCP%20US%20Map.png")
+knitr::include_graphics("img/GCCP US Map.png")
 
 ## Save Data
 
