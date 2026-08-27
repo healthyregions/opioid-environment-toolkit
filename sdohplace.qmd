@@ -125,7 +125,7 @@ The Data Discovery platform helps answer several questions before we begin codin
 4.  Does the dataset cover the community or region of interest?
 5.  Where can the underlying data be downloaded?
 
-### 8.3.1 Search by Topic
+### Search by Topic
 
 For this example, we are interested in neighborhood socioeconomic conditions.
 
@@ -147,7 +147,7 @@ neighborhood disadvantage
 
 The search results contain datasets related to economic stability and neighborhood socioeconomic conditions.
 
-### 8.3.2 Refine by Geography and Time
+### Refine by Geography and Time
 
 The Data Discovery platform can be used to refine datasets by geographic unit and time period.
 
@@ -176,7 +176,7 @@ Dataset page:
 
 The Data Discovery platform helps us identify the resource. The actual data are then downloaded from the original repository.
 
-## 8.4 Select the Appropriate NaNDA Dataset
+## Select the Appropriate NaNDA Dataset
 
 The downloaded ICPSR package contains several dataset folders, identified as `DS0001` through `DS0008`.
 
@@ -356,7 +356,7 @@ head(nanda)
 
 The dataset contains one record per census tract and includes socioeconomic, demographic, income, and neighborhood index variables.
 
-##  Explore Variables
+## Explore Variables
 
 Before selecting a variable for analysis, we should inspect the available fields.
 
@@ -727,7 +727,7 @@ ggplot(cook_disadvantage) +
 
 The resulting map displays one polygon for each census tract.\
 \
-![](images/clipboard-155908235.png)
+![Screenshot](https://github.com/healthyregions/opioid-environment-toolkit/blob/part2-organize/img/GCCP%20County%20Map.png)
 
 Higher values of `DISADVANTAGE` represent greater neighborhood disadvantage according to the NaNDA index.
 
@@ -799,7 +799,7 @@ ggplot(conus_disadvantage) +
 
 This produces a tract-level map focused on the 48 contiguous states and the District of Columbia.
 
-![](images/clipboard-2118773655.png)
+![Screenshot](https://github.com/healthyregions/opioid-environment-toolkit/blob/part2-organize/img/GCCP%20US%20Map.png)
 
 ## Save Data
 
@@ -1091,7 +1091,7 @@ ggplot(conus_disadvantage) +
   theme_void()
 ```
 
-###  Resources
+### Resources
 
 SDOH & Place Project:
 
