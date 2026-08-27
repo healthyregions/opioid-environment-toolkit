@@ -356,7 +356,7 @@ head(nanda)
 
 The dataset contains one record per census tract and includes socioeconomic, demographic, income, and neighborhood index variables.
 
-##  Explore Variables
+## Explore Variables
 
 Before selecting a variable for analysis, we should inspect the available fields.
 
@@ -730,7 +730,6 @@ The resulting map displays one polygon for each census tract.\
 
 knitr::include_graphics("img/GCCP County Map.png")
 
-
 Higher values of `DISADVANTAGE` represent greater neighborhood disadvantage according to the NaNDA index.
 
 Missing values are shown separately in light gray.
@@ -1093,7 +1092,7 @@ ggplot(conus_disadvantage) +
   theme_void()
 ```
 
-###  Resources
+### Resources
 
 SDOH & Place Project:
 
