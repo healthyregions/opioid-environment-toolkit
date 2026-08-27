@@ -4,7 +4,7 @@
     "href": "sdohplace.html",
     "title": "7  SDOH & Place",
     "section": "",
-    "text": "7.1 Overview\nblah blah blah",
+    "text": "7.1 Overview\nFinding data about the Social Determinants of Health (SDOH) and community context can be difficult. Data are often distributed across federal agencies, universities, local governments, research repositories, and other organizations. Even after identifying a useful dataset, additional work is usually required to understand the geographic scale, time period, file structure, identifiers, and documentation before the data can be integrated into a spatial analysis.\nThe SDOH & Place Project was developed to make this process easier. The project brings together spatial data science, health equity research, and human-centered design to help researchers, advocates, students, planners, and community organizations find and use place-based SDOH data.\nTwo major resources developed through the project are:\nThe Data Discovery platform is primarily a search and metadata tool. It helps users identify relevant datasets and directs them to the organization or repository where the underlying data can be downloaded.\nIn this tutorial, we demonstrate how to use the Data Discovery platform to locate a community-level socioeconomic dataset, download the data from its source repository, inspect the downloaded files in R, connect the data to census tract boundaries, and map neighborhood disadvantage.\nOur objectives are to:\nThe worked example uses the National Neighborhood Data Archive (NaNDA) socioeconomic and demographic dataset for 2018–2022 using 2022 Census tract geography.",
     "crumbs": [
       "PART 2",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
@@ -15,7 +15,161 @@
     "href": "sdohplace.html#overview",
     "title": "7  SDOH & Place",
     "section": "",
-    "text": "blah\nblah",
+    "text": "the Community Toolkit, which provides tutorials for working with SDOH data, place-based visualization, and community-centered GIS applications; and\nthe Data Discovery search tool, which helps users identify curated SDOH datasets by topic, geography, place, and time period.\n\n\n\n\n\nSearch for community-level SDOH data using the SDOH & Place Data Discovery platform\nIdentify the appropriate dataset, geography, and time period\nNavigate and inspect a downloaded data package in R\nLoad and explore an R data file\nPrepare Census GEOIDs for integration\nJoin community data to a spatial census tract boundary\nSelect a specific county for analysis\nMap neighborhood disadvantage for a county\nMap neighborhood disadvantage for the contiguous United States\nSave the resulting spatial data for future analysis",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#environment-setup",
+    "href": "sdohplace.html#environment-setup",
+    "title": "7  SDOH & Place",
+    "section": "7.2 Environment Setup",
+    "text": "7.2 Environment Setup\nTo replicate the code and functions illustrated in this tutorial, you will need to have R and RStudio installed on your system. This tutorial assumes some basic familiarity with the R programming language, such as creating objects and running code from an R script.\n\n7.2.1 Input/Output\nThe main external inputs for this tutorial are:\n\nthe downloaded NaNDA socioeconomic and demographic dataset from ICPSR;\nthe NaNDA codebook and documentation included with the download; and\na 2020 Census tract boundary shapefile or GeoJSON.\n\nIn this example, the downloaded NaNDA folder is stored as:\n~/GCCP-Data/NaNDA-SocEco1990-2022/ICPSR_38528\nThe census tract boundary is stored as:\n~/GCCP-Data/Boundaries/tract-2022-500k-shp\nThe main outputs will be:\n\na spatial census tract dataset containing the NaNDA neighborhood disadvantage index;\na neighborhood disadvantage map for Cook County, Illinois;\na neighborhood disadvantage map for the contiguous United States; and\noptionally, a GeoPackage or GeoJSON file for use in other GIS software.\n\n\n\n7.2.2 Load Libraries\nWe will use the following packages in this tutorial:\n\nsf: to read, manipulate, transform, and write spatial objects\ndplyr: to select, filter, transform, and join tabular and spatial data\nstringr: to search and identify variables using text patterns\nggplot2: to create maps\nhere: to help construct reproducible project file paths\n\nInstall the packages once if they are not already installed.\n\npackages &lt;- c(\n  \"sf\",\n  \"dplyr\",\n  \"stringr\",\n  \"ggplot2\",\n  \"here\"\n)\n\npackages_to_install &lt;- packages[\n  !packages %in% rownames(installed.packages())\n]\n\nif (length(packages_to_install) &gt; 0) {\n  install.packages(packages_to_install)\n}\n\nLoad the required libraries.\n\nlibrary(sf)\nlibrary(dplyr)\nlibrary(stringr)\nlibrary(ggplot2)\nlibrary(here)\n\nIf dplyr returns an error indicating that an older version of rlang is loaded, restart R and update rlang.\n\ninstall.packages(\"rlang\")\n\nThen restart R and load dplyr again.\n\nlibrary(dplyr)",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#discover-community-data",
+    "href": "sdohplace.html#discover-community-data",
+    "title": "7  SDOH & Place",
+    "section": "7.3 Discover Community Data",
+    "text": "7.3 Discover Community Data\nWe can begin by using the SDOH & Place Data Discovery platform to identify a dataset that measures the community characteristic of interest.\nThe Data Discovery platform helps answer several questions before we begin coding:\n\nWhat dataset measures the concept we are interested in?\nAt what geographic scale is the dataset available?\nWhat years or time periods are available?\nDoes the dataset cover the community or region of interest?\nWhere can the underlying data be downloaded?\n\n\n7.3.1 8.3.1 Search by Topic\nFor this example, we are interested in neighborhood socioeconomic conditions.\nOpen the Data Discovery platform and search for:\neconomic\nRelated searches might include:\nsocioeconomic\nincome\npoverty\nunemployment\nneighborhood disadvantage\nThe search results contain datasets related to economic stability and neighborhood socioeconomic conditions.\n\n\n7.3.2 8.3.2 Refine by Geography and Time\nThe Data Discovery platform can be used to refine datasets by geographic unit and time period.\nFor a neighborhood-level analysis, we are interested in census tract data rather than state-level or county-level data.\nThe selected dataset should therefore meet the following criteria:\nTopic:       Socioeconomic conditions\nGeography:   Census tract\nCoverage:    United States\nTime period: Recent multi-year estimates\n\n\n7.3.3 Follow the Dataset Source\nOne relevant dataset is:\nNational Neighborhood Data Archive (NaNDA): Socioeconomic Status and Demographic Characteristics of Census Tracts and ZIP Code Tabulation Areas, United States, 1990–2022\nThe underlying data are distributed through the Inter-university Consortium for Political and Social Research (ICPSR).\nDataset page:\nhttps://www.icpsr.umich.edu/web/ICPSR/studies/38528\nThe Data Discovery platform helps us identify the resource. The actual data are then downloaded from the original repository.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#select-the-appropriate-nanda-dataset",
+    "href": "sdohplace.html#select-the-appropriate-nanda-dataset",
+    "title": "7  SDOH & Place",
+    "section": "7.4 8.4 Select the Appropriate NaNDA Dataset",
+    "text": "7.4 8.4 Select the Appropriate NaNDA Dataset\nThe downloaded ICPSR package contains several dataset folders, identified as DS0001 through DS0008.\nThe datasets differ by:\n\ngeographic unit;\ntime period; and\nCensus geography vintage.\n\nThe available folders include:\n\n\n\nFolder\nGeography and Period\n\n\n\n\nDS0001\n2010 Census tracts, 1990–2010\n\n\nDS0002\n2010 Census tracts, 2008–2017\n\n\nDS0003\n2010 ZCTAs, 2008–2017\n\n\nDS0004\n2020 Census tracts, 2016–2020\n\n\nDS0005\n2020 ZCTAs, 2016–2020\n\n\nDS0006\n2010 Census tracts, 2018–2022\n\n\nDS0007\n2020 Census tracts, 2018–2022\n\n\nDS0008\n2020 ZCTAs, 2018–2022\n\n\n\nFor this tutorial, we want recent socioeconomic data at the census tract level using 2020 Census geography.\nWe therefore use:\nDS0007\nThis corresponds to:\n2018–2022 socioeconomic and demographic data\n2022 Census tract geography\nThe geographic vintage is important because the tabular dataset and boundary file should represent the same tract geography.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#navigate-the-downloaded-data-in-r",
+    "href": "sdohplace.html#navigate-the-downloaded-data-in-r",
+    "title": "7  SDOH & Place",
+    "section": "7.5 Navigate the Downloaded Data in R",
+    "text": "7.5 Navigate the Downloaded Data in R\nWe can now move from data discovery to the R environment.\nFirst, define the location of the downloaded ICPSR folder.\n\nnanda_root &lt;- \"~/GCCP-Data/NaNDA-SocEco1990-2022/ICPSR_38528\"\n\nInspect the contents of the folder.\n\nlist.files(nanda_root)\n\nThe output should resemble:\n [1] \"38528-related_literature.txt\"\n [2] \"DS0001\"\n [3] \"DS0002\"\n [4] \"DS0003\"\n [5] \"DS0004\"\n [6] \"DS0005\"\n [7] \"DS0006\"\n [8] \"DS0007\"\n [9] \"DS0008\"\n[10] \"factor_to_numeric_icpsr.R\"\n[11] \"series-1920-related_literature.txt\"\n[12] \"TermsOfUse.html\"\nThe DS0001 through DS0008 folders contain the individual datasets. The other files provide documentation or supporting materials.\n\n7.5.1 Open the DS0007 Folder\nCreate a path to DS0007.\n\nds7_folder &lt;- file.path(\n  nanda_root,\n  \"DS0007\"\n)\n\nInspect the folder.\n\nlist.files(ds7_folder)\n\nThe output should resemble:\n[1] \"38528-0007-Codebook-ICPSR.epub\"\n[2] \"38528-0007-Codebook-ICPSR.pdf\"\n[3] \"38528-0007-Data.rda\"\n[4] \"38528-0007-Documentation-20182022_MULTI.pdf\"\nThe key files are:\n\n38528-0007-Data.rda: the R data file\n38528-0007-Codebook-ICPSR.pdf: variable definitions\n38528-0007-Documentation-20182022_MULTI.pdf: methodological documentation\n\n\n\n7.5.2 Find the R Data File\nRather than manually entering the complete data filename, we can ask R to locate any .rda or .RData files.\n\nr_files &lt;- list.files(\n  ds7_folder,\n  pattern = \"\\\\.(rda|RData)$\",\n  recursive = TRUE,\n  full.names = TRUE,\n  ignore.case = TRUE\n)\n\nr_files\n\nExample output:\n\"C:/Users/.../ICPSR_38528/DS0007/38528-0007-Data.rda\"\n\n\n7.5.3 Load the Data\nLoad the R data file.\n\nloaded_objects &lt;- load(r_files[1])\n\nloaded_objects\n\nExample output:\n[1] \"da38528.0007\"\nCreate a simpler object name for the rest of the tutorial.\n\nnanda &lt;- get(loaded_objects[1])\n\nCheck the dimensions.\n\ndim(nanda)\n\nOutput:\n[1] 85396    39\nThis means the dataset contains:\n85,396 rows\n39 variables\nInspect the first several rows.\n\nhead(nanda)\n\nThe dataset contains one record per census tract and includes socioeconomic, demographic, income, and neighborhood index variables.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#explore-variables",
+    "href": "sdohplace.html#explore-variables",
+    "title": "7  SDOH & Place",
+    "section": "7.6 Explore Variables",
+    "text": "7.6 Explore Variables\nBefore selecting a variable for analysis, we should inspect the available fields.\n\nnames(nanda)\n\nSome of the available variables include:\nTRACT_FIPS20\nTOTPOP\nPOPDEN\nPUNEMP\nPPOV\nPPUBAS\nAFFLUENCE\nDISADVANTAGE\nMEDFAMINC\nRather than manually searching all variable names, we can use str_detect() from the stringr package.\n\n7.6.1 Search for Socioeconomic Variables\n\nnames(nanda)[\n  str_detect(\n    names(nanda),\n    regex(\n      \"disadv|afflu|poverty|income|assist\",\n      ignore_case = TRUE\n    )\n  )\n]\n\nOutput:\n[1] \"AFFLUENCE\"    \"DISADVANTAGE\"\nThis search finds variables whose names contain those exact text patterns.\nThe codebook should always be consulted because several socioeconomic variables use abbreviations, such as:\nPPOV\nPPUBAS\nMEDFAMINC\n\n\n7.6.2 Find the Geographic Identifier\nSearch for possible tract or geographic identifiers.\n\nnames(nanda)[\n  str_detect(\n    names(nanda),\n    regex(\n      \"geoid|tract|fips\",\n      ignore_case = TRUE\n    )\n  )\n]\n\nOutput:\n[1] \"TRACT_FIPS20\"\nTRACT_FIPS20 is the geographic identifier used to connect the NaNDA data to 2020 Census tract boundaries.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#prepare-the-neighborhood-disadvantage-data",
+    "href": "sdohplace.html#prepare-the-neighborhood-disadvantage-data",
+    "title": "7  SDOH & Place",
+    "section": "7.7 Prepare the Neighborhood Disadvantage Data",
+    "text": "7.7 Prepare the Neighborhood Disadvantage Data\nFor this tutorial, we only need:\n\nthe census tract identifier; and\nthe neighborhood disadvantage measure.\n\nBefore creating the smaller dataset, it is useful to understand the tract identifier.\n\n7.7.1 Census Tract GEOID\nA census tract GEOID contains 11 characters.\nThe general structure is:\nSSCCCTTTTTT\nwhere:\nSS      = state FIPS\nCCC     = county FIPS\nTTTTTT  = census tract code\nFor example:\n17031839100\ncontains:\n17     Illinois\n031    Cook County\n839100 Census tract code\nGeographic identifiers should generally be stored as character variables rather than numbers because some identifiers begin with zero.\nCreate a simplified NaNDA dataset.\n\nnanda_disadvantage &lt;- nanda %&gt;%\n  transmute(\n    GEOID = as.character(TRACT_FIPS20),\n    DISADVANTAGE = as.numeric(DISADVANTAGE)\n  )\n\nInspect the result.\n\nhead(nanda_disadvantage)\n\nOutput:\n        GEOID DISADVANTAGE\n1 01001020100   0.17298892\n2 01001020200   0.14308497\n3 01001020300   0.10727025\n4 01001020400   0.09424171\n5 01001020501   0.08787425\n8 01001020502   0.04378821\nAt this stage, the dataset is still a regular table. It does not yet contain spatial geometry.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#get-geometry",
+    "href": "sdohplace.html#get-geometry",
+    "title": "7  SDOH & Place",
+    "section": "7.8 Get Geometry",
+    "text": "7.8 Get Geometry\nGeometry or geographic boundaries allow us to map and spatially analyze the NaNDA socioeconomic data.\nThe downloaded NaNDA table contains a tract identifier, but it does not contain the polygon geometry needed to draw each tract.\nWe therefore need to connect it to a census tract boundary file.\nIn this example, we use a generalized 2022 Census tract shapefile based on 2020 Census tract geography.\n\n7.8.1 Read the Census Tract Boundary\nRead the tract boundary using st_read() from the sf package.\n\ntracts &lt;- st_read(\n  \"~/GCCP-Data/Boundaries/tract-2022-500k-shp\"\n)\n\nThe output should resemble:\nReading layer `tract-2022-500k' ...\nSimple feature collection with 85185 features and 20 fields\nGeometry type: MULTIPOLYGON\nDimension: XY\nGeodetic CRS: NAD83\nInspect the spatial object.\n\ntracts\n\nImportant fields include:\nSTATEFP\nCOUNTYFP\nTRACTCE\nGEOID\nSTUSPS\nSTATE_NAME\ngeometry\nInspect the column names.\n\nnames(tracts)\n\n\n\n7.8.2 Prepare the Boundary GEOID\nMake sure the boundary GEOID is stored as character text.\n\ntracts &lt;- tracts %&gt;%\n  mutate(\n    GEOID = as.character(GEOID)\n  )\n\nCheck that both join fields are character variables.\n\nclass(tracts$GEOID)\n\nclass(nanda_disadvantage$GEOID)\n\nExpected output:\n[1] \"character\"\n[1] \"character\"",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#merge-community-data-with-geometry",
+    "href": "sdohplace.html#merge-community-data-with-geometry",
+    "title": "7  SDOH & Place",
+    "section": "7.9 Merge Community Data with Geometry",
+    "text": "7.9 Merge Community Data with Geometry\nWe can now join the NaNDA neighborhood disadvantage table to the census tract boundary using GEOID.\n\ntracts_disadvantage &lt;- tracts %&gt;%\n  left_join(\n    nanda_disadvantage,\n    by = \"GEOID\"\n  )\n\nBecause tracts is the object on the left side of left_join(), all tract polygons are retained and NaNDA attributes are added when the GEOIDs match.\nInspect the joined data without printing the large geometry field.\n\ntracts_disadvantage %&gt;%\n  st_drop_geometry() %&gt;%\n  select(\n    GEOID,\n    DISADVANTAGE\n  ) %&gt;%\n  head()\n\nThe output will contain one tract GEOID and its corresponding disadvantage value.\n\n7.9.1 Check the Join\nBefore mapping, check how many tract polygons received a neighborhood disadvantage value.\n\nsum(\n  !is.na(\n    tracts_disadvantage$DISADVANTAGE\n  )\n)\n\nCheck the total number of polygons.\n\nnrow(tracts_disadvantage)\n\nCalculate the percent matched.\n\nmean(\n  !is.na(\n    tracts_disadvantage$DISADVANTAGE\n  )\n) * 100\n\nThis provides a simple quality-control check before moving to visualization.\nA small number of unmatched polygons does not necessarily indicate an error. Differences may occur because of data availability, special-use tracts, territorial coverage, or differences between the source datasets.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#select-a-specific-county",
+    "href": "sdohplace.html#select-a-specific-county",
+    "title": "7  SDOH & Place",
+    "section": "7.10 Select a Specific County",
+    "text": "7.10 Select a Specific County\nCommunity analyses often focus on a smaller geographic area rather than the entire United States.\nFor this example, we will select Cook County, Illinois.\nCook County is identified by:\nState FIPS:  17\nCounty FIPS: 031\nFilter the national spatial dataset.\n\ncook_disadvantage &lt;- tracts_disadvantage %&gt;%\n  filter(\n    STATEFP == \"17\",\n    COUNTYFP == \"031\"\n  )\n\nInspect the result.\n\ncook_disadvantage %&gt;%\n  st_drop_geometry() %&gt;%\n  select(\n    GEOID,\n    STATEFP,\n    COUNTYFP,\n    DISADVANTAGE\n  ) %&gt;%\n  head()\n\nTo use another county, replace the state and county FIPS values.\nFor example:\n\nstate_fips &lt;- \"17\"\ncounty_fips &lt;- \"031\"\n\ncounty_disadvantage &lt;- tracts_disadvantage %&gt;%\n  filter(\n    STATEFP == state_fips,\n    COUNTYFP == county_fips\n  )",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#map-neighborhood-disadvantage",
+    "href": "sdohplace.html#map-neighborhood-disadvantage",
+    "title": "7  SDOH & Place",
+    "section": "7.11 Map Neighborhood Disadvantage",
+    "text": "7.11 Map Neighborhood Disadvantage\nOnce the neighborhood disadvantage values have been attached to the tract polygons, we can create a choropleth map using ggplot2.\n\n7.11.1 County Level\nMap Cook County.\n\nggplot(cook_disadvantage) +\n  geom_sf(\n    aes(fill = DISADVANTAGE),\n    color = NA\n  ) +\n  scale_fill_viridis_c(\n    name = \"Neighborhood\\nDisadvantage\",\n    na.value = \"grey90\"\n  ) +\n  labs(\n    title = \"Neighborhood Disadvantage by Census Tract\",\n    subtitle = \"Cook County, Illinois — NaNDA 2018–2022\",\n    caption = \"Source: National Neighborhood Data Archive\"\n  ) +\n  theme_void()\n\nThe resulting map displays one polygon for each census tract.\n\n\nHigher values of DISADVANTAGE represent greater neighborhood disadvantage according to the NaNDA index.\nMissing values are shown separately in light gray.\n\n\n7.11.2 Contiguous United States\nIf we map the complete national tract file directly, the plotting extent may include Alaska, Hawaii, Puerto Rico, and other U.S. territories. This can make the contiguous United States appear small.\nWe therefore first remove non-contiguous states and territories.\n\nconus_disadvantage &lt;- tracts_disadvantage %&gt;%\n  filter(\n    !STUSPS %in% c(\n      \"AK\",\n      \"HI\",\n      \"PR\",\n      \"GU\",\n      \"MP\",\n      \"AS\",\n      \"VI\"\n    )\n  )\n\nTransform the data to a projection designed for the contiguous United States.\n\nconus_disadvantage &lt;- conus_disadvantage %&gt;%\n  st_transform(5070)\n\nCheck the coordinate reference system.\n\nst_crs(conus_disadvantage)\n\nThe output should identify:\nEPSG: 5070\nNAD83 / Conus Albers\nNow create the national map.\n\nggplot(conus_disadvantage) +\n  geom_sf(\n    aes(fill = DISADVANTAGE),\n    color = NA\n  ) +\n  scale_fill_viridis_c(\n    name = \"Neighborhood\\nDisadvantage\",\n    na.value = \"grey90\"\n  ) +\n  labs(\n    title = \"Neighborhood Disadvantage Across the Contiguous United States\",\n    subtitle = \"NaNDA 2018–2022, 2020 Census Tracts\",\n    caption = \"Source: National Neighborhood Data Archive\"\n  ) +\n  coord_sf(\n    datum = NA\n  ) +\n  theme_void()\n\nThis produces a tract-level map focused on the 48 contiguous states and the District of Columbia.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#save-data",
+    "href": "sdohplace.html#save-data",
+    "title": "7  SDOH & Place",
+    "section": "7.12 Save Data",
+    "text": "7.12 Save Data\nAfter completing the join, the resulting spatial object can be saved for use in another R project, ArcGIS Pro, QGIS, or a web mapping application.\n\n7.12.1 Save as GeoPackage\nGeoPackage is useful because it stores the complete spatial dataset in a single file.\n\nst_write(\n  tracts_disadvantage,\n  \"data/nanda_neighborhood_disadvantage_2020_tracts.gpkg\",\n  delete_dsn = TRUE\n)\n\nSave only Cook County.\n\nst_write(\n  cook_disadvantage,\n  \"data/cook_county_neighborhood_disadvantage.gpkg\",\n  delete_dsn = TRUE\n)\n\n\n\n7.12.2 Save as GeoJSON\nGeoJSON is also convenient for web mapping and data sharing.\n\nst_write(\n  cook_disadvantage,\n  \"data/cook_county_neighborhood_disadvantage.geojson\",\n  driver = \"GeoJSON\",\n  delete_dsn = TRUE\n)\n\n\n\n7.12.3 Save Maps\nCreate a map object first.\n\ncook_map &lt;- ggplot(cook_disadvantage) +\n  geom_sf(\n    aes(fill = DISADVANTAGE),\n    color = NA\n  ) +\n  scale_fill_viridis_c(\n    name = \"Neighborhood\\nDisadvantage\",\n    na.value = \"grey90\"\n  ) +\n  labs(\n    title = \"Neighborhood Disadvantage by Census Tract\",\n    subtitle = \"Cook County, Illinois — NaNDA 2018–2022\",\n    caption = \"Source: National Neighborhood Data Archive\"\n  ) +\n  theme_void()\n\nSave it as a PNG.\n\nggsave(\n  \"figures/cook_county_neighborhood_disadvantage.png\",\n  plot = cook_map,\n  width = 8,\n  height = 8,\n  dpi = 300\n)",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#using-community-data-for-health-equity-research",
+    "href": "sdohplace.html#using-community-data-for-health-equity-research",
+    "title": "7  SDOH & Place",
+    "section": "7.13 Using Community Data for Health Equity Research",
+    "text": "7.13 Using Community Data for Health Equity Research\nThe workflow illustrated in this tutorial can be adapted to many SDOH datasets identified through the Data Discovery platform.\nNeighborhood disadvantage could be combined with:\n\nair pollution\nheat exposure\ntraffic exposure\nhousing conditions\nindustrial land use\nfood access\ntree canopy\nhealthcare accessibility\nhospitalization\nchronic disease outcomes\n\nFor example, a researcher might ask:\nAre census tracts with greater neighborhood disadvantage\nalso experiencing greater environmental burdens?\nA community organization might use the resulting maps to identify areas for additional outreach, compare neighborhood conditions with services or infrastructure, support grant applications, or communicate local priorities.\nThe purpose of spatial data is not simply to produce a map. Spatial data allow researchers and communities to connect what is happening with where it is happening.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#considerations-when-mapping-community-data",
+    "href": "sdohplace.html#considerations-when-mapping-community-data",
+    "title": "7  SDOH & Place",
+    "section": "7.14 Considerations When Mapping Community Data",
+    "text": "7.14 Considerations When Mapping Community Data\nCommunity data should be interpreted carefully.\n\n7.14.1 Area-Level Measures\nNeighborhood disadvantage is an area-level measure.\nA high tract-level disadvantage score does not mean that every person living within that tract has the same socioeconomic circumstances.\n\n\n7.14.2 Geographic Units\nCensus tracts are statistical units and may not correspond to how residents define their neighborhoods.\nThe geographic scale selected for an analysis should therefore be connected to the research or community question.\n\n\n7.14.3 Missing Data\nMissing values should not automatically be replaced with zero.\nA zero represents a measured value. A missing value means that the information was not available or did not match during the join.\n\n\n7.14.4 Community Context\nMeasures such as neighborhood disadvantage describe structural and socioeconomic conditions. They should not be used to characterize communities as inherently deficient.\nWhere possible, pair measures of disadvantage with information about community assets, institutions, services, historical context, and resident priorities.",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
+    ]
+  },
+  {
+    "objectID": "sdohplace.html#appendix",
+    "href": "sdohplace.html#appendix",
+    "title": "7  SDOH & Place",
+    "section": "7.15 Appendix",
+    "text": "7.15 Appendix\n\n7.15.1 Common R Errors\n\n7.15.1.1 could not find function \"mutate\"\nmutate() is part of dplyr.\n\nlibrary(dplyr)\n\n\n\n7.15.1.2 could not find function \"str_detect\"\nstr_detect() is part of stringr.\n\nlibrary(stringr)\n\n\n\n7.15.1.3 Join column GEOID is missing\nCheck the fields in both objects.\n\nnames(tracts)\n\nnames(nanda_disadvantage)\n\nBoth objects should contain a field named:\nGEOID\nThe cleaned NaNDA table used in this tutorial creates the field directly.\n\nnanda_disadvantage &lt;- nanda %&gt;%\n  transmute(\n    GEOID = as.character(TRACT_FIPS20),\n    DISADVANTAGE = as.numeric(DISADVANTAGE)\n  )\n\n\n\n7.15.1.4 Very few records match\nCheck the identifier lengths.\n\ntable(\n  nchar(\n    nanda_disadvantage$GEOID\n  )\n)\n\ntable(\n  nchar(\n    tracts$GEOID\n  )\n)\n\nFor census tracts, the GEOID should contain 11 characters.\nAlso confirm that the NaNDA file and boundary file use compatible Census geography.\n\n\n\n7.15.2 Condensed Workflow\nOnce the steps above are familiar, the essential workflow can be shortened to:\n\nlibrary(sf)\nlibrary(dplyr)\nlibrary(ggplot2)\n\n# Locate DS0007\nnanda_root &lt;- \"~/GCCP-Data/NaNDA-SocEco1990-2022/ICPSR_38528\"\n\nds7_folder &lt;- file.path(\n  nanda_root,\n  \"DS0007\"\n)\n\n# Find and load the R data file\nr_file &lt;- list.files(\n  ds7_folder,\n  pattern = \"\\\\.(rda|RData)$\",\n  full.names = TRUE,\n  ignore.case = TRUE\n)[1]\n\nloaded_object &lt;- load(r_file)\n\nnanda &lt;- get(loaded_object[1])\n\n# Prepare neighborhood disadvantage\nnanda_disadvantage &lt;- nanda %&gt;%\n  transmute(\n    GEOID = as.character(TRACT_FIPS20),\n    DISADVANTAGE = as.numeric(DISADVANTAGE)\n  )\n\n# Read tract geometry\ntracts &lt;- st_read(\n  \"~/GCCP-Data/Boundaries/tract-2022-500k-shp\"\n) %&gt;%\n  mutate(\n    GEOID = as.character(GEOID)\n  )\n\n# Join data to geometry\ntracts_disadvantage &lt;- tracts %&gt;%\n  left_join(\n    nanda_disadvantage,\n    by = \"GEOID\"\n  )\n\n# Select Cook County\ncook_disadvantage &lt;- tracts_disadvantage %&gt;%\n  filter(\n    STATEFP == \"17\",\n    COUNTYFP == \"031\"\n  )\n\n# Map Cook County\nggplot(cook_disadvantage) +\n  geom_sf(\n    aes(fill = DISADVANTAGE),\n    color = NA\n  ) +\n  scale_fill_viridis_c(\n    name = \"Neighborhood\\nDisadvantage\",\n    na.value = \"grey90\"\n  ) +\n  theme_void()\n\n# Select the contiguous United States\nconus_disadvantage &lt;- tracts_disadvantage %&gt;%\n  filter(\n    !STUSPS %in% c(\n      \"AK\", \"HI\", \"PR\", \"GU\", \"MP\", \"AS\", \"VI\"\n    )\n  ) %&gt;%\n  st_transform(5070)\n\n# Map contiguous United States\nggplot(conus_disadvantage) +\n  geom_sf(\n    aes(fill = DISADVANTAGE),\n    color = NA\n  ) +\n  scale_fill_viridis_c(\n    name = \"Neighborhood\\nDisadvantage\",\n    na.value = \"grey90\"\n  ) +\n  coord_sf(datum = NA) +\n  theme_void()\n\n\n\n7.15.3 Resources\nSDOH & Place Project:\nhttps://sdohplace.org/\nSDOH & Place Data Discovery:\nhttps://search.sdohplace.org/\nCommunity Toolkit:\nhttps://toolkit.sdohplace.org/\nNational Neighborhood Data Archive socioeconomic dataset:\nhttps://www.icpsr.umich.edu/web/ICPSR/studies/38528\nWhen using NaNDA data in a research product, consult and cite the codebook, documentation, dataset version, and original data citation associated with the specific dataset used.",
     "crumbs": [
       "PART 2",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span>"
