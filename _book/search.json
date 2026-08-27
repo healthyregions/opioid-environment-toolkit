@@ -130,5 +130,82 @@
       "PART 2",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>OEPS</span>"
     ]
+  },
+  {
+    "objectID": "census.html",
+    "href": "census.html",
+    "title": "5  Census Data Wrangling",
+    "section": "",
+    "text": "5.1 Overview\nSo far, we have used spatial data to characterize access to opioid treatment resources and link those patterns with community-level information. Adding demographic, social, and economic context can help us identify whether disparities in access exist across different populations and better understand factors that may contribute to observed spatial patterns. Many of these community characteristics are available from the U.S. Census Bureau.\nThe American Community Survey (ACS) is an ongoing survey that provides annually updated estimates of population and housing characteristics. ACS estimates are available as 1-year and 5-year products. We generally recommend using the 5-year estimates for small geographic areas because they provide greater statistical reliability, particularly for less populated areas and smaller population subgroups. In this tutorial, we use the 2020–2024 ACS 5-year estimates, referred to as the 2024 ACS 5-year estimates.\nIn this tutorial, we demonstrate how to use the tidycensus package to explore and download commonly used ACS variables at multiple geographic levels, both with and without spatial geometries. We will also wrangle these data into formats that can be integrated with other spatial datasets for further analysis. This tutorial focuses on ACS data available through the Census Bureau API. Additional tutorials and documentation for tidycensus are available from the package authors.\nOur objectives are thus to:",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
+  },
+  {
+    "objectID": "census.html#overview",
+    "href": "census.html#overview",
+    "title": "5  Census Data Wrangling",
+    "section": "",
+    "text": "Download ACS data through the Census API\nDownload Census geographic boundaries\nExplore ACS data at multiple geographic levels\nWrangle, clean, and merge Census data for further spatial analysis",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
+  },
+  {
+    "objectID": "census.html#environment-setup",
+    "href": "census.html#environment-setup",
+    "title": "5  Census Data Wrangling",
+    "section": "5.2 Environment Setup",
+    "text": "5.2 Environment Setup\nTo replicate the code and functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language.\n\n5.2.1 Input/Output\nOur only external input will be a GeoJSON file of the Chicago city boundary. This file can be found here, though all ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.\n\nChicago City Boundary, boundaries_chicago.geojson\n\nWe will generate Census datasets at multiple geographic levels throughout this tutorial. Our final outputs will include:\n\nA CSV file and spatial file with selected ACS characteristics at the county level for the state of Illinois.\nA CSV file and spatial file with selected ACS characteristics for zipcodes within the city of Chicago.\n\nThese outputs can be used for further spatial analysis or linked with other datasets using their geographic identifiers.\n\n\n5.2.2 Load Libraries\nWe will use the following packages in this tutorial:\n\nsf: to manipulate spatial data\ntidycensus: to download Census data using the ACS API\ntidyverse: to manipulate and clean data\ntigris: to download Census TIGER/Line geographic boundaries\n\nFirst, load the required libraries.\n\nlibrary(sf)\nlibrary(tidycensus)\nlibrary(tidyverse)\nlibrary(tigris)",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
+  },
+  {
+    "objectID": "census.html#enable-census-api-key",
+    "href": "census.html#enable-census-api-key",
+    "title": "5  Census Data Wrangling",
+    "section": "5.3 Enable Census API Key",
+    "text": "5.3 Enable Census API Key",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
+  },
+  {
+    "objectID": "census.html#load-data-dynamically",
+    "href": "census.html#load-data-dynamically",
+    "title": "5  Census Data Wrangling",
+    "section": "5.4 Load Data Dynamically",
+    "text": "5.4 Load Data Dynamically",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
+  },
+  {
+    "objectID": "census.html#get-geometry",
+    "href": "census.html#get-geometry",
+    "title": "5  Census Data Wrangling",
+    "section": "5.5 Get Geometry",
+    "text": "5.5 Get Geometry",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
+  },
+  {
+    "objectID": "census.html#appendix",
+    "href": "census.html#appendix",
+    "title": "5  Census Data Wrangling",
+    "section": "5.6 Appendix",
+    "text": "5.6 Appendix",
+    "crumbs": [
+      "PART 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Census Data Wrangling</span>"
+    ]
   }
 ]
