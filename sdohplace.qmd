@@ -728,8 +728,9 @@ ggplot(cook_disadvantage) +
 The resulting map displays one polygon for each census tract.\
 \
 
+```{r, echo=FALSE, out.width="100%"}
 knitr::include_graphics("img/GCCP County Map.png")
-
+```
 Higher values of `DISADVANTAGE` represent greater neighborhood disadvantage according to the NaNDA index.
 
 Missing values are shown separately in light gray.
@@ -800,8 +801,9 @@ ggplot(conus_disadvantage) +
 
 This produces a tract-level map focused on the 48 contiguous states and the District of Columbia.
 
+```{r, echo=FALSE, out.width="100%"}
 knitr::include_graphics("img/GCCP US Map.png")
-
+```
 ## Save Data
 
 After completing the join, the resulting spatial object can be saved for use in another R project, ArcGIS Pro, QGIS, or a web mapping application.
