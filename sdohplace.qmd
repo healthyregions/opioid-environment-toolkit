@@ -727,7 +727,8 @@ ggplot(cook_disadvantage) +
 
 The resulting map displays one polygon for each census tract.\
 \
-![Screenshot](https://github.com/healthyregions/opioid-environment-toolkit/blob/part2-organize/img/GCCP%20County%20Map.png)
+
+knitr::include_graphics((https://github.com/healthyregions/opioid-environment-toolkit/blob/part2-organize/img/GCCP%20County%20Map.png)
 
 Higher values of `DISADVANTAGE` represent greater neighborhood disadvantage according to the NaNDA index.
 
@@ -799,7 +800,7 @@ ggplot(conus_disadvantage) +
 
 This produces a tract-level map focused on the 48 contiguous states and the District of Columbia.
 
-![Screenshot](https://github.com/healthyregions/opioid-environment-toolkit/blob/part2-organize/img/GCCP%20US%20Map.png)
+knitr::include_graphics((https://github.com/healthyregions/opioid-environment-toolkit/blob/part2-organize/img/GCCP%20US%20Map.png)
 
 ## Save Data
 
