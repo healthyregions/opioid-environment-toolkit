@@ -36,7 +36,7 @@ To replicate the code and functions illustrated in this tutorial, you will need 
 
 ### Input/Output
 
-The main external inputs for this tutorial are:
+Place your input data in yout desired folder location and neame them so it is easier to find.The main external inputs for this tutorial are:
 
 -   the downloaded NaNDA socioeconomic and demographic dataset from ICPSR;
 -   the NaNDA codebook and documentation included with the download; and
@@ -53,7 +53,6 @@ The census tract boundary is stored as:
 ``` text
 ~/GCCP-Data/Boundaries/tract-2022-500k-shp
 ```
-
 The main outputs will be:
 
 -   a spatial census tract dataset containing the NaNDA neighborhood disadvantage index;
@@ -116,6 +115,10 @@ library(dplyr)
 ## Discover Community Data
 
 We can begin by using the [SDOH & Place Data Discovery](https://search.sdohplace.org/) platform to identify a dataset that measures the community characteristic of interest.
+
+```{r, echo=FALSE, out.width="100%"}
+knitr::include_graphics("img/Data Discovery App Screenshot.png")
+```
 
 The Data Discovery platform helps answer several questions before we begin coding:
 
