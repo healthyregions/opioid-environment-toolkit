@@ -4009,7 +4009,14 @@ vertical-align: -.125em;
   <li><a href="#load-libraries" id="toc-load-libraries" class="nav-link" data-scroll-target="#load-libraries"><span class="header-section-number">5.2.2</span> Load Libraries</a></li>
   </ul></li>
   <li><a href="#enable-census-api-key" id="toc-enable-census-api-key" class="nav-link" data-scroll-target="#enable-census-api-key"><span class="header-section-number">5.3</span> Enable Census API Key</a></li>
-  <li><a href="#load-data-dynamically" id="toc-load-data-dynamically" class="nav-link" data-scroll-target="#load-data-dynamically"><span class="header-section-number">5.4</span> Load Data Dynamically</a></li>
+  <li><a href="#load-data-dynamically" id="toc-load-data-dynamically" class="nav-link" data-scroll-target="#load-data-dynamically"><span class="header-section-number">5.4</span> Load Data Dynamically</a>
+  <ul class="collapse">
+  <li><a href="#state-level" id="toc-state-level" class="nav-link" data-scroll-target="#state-level"><span class="header-section-number">5.4.1</span> State Level</a></li>
+  <li><a href="#county-level" id="toc-county-level" class="nav-link" data-scroll-target="#county-level"><span class="header-section-number">5.4.2</span> County Level</a></li>
+  <li><a href="#census-tract-level" id="toc-census-tract-level" class="nav-link" data-scroll-target="#census-tract-level"><span class="header-section-number">5.4.3</span> Census tract Level</a></li>
+  <li><a href="#zipcode-level" id="toc-zipcode-level" class="nav-link" data-scroll-target="#zipcode-level"><span class="header-section-number">5.4.4</span> Zipcode Level</a></li>
+  <li><a href="#save-data" id="toc-save-data" class="nav-link" data-scroll-target="#save-data"><span class="header-section-number">5.4.5</span> Save Data</a></li>
+  </ul></li>
   <li><a href="#get-geometry" id="toc-get-geometry" class="nav-link" data-scroll-target="#get-geometry"><span class="header-section-number">5.5</span> Get Geometry</a></li>
   <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">5.6</span> Appendix</a></li>
   </ul>
@@ -4086,9 +4093,233 @@ vertical-align: -.125em;
 </section>
 <section id="enable-census-api-key" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="enable-census-api-key"><span class="header-section-number">5.3</span> Enable Census API Key</h2>
+<p>To use the Census API, we first need to sign up for an API key. The API key allows the Census Bureau API to identify and authorize requests from your R session. A Census API key can be requested <a href="https://api.census.gov/data/key_signup.html">here</a>.</p>
+<p>Once you receive your key, install it by running the code below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#census_api_key("yourkeyhere", install = TRUE) # installs the key for future sessions.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Setting <code>install = TRUE</code> saves the key to your .Renviron file so that it is available for future R sessions.</p>
+<p>If you are working on a shared computer or do not want to save your API key, you can use the same function with <code>install = FALSE</code>.</p>
+<p>To check whether a Census API key is already installed, run:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.getenv</span>(<span class="st">"CENSUS_API_KEY"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2b58134a93cc71ca32aa1f41e83bd7f5913433d5"</code></pre>
+</div>
+</div>
 </section>
 <section id="load-data-dynamically" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="load-data-dynamically"><span class="header-section-number">5.4</span> Load Data Dynamically</h2>
+<p>5.4 Load Data Dynamically</p>
+<p>We can now start using the tidycensus package to download demographic and socioeconomic data from the U.S. Census Bureau. In this tutorial, we will cover methods to download ACS data at the state, county, census tract, and ZIP Code Tabulation Area (ZCTA) levels. We will also demonstrate how to download the data with and without spatial geometry.</p>
+<p>To download a particular variable or table using tidycensus, we need the relevant variable ID. We can identify these IDs by reviewing the variables available through the <code>load_variables()</code> function. For details on exploring available ACS variables and identifying their variable IDs, see the Explore Variables section in the Appendix.</p>
+<p>We can download ACS variables using the <code>get_acs()</code> function. Because ACS data are based on survey samples, estimates are provided along with a margin of error (moe). The <code>tidycensus</code> package returns both values for each requested variable in tidy format.</p>
+<p>For the examples covered in this tutorial, the four main inputs for the <code>get_acs()</code> function are: - <code>geography</code>: the geographic level at which to retrieve the data (state, county, tract, or zcta) - <code>variables</code>: a character string or vector of variable IDs to retrieve - <code>year</code>: the ACS data year to retrieve - <code>geometry</code>: whether to include spatial geometry in the returned data (TRUE / FALSE)</p>
+<section id="state-level" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="state-level"><span class="header-section-number">5.4.1</span> State Level</h3>
+<p>To begin, we can download selected demographic characteristics for all states.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>stateDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"state"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stateDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  GEOID NAME    variable estimate   moe
+  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+1 01    Alabama totalPop  5086768    NA
+2 01    Alabama white     3284260  4017
+3 01    Alabama black     1311062  3846
+4 01    Alabama asian       74435  1388
+5 01    Alabama hispanic   284135   217
+6 02    Alaska  totalPop   735706    NA</code></pre>
+</div>
+</div>
+<p>As we can see, the data are available in tidy format. We can use other tools in the tidyverse to clean and manipulate the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>stateDf <span class="ot">&lt;-</span> stateDf <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stateDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID totalPop hispanicPr whitePr blackPr asianPr
+  &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1 01     5086768     0.0559   0.646  0.258   0.0146
+2 02      735706     0.0731   0.596  0.0300  0.0645
+3 04     7378838     0.314    0.590  0.0460  0.0358
+4 05     3049391     0.0904   0.691  0.147   0.0163
+5 06    39287377     0.402    0.397  0.0543  0.155 
+6 08     5862189     0.225    0.705  0.0405  0.0329</code></pre>
+</div>
+</div>
+</section>
+<section id="county-level" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="county-level"><span class="header-section-number">5.4.2</span> County Level</h3>
+<p>Similarly, for county-level data:</p>
+<ul>
+<li>use <code>geography = "county"</code> to download all counties in the U.S.</li>
+<li>use <code>geography = "county"</code>, <code>state = sampleStateName</code> to download all counties within a state</li>
+<li>use <code>geography = "county"</code>, <code>state = sampleStateName</code>, <code>county = sampleCountyName</code> to download a specific county</li>
+</ul>
+<p>For example, the code below downloads selected demographic characteristics for all counties in Illinois.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>countyDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"county"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>                                <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>                                <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>                                <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(countyDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID totalPop hispanicPr whitePr blackPr  asianPr
+  &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+1 17001    64754    0.0208    0.906 0.0284  0.00672 
+2 17003     4875    0.00677   0.630 0.331   0.00431 
+3 17005    16716    0.0201    0.867 0.0612  0.00658 
+4 17007    53230    0.256     0.718 0.0305  0.00960 
+5 17009     6322    0.0671    0.745 0.179   0.000475
+6 17011    32866    0.102     0.875 0.00587 0.00873 </code></pre>
+</div>
+</div>
+</section>
+<section id="census-tract-level" class="level3" data-number="5.4.3">
+<h3 data-number="5.4.3" class="anchored" data-anchor-id="census-tract-level"><span class="header-section-number">5.4.3</span> Census tract Level</h3>
+<p>For census tract-level data, at minimum a state must be provided.</p>
+<ul>
+<li>use <code>geography = "tract"</code>, <code>state = sampleStateName</code> to download all census tracts within a state</li>
+<li>use <code>geography = "tract"</code>, <code>state = sampleStateName</code>, <code>county = sampleCountyName</code> to download all census tracts within a specific county</li>
+</ul>
+<p>The code below downloads selected demographic characteristics for all census tracts in Illinois.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>tractDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"tract"</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tractDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID       totalPop hispanicPr whitePr blackPr asianPr
+  &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1 17001000100     4219    0         0.882  0.0356 0.0166 
+2 17001000201     1889    0.00159   0.931  0.0291 0      
+3 17001000202     3033    0.0310    0.778  0.0633 0.0501 
+4 17001000400     3451    0.0151    0.770  0.143  0      
+5 17001000500     1808    0.137     0.877  0.0271 0.0144 
+6 17001000600     3931    0.0231    0.907  0.0237 0.00254</code></pre>
+</div>
+</div>
+</section>
+<section id="zipcode-level" class="level3" data-number="5.4.4">
+<h3 data-number="5.4.4" class="anchored" data-anchor-id="zipcode-level"><span class="header-section-number">5.4.4</span> Zipcode Level</h3>
+<p>For zipcode-level data, use <code>geography = "zcta"</code>. ZIP Code Tabulation Areas (ZCTAs) are Census Bureau approximations of U.S. Postal Service ZIP Codes. Because ZCTAs can cross county and state boundaries, tidycensus retrieves ZCTA data for the entire U.S.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>zctaDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"zcta"</span>,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>          <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Inspect the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zctaDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID totalPop hispanicPr whitePr blackPr  asianPr
+  &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+1 00601    16669      0.993   0.798 0.0145  0.00108 
+2 00602    37233      0.972   0.272 0.0180  0.00118 
+3 00603    48448      0.984   0.729 0.0333  0.000186
+4 00606     5163      0.997   0.666 0.00136 0.00232 
+5 00610    25357      0.964   0.187 0.0189  0       
+6 00611     1383      0.974   0.612 0.0253  0       </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(zctaDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 33772     6</code></pre>
+</div>
+</div>
+<p>Because ZCTA data are retrieved for the entire nation, we can filter the results to a particular region after downloading them. For example, Chicago ZIP Codes commonly begin with 606, so we can use <code>str_detect()</code> as a simple non-spatial filter. If geometry information is available, we can instead overlay the ZCTA geometries with a city boundary to identify the required region. We will illustrate this approach in the Get Geometry section.</p>
+<p>In addition to demographic characteristics, ACS data can provide community context that may help us better understand geographic patterns in healthcare access. Here, we use poverty and household vehicle availability as two examples of access-relevant community characteristics.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>zipChicagoDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"zcta"</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">povertyTotal =</span> <span class="st">"B17001_001"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">povertyBelow =</span> <span class="st">"B17001_002"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">households =</span> <span class="st">"B08201_001"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">noVehicle =</span> <span class="st">"B08201_002"</span>),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">filter</span>(<span class="fu">str_detect</span>(GEOID, <span class="st">"^606"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">mutate</span>(<span class="at">povertyPr =</span> povertyBelow <span class="sc">/</span> povertyTotal,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">noVehiclePr =</span> noVehicle <span class="sc">/</span> households) <span class="sc">%&gt;%</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(GEOID, povertyPr, noVehiclePr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Inspect the Chicago ZCTA data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zipChicagoDf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  GEOID povertyPr noVehiclePr
+  &lt;chr&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+1 60601    0.0564       0.454
+2 60602    0.113        0.552
+3 60603    0.141        0.367
+4 60604    0.125        0.206
+5 60605    0.0979       0.391
+6 60606    0.0453       0.549</code></pre>
+</div>
+</div>
+</section>
+<section id="save-data" class="level3" data-number="5.4.5">
+<h3 data-number="5.4.5" class="anchored" data-anchor-id="save-data"><span class="header-section-number">5.4.5</span> Save Data</h3>
+<p>We can now save the county and Chicago zipcode datasets as CSV files using the code below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(countyDf, <span class="st">"data/ilcounty_24_demographic.csv"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(zipChicagoDf, <span class="st">"data/chizips_24_context.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
 </section>
 <section id="get-geometry" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="get-geometry"><span class="header-section-number">5.5</span> Get Geometry</h2>

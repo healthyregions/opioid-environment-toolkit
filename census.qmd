@@ -52,12 +52,195 @@ library(tigris)
 
 ## Enable Census API Key
 
+To use the Census API, we first need to sign up for an API key. The API key allows the Census Bureau API to identify and authorize requests from your R session. A Census API key can be requested [here](https://api.census.gov/data/key_signup.html).
+
+Once you receive your key, install it by running the code below.
+
+```{r warning = FALSE, message=FALSE}
+#census_api_key("yourkeyhere", install = TRUE) # installs the key for future sessions.
+```
+
+Setting `install = TRUE` saves the key to your .Renviron file so that it is available for future R sessions.
+
+If you are working on a shared computer or do not want to save your API key, you can use the same function with `install = FALSE`.
+
+To check whether a Census API key is already installed, run:
+
+```{r warning = FALSE, message=FALSE}
+Sys.getenv("CENSUS_API_KEY")
+```
 
 ## Load Data Dynamically
 
+5.4 Load Data Dynamically
+
+We can now start using the tidycensus package to download demographic and socioeconomic data from the U.S. Census Bureau. In this tutorial, we will cover methods to download ACS data at the state, county, census tract, and ZIP Code Tabulation Area (ZCTA) levels. We will also demonstrate how to download the data with and without spatial geometry.
+
+To download a particular variable or table using tidycensus, we need the relevant variable ID. We can identify these IDs by reviewing the variables available through the `load_variables()` function. For details on exploring available ACS variables and identifying their variable IDs, see the Explore Variables section in the Appendix.
+
+We can download ACS variables using the `get_acs()` function. Because ACS data are based on survey samples, estimates are provided along with a margin of error (moe). The `tidycensus` package returns both values for each requested variable in tidy format.
+
+For the examples covered in this tutorial, the four main inputs for the `get_acs()` function are:
+-   `geography`: the geographic level at which to retrieve the data (state, county, tract, or zcta)
+-   `variables`: a character string or vector of variable IDs to retrieve
+-   `year`: the ACS data year to retrieve
+-   `geometry`: whether to include spatial geometry in the returned data (TRUE / FALSE)
+
+### State Level
+
+To begin, we can download selected demographic characteristics for all states.
+
+```{r warning = FALSE, message=FALSE}
+stateDf <- get_acs(geography = "state",
+                   variables = c(totalPop = "B01001_001",
+                                 hispanic = "B03003_003",
+                                 white = "B02001_002",
+                                 black = "B02001_003",
+                                 asian = "B02001_005"),
+                   year = 2024, geometry = FALSE)
+
+head(stateDf)
+```
+
+As we can see, the data are available in tidy format. We can use other tools in the tidyverse to clean and manipulate the data.
+
+```{r warning = FALSE, message=FALSE}
+stateDf <- stateDf %>%
+           select(GEOID, NAME, variable, estimate) %>%
+           pivot_wider(names_from = variable, values_from = estimate) %>%
+           mutate(hispanicPr = hispanic / totalPop,
+                  whitePr = white / totalPop,
+                  blackPr = black / totalPop,
+                  asianPr = asian / totalPop) %>%
+           select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
+
+head(stateDf)
+```
+
+### County Level
+
+Similarly, for county-level data:
+
+-   use `geography = "county"` to download all counties in the U.S.
+-   use `geography = "county"`, `state = sampleStateName` to download all counties within a state
+-   use `geography = "county"`, `state = sampleStateName`, `county = sampleCountyName` to download a specific county
+
+For example, the code below downloads selected demographic characteristics for all counties in Illinois.
+
+```{r warning = FALSE, message=FALSE}
+countyDf <- get_acs(geography = "county",
+                    variables = c(totalPop = "B01001_001",
+                                  hispanic = "B03003_003",
+                                  white = "B02001_002",
+                                  black = "B02001_003",
+                                  asian = "B02001_005"),
+                    year = 2024, state = "IL", geometry = FALSE) %>%
+            select(GEOID, NAME, variable, estimate) %>%
+            pivot_wider(names_from = variable, values_from = estimate) %>%
+            mutate(hispanicPr = hispanic / totalPop,
+                                whitePr = white / totalPop,
+                                blackPr = black / totalPop,
+                                asianPr = asian / totalPop) %>%
+            select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
+
+head(countyDf)
+```
+
+### Census tract Level
+
+For census tract-level data, at minimum a state must be provided.
+
+-   use `geography = "tract"`, `state = sampleStateName` to download all census tracts within a state
+-   use `geography = "tract"`, `state = sampleStateName`, `county = sampleCountyName` to download all census tracts within a specific county
+
+The code below downloads selected demographic characteristics for all census tracts in Illinois.
+
+```{r warning = FALSE, message=FALSE}
+tractDf <- get_acs(geography = "tract",
+                   variables = c(totalPop = "B01001_001",
+                                 hispanic = "B03003_003",
+                                 white = "B02001_002",
+                                 black = "B02001_003",
+                                 asian = "B02001_005"),
+                   year = 2024, state = "IL", geometry = FALSE) %>%
+           select(GEOID, NAME, variable, estimate) %>%
+           pivot_wider(names_from = variable, values_from = estimate) %>%
+           mutate(hispanicPr = hispanic / totalPop,
+                  whitePr = white / totalPop,
+                  blackPr = black / totalPop,
+                  asianPr = asian / totalPop) %>%
+           select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
+
+head(tractDf)
+```
+
+### Zipcode Level
+
+For zipcode-level data, use `geography = "zcta"`. ZIP Code Tabulation Areas (ZCTAs) are Census Bureau approximations of U.S. Postal Service ZIP Codes. Because ZCTAs can cross county and state boundaries, tidycensus retrieves ZCTA data for the entire U.S.
+
+```{r warning = FALSE, message=FALSE}
+zctaDf <- get_acs(geography = "zcta",
+                  variables = c(totalPop = "B01001_001",
+                                hispanic = "B03003_003",
+                                white = "B02001_002",
+                                black = "B02001_003",
+                                asian = "B02001_005"),
+                  year = 2024, geometry = FALSE) %>%
+          select(GEOID, NAME, variable, estimate) %>%
+          pivot_wider(names_from = variable, values_from = estimate) %>%
+          mutate(hispanicPr = hispanic / totalPop,
+                 whitePr = white / totalPop,
+                 blackPr = black / totalPop,
+                 asianPr = asian / totalPop) %>%
+          select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
+```
+
+Inspect the data.
+
+```{r warning = FALSE, message=FALSE}
+head(zctaDf)
+dim(zctaDf)
+```
+
+Because ZCTA data are retrieved for the entire nation, we can filter the results to a particular region after downloading them. For example, Chicago ZIP Codes commonly begin with 606, so we can use `str_detect()` as a simple non-spatial filter. If geometry information is available, we can instead overlay the ZCTA geometries with a city boundary to identify the required region. We will illustrate this approach in the Get Geometry section.
+
+In addition to demographic characteristics, ACS data can provide community context that may help us better understand geographic patterns in healthcare access. Here, we use poverty and household vehicle availability as two examples of access-relevant community characteristics.
+
+```{r warning = FALSE, message=FALSE}
+zipChicagoDf <- get_acs(geography = "zcta",
+                        variables = c(povertyTotal = "B17001_001",
+                                      povertyBelow = "B17001_002",
+                                      households = "B08201_001",
+                                      noVehicle = "B08201_002"),
+                        year = 2024, geometry = FALSE) %>%
+                select(GEOID, NAME, variable, estimate) %>%
+                filter(str_detect(GEOID, "^606")) %>%
+                pivot_wider(names_from = variable, values_from = estimate) %>%
+                mutate(povertyPr = povertyBelow / povertyTotal,
+                       noVehiclePr = noVehicle / households) %>%
+                select(GEOID, povertyPr, noVehiclePr)
+```
+
+Inspect the Chicago ZCTA data.
+
+```{r warning = FALSE, message=FALSE}
+head(zipChicagoDf)
+```
+
+### Save Data
+
+We can now save the county and Chicago zipcode datasets as CSV files using the code below.
+
+```{r warning = FALSE, message=FALSE}
+write.csv(countyDf, "data/ilcounty_24_demographic.csv")
+write.csv(zipChicagoDf, "data/chizips_24_context.csv")
+```
 
 ## Get Geometry
 
+```{r warning = FALSE, message=FALSE}
+
+```
 
 ## Appendix
 
