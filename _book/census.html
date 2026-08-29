@@ -4017,7 +4017,12 @@ vertical-align: -.125em;
   <li><a href="#zipcode-level" id="toc-zipcode-level" class="nav-link" data-scroll-target="#zipcode-level"><span class="header-section-number">5.4.4</span> Zipcode Level</a></li>
   <li><a href="#save-data" id="toc-save-data" class="nav-link" data-scroll-target="#save-data"><span class="header-section-number">5.4.5</span> Save Data</a></li>
   </ul></li>
-  <li><a href="#get-geometry" id="toc-get-geometry" class="nav-link" data-scroll-target="#get-geometry"><span class="header-section-number">5.5</span> Get Geometry</a></li>
+  <li><a href="#get-geometry" id="toc-get-geometry" class="nav-link" data-scroll-target="#get-geometry"><span class="header-section-number">5.5</span> Get Geometry</a>
+  <ul class="collapse">
+  <li><a href="#using-tigris" id="toc-using-tigris" class="nav-link" data-scroll-target="#using-tigris"><span class="header-section-number">5.5.1</span> Using tigris</a></li>
+  <li><a href="#using-tidycensus" id="toc-using-tidycensus" class="nav-link" data-scroll-target="#using-tidycensus"><span class="header-section-number">5.5.2</span> Using tidycensus</a></li>
+  <li><a href="#save-data-1" id="toc-save-data-1" class="nav-link" data-scroll-target="#save-data-1"><span class="header-section-number">5.5.3</span> Save Data</a></li>
+  </ul></li>
   <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">5.6</span> Appendix</a></li>
   </ul>
 </nav>
@@ -4064,7 +4069,7 @@ vertical-align: -.125em;
 <h3 data-number="5.2.1" class="anchored" data-anchor-id="inputoutput"><span class="header-section-number">5.2.1</span> Input/Output</h3>
 <p>Our only external input will be a GeoJSON file of the Chicago city boundary. This file can be found here, though all ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.</p>
 <ul>
-<li>Chicago City Boundary, boundaries_chicago.geojson</li>
+<li>Chicago City Boundary: <a href="https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data">boundaries_chicago.geojson</a></li>
 </ul>
 <p>We will generate Census datasets at multiple geographic levels throughout this tutorial. Our final outputs will include:</p>
 <ul>
@@ -4323,9 +4328,334 @@ vertical-align: -.125em;
 </section>
 <section id="get-geometry" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="get-geometry"><span class="header-section-number">5.5</span> Get Geometry</h2>
+<p>Geometry and geographic boundaries are key components of American Community Survey data because they provide the spatial framework used to map and analyze Census estimates. Geographic boundaries may be updated over time, and Census data for a given year generally correspond to geographic definitions available for that data vintage. In this tutorial, we use 2024 Census geographic boundaries to correspond with the 2024 ACS 5-year estimates.</p>
+<p>The datasets downloaded so far do not include spatial geometry. To conduct spatial analysis, we need to join these data frames to spatially enabled <code>sf</code> objects using a common geographic identifier such as GEOID.</p>
+<p>We can download Census geographic boundaries using two methods: - using <code>tigris</code> - using <code>tidycensus</code></p>
+<section id="using-tigris" class="level3" data-number="5.5.1">
+<h3 data-number="5.5.1" class="anchored" data-anchor-id="using-tigris"><span class="header-section-number">5.5.1</span> Using tigris</h3>
+<p>To download TIGER/Line geographic boundaries provided by the <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">U.S. Census Bureau</a>, we can use the <code>tigris</code> package. Setting <code>cb = TRUE</code> downloads generalized cartographic boundary files, which have less spatial detail and smaller file sizes than full-resolution TIGER/Line files.</p>
+<p>For states, counties, and census tracts, we use 2024 boundary files. The 2024 cartographic boundary file for ZCTAs is not currently available, so we use the 2020 ZCTA boundaries.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>yearToFetch <span class="ot">&lt;-</span> <span class="dv">2024</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>stateShp <span class="ot">&lt;-</span> <span class="fu">states</span>(<span class="at">year =</span> yearToFetch, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>countyShp <span class="ot">&lt;-</span> <span class="fu">counties</span>(<span class="at">year =</span> yearToFetch, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">tracts</span>(<span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">year =</span> yearToFetch, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">zctas</span>(<span class="at">year =</span> <span class="dv">2020</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>After downloading the geometry files, we can merge these shapes with the demographic data downloaded in the previous section.</p>
+<p>For states:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check object types &amp; identifier variable type</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># str(stateShp)</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># str(stateDf)</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>stateShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(stateShp, stateDf, <span class="at">by.x =</span> <span class="st">"STATEFP"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stateShp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 14 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -179.1467 ymin: 30.22333 xmax: 179.7785 ymax: 71.38782
+Geodetic CRS:  NAD83
+  STATEFP  STATENS     GEOIDFQ GEOID STUSPS       NAME LSAD        ALAND
+1      01 01779775 0400000US01    01     AL    Alabama   00 1.311856e+11
+2      02 01785533 0400000US02    02     AK     Alaska   00 1.479509e+12
+3      04 01779777 0400000US04    04     AZ    Arizona   00 2.943661e+11
+4      05 00068085 0400000US05    05     AR   Arkansas   00 1.346585e+11
+5      06 01779778 0400000US06    06     CA California   00 4.036734e+11
+6      08 01779779 0400000US08    08     CO   Colorado   00 2.684190e+11
+        AWATER totalPop hispanicPr   whitePr    blackPr    asianPr
+1   4581813708  5086768 0.05585767 0.6456477 0.25773969 0.01463306
+2 244710526650   735706 0.07313111 0.5955885 0.02999976 0.06445917
+3    853991999  7378838 0.31357322 0.5900494 0.04601849 0.03578057
+4   3122715710  3049391 0.09036919 0.6914810 0.14713528 0.01629375
+5  20291632828 39287377 0.40162933 0.3971951 0.05433084 0.15528041
+6   1185541418  5862189 0.22533170 0.7051564 0.04049835 0.03287117
+                        geometry
+1 MULTIPOLYGON (((-88.05338 3...
+2 MULTIPOLYGON (((-132.4825 5...
+3 MULTIPOLYGON (((-114.8163 3...
+4 MULTIPOLYGON (((-94.61792 3...
+5 MULTIPOLYGON (((-118.6044 3...
+6 MULTIPOLYGON (((-109.0603 3...</code></pre>
+</div>
+</div>
+<p>Similarly for counties, zctas &amp; census tracts we can use the code below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>countyShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(countyShp, countyDf, <span class="at">by.x =</span> <span class="st">"GEOID"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(tractShp, tractDf, <span class="at">by.x =</span> <span class="st">"GEOID"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The 2024 cartographic boundary file for ZCTAs is not currently available, so we use the 2020 ZCTA boundaries, which correspond to the current ZCTA geography used by the 2024 ACS.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(zctaShp, zctaDf, <span class="at">by.x =</span> <span class="st">"GEOID20"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(GEOID20, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="using-tidycensus" class="level3" data-number="5.5.2">
+<h3 data-number="5.5.2" class="anchored" data-anchor-id="using-tidycensus"><span class="header-section-number">5.5.2</span> Using tidycensus</h3>
+<p>The previous method adds an additional step of using the <code>tigris</code> package to download geographic boundary files. The <code>tidycensus</code> package can also invoke <code>tigris</code> within the <code>get_acs()</code> function, allowing us to download ACS data with geometry by setting <code>geometry = TRUE</code>.</p>
+<p>Adding geometry to each variable can increase the size of intermediate datasets and slow down processing, particularly when downloading many variables. For larger requests, we recommend downloading the ACS variables without geometry and then downloading a single variable with <code>geometry = TRUE</code>. The resulting spatial object can then be merged with the larger ACS dataset. We illustrate this approach below.</p>
+<p>First, download the census tract demographic data without geometry.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tractDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"tract"</span>,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We can then download a single variable with geometry.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"tract"</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Merge the geometry with the demographic data using GEOID.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(tractShp, tractDf, <span class="at">by.x =</span> <span class="st">"GEOID"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tractShp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 8 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -91.42005 ymin: 39.92603 xmax: -91.32937 ymax: 39.97247
+Geodetic CRS:  NAD83
+        GEOID                                      NAME totalPop.x totalPop.y
+1 17001000100    Census Tract 1; Adams County; Illinois       4219       4219
+2 17001000201 Census Tract 2.01; Adams County; Illinois       1889       1889
+3 17001000202 Census Tract 2.02; Adams County; Illinois       3033       3033
+4 17001000400    Census Tract 4; Adams County; Illinois       3451       3451
+5 17001000500    Census Tract 5; Adams County; Illinois       1808       1808
+6 17001000600    Census Tract 6; Adams County; Illinois       3931       3931
+   hispanicPr   whitePr    blackPr     asianPr                       geometry
+1 0.000000000 0.8824366 0.03555345 0.016591609 MULTIPOLYGON (((-91.37766 3...
+2 0.001588142 0.9311805 0.02911593 0.000000000 MULTIPOLYGON (((-91.39646 3...
+3 0.030992417 0.7777778 0.06330366 0.050115397 MULTIPOLYGON (((-91.3937 39...
+4 0.015068096 0.7696320 0.14256737 0.000000000 MULTIPOLYGON (((-91.42005 3...
+5 0.137168142 0.8772124 0.02710177 0.014380531 MULTIPOLYGON (((-91.4034 39...
+6 0.023149326 0.9071483 0.02365810 0.002543882 MULTIPOLYGON (((-91.39655 3...</code></pre>
+</div>
+</div>
+<p>To get ZCTA-level data for a specific region, we first download the required dataset for the entire country and then filter the relevant ZCTAs by overlaying the downloaded dataset with the geometry of the region of interest.</p>
+<p>Here, we download the poverty and household vehicle availability measures used in the previous section without geometry.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>zctaContextDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"zcta"</span>,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">povertyTotal =</span> <span class="st">"B17001_001"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">povertyBelow =</span> <span class="st">"B17001_002"</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">households =</span> <span class="st">"B08201_001"</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">noVehicle =</span> <span class="st">"B08201_002"</span>),</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">year =</span> <span class="dv">2024</span>,<span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>               <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>               <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">povertyPr =</span> povertyBelow <span class="sc">/</span> povertyTotal,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">noVehiclePr =</span> noVehicle <span class="sc">/</span> households) <span class="sc">%&gt;%</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>               <span class="fu">select</span>(GEOID, povertyPr, noVehiclePr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Download the 2020 ZCTA boundaries and merge them with the 2024 ACS data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">zctas</span>(<span class="at">year =</span> <span class="dv">2020</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(zctaShp, zctaContextDf, <span class="at">by.x =</span> <span class="st">"GEOID20"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID20, povertyPr, noVehiclePr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Inspect the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zctaShp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 3 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -67.23915 ymin: 18.11201 xmax: -66.66106 ymax: 18.51335
+Geodetic CRS:  NAD83
+  GEOID20 povertyPr noVehiclePr                       geometry
+1   00601 0.5990141  0.12014563 MULTIPOLYGON (((-66.83637 1...
+2   00602 0.4695903  0.12575266 MULTIPOLYGON (((-67.23915 1...
+3   00603 0.4442137  0.15985296 MULTIPOLYGON (((-67.16914 1...
+4   00606 0.5448383  0.08978495 MULTIPOLYGON (((-67.05134 1...
+5   00610 0.4226457  0.08923365 MULTIPOLYGON (((-67.22534 1...
+6   00611 0.3984093  0.12812960 MULTIPOLYGON (((-66.82743 1...</code></pre>
+</div>
+</div>
+<p>Read in the Chicago city boundary file, which can be download <a href="https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data">here</a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>chiCityBoundary <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/boundaries_chicago.geojson"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `boundaries_chicago' from data source 
+  `/Users/yilinlyu/Documents/opioid-environment-toolkit/data/boundaries_chicago.geojson' 
+  using driver `GeoJSON'
+Simple feature collection with 1 feature and 4 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -87.94011 ymin: 41.64454 xmax: -87.52414 ymax: 42.02304
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Set the same coordinate reference system for both spatial datasets.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>chiCityBoundary <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(chiCityBoundary, <span class="dv">4326</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(zctaShp, <span class="dv">4326</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Only keep ZCTAs that intersect the Chicago city boundary.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>zipChicagoShp <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(zctaShp, chiCityBoundary)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Inspect data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zipChicagoShp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 7 fields
+Geometry type: GEOMETRY
+Dimension:     XY
+Bounding box:  xmin: -87.94011 ymin: 41.68284 xmax: -87.52454 ymax: 42.01914
+Geodetic CRS:  WGS 84
+      GEOID20  povertyPr noVehiclePr    name objectid    shape_area
+15446   46394 0.15652542  0.07039934 CHICAGO        1 6450276623.31
+20826   60007 0.07980461  0.05677877 CHICAGO        1 6450276623.31
+20834   60018 0.06665457  0.05746167 CHICAGO        1 6450276623.31
+20864   60068 0.02912086  0.04585859 CHICAGO        1 6450276623.31
+20872   60076 0.06489307  0.05527768 CHICAGO        1 6450276623.31
+20873   60077 0.14556758  0.09126948 CHICAGO        1 6450276623.31
+          shape_len                       geometry
+15446 845282.931362 MULTIPOLYGON (((-87.52454 4...
+20826 845282.931362 MULTIPOLYGON (((-87.93993 4...
+20834 845282.931362 MULTIPOLYGON (((-87.93523 4...
+20864 845282.931362 MULTIPOLYGON (((-87.85584 4...
+20872 845282.931362 POLYGON ((-87.70919 42.0118...
+20873 845282.931362 POLYGON ((-87.76167 42.0082...</code></pre>
+</div>
+</div>
+</section>
+<section id="save-data-1" class="level3" data-number="5.5.3">
+<h3 data-number="5.5.3" class="anchored" data-anchor-id="save-data-1"><span class="header-section-number">5.5.3</span> Save Data</h3>
+<p>We previously saved our datasets without geometry information as CSV files. Now we can save the Illinois county demographic data and Chicago ZCTA community context data with geometries as shapefiles using <code>write_sf()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(countyShp, <span class="st">"data/ilcounty_24_demographic.shp"</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(zipChicagoShp, <span class="st">"data/chizips_24_context.shp"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
 </section>
 <section id="appendix" class="level2" data-number="5.6">
 <h2 data-number="5.6" class="anchored" data-anchor-id="appendix"><span class="header-section-number">5.6</span> Appendix</h2>
+<p>5.6.1 Explore Variables</p>
+<p>Using tidycensus, we can download ACS variables from several types of tables. Some commonly used products include: - <code>Data Profiles</code>: Broad collections of social, economic, housing, and demographic characteristics, such as Social Characteristics (DP02), Economic Characteristics (DP03), Housing Characteristics (DP04), and Demographic and Housing Estimates (DP05). - <code>Subject Tables</code>: Topic-specific tables that provide estimates and percentages for subjects such as age and sex (S0101), employment, education, income, and disability. - <code>Detailed Tables</code>: Detailed ACS tables identified primarily by B and C table IDs. These tables provide the variables used throughout this tutorial.</p>
+<p>We can explore the variables available for our year of interest using <code>load_variables()</code>. Variable IDs and table structures may change over time, so it is important to check the variables for the ACS year being used.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sVarNames <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2024</span>, <span class="st">"acs5/subject"</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>pVarNames <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2024</span>, <span class="st">"acs5/profile"</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>otherVarNames <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2024</span>, <span class="st">"acs5"</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pVarNames)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  name         label                                                     concept
+  &lt;chr&gt;        &lt;chr&gt;                                                     &lt;chr&gt;  
+1 DP02PR_0001  Estimate!!HOUSEHOLDS BY TYPE!!Total households            Select…
+2 DP02PR_0001P Percent!!HOUSEHOLDS BY TYPE!!Total households             Select…
+3 DP02PR_0002  Estimate!!HOUSEHOLDS BY TYPE!!Total households!!Married-… Select…
+4 DP02PR_0002P Percent!!HOUSEHOLDS BY TYPE!!Total households!!Married-c… Select…
+5 DP02PR_0003  Estimate!!HOUSEHOLDS BY TYPE!!Total households!!Married-… Select…
+6 DP02PR_0003P Percent!!HOUSEHOLDS BY TYPE!!Total households!!Married-c… Select…</code></pre>
+</div>
+</div>
+<p>A tibble containing table and variable information includes three main columns: name, label, and concept.</p>
+<p>name identifies the ACS variable. concept generally identifies the table or topic associated with the variable, while label provides a description of the variable.</p>
+<p>We can explore these tibbles to identify the appropriate variable ID for use with <code>get_acs()</code>. For example, we can search the Subject Tables for variables related to children under 5 years of age.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>sVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(concept, <span class="st">"AGE AND SEX"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Under 5 years"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variableId =</span> name, label)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 2
+# ℹ 2 variables: variableId &lt;chr&gt;, label &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>We can also search directly within a specific Subject Table, such as S0101.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>sVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_sub</span>(name, <span class="dv">1</span>, <span class="dv">5</span>) <span class="sc">==</span> <span class="st">"S0101"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Under 5 years"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variableId =</span> name, label)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  variableId    label                                               
+  &lt;chr&gt;         &lt;chr&gt;                                               
+1 S0101_C01_002 Total!!Total population!!AGE!!Under 5 years         
+2 S0101_C02_002 Percent!!Total population!!AGE!!Under 5 years       
+3 S0101_C03_002 Male!!Total population!!AGE!!Under 5 years          
+4 S0101_C04_002 Percent Male!!Total population!!AGE!!Under 5 years  
+5 S0101_C05_002 Female!!Total population!!AGE!!Under 5 years        
+6 S0101_C06_002 Percent Female!!Total population!!AGE!!Under 5 years</code></pre>
+</div>
+</div>
+<p>Similarly, we can explore Data Profile variables. For example, the following code searches for per capita income variables.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>pVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Per capita"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variable =</span> name, label)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  variable   label                                                              
+  &lt;chr&gt;      &lt;chr&gt;                                                              
+1 DP03_0088  INCOME AND BENEFITS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Per capi…
+2 DP03_0088P Percent!!INCOME AND BENEFITS (IN 2024 INFLATION-ADJUSTED DOLLARS)!…</code></pre>
+</div>
+</div>
+<p>We can also search for age-related variables in the Demographic and Housing Estimates profile.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>pVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Under 5 years"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variable =</span> name, label)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  variable   label                                                
+  &lt;chr&gt;      &lt;chr&gt;                                                
+1 DP05_0005  SEX AND AGE!!Total population!!Under 5 years         
+2 DP05_0005P Percent!!SEX AND AGE!!Total population!!Under 5 years</code></pre>
+</div>
+</div>
+<p>Because variable IDs and table structures can change across ACS releases, users should verify the appropriate variable IDs for each year. For analyses across multiple years, Detailed Tables can often provide a more consistent basis for identifying comparable variables. The examples in this tutorial primarily use Detailed Table variables.</p>
+<p>For example, we can search the Detailed Tables for per capita income.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>otherVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Per capita income"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variable =</span> name, label)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 2
+   variable    label                                                            
+   &lt;chr&gt;       &lt;chr&gt;                                                            
+ 1 B19301A_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 2 B19301B_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 3 B19301C_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 4 B19301D_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 5 B19301E_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 6 B19301F_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 7 B19301G_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 8 B19301H_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 9 B19301I_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+10 B19301_001  Per capita income in the past 12 months (in 2024 inflation-adjus…</code></pre>
+</div>
+</div>
 
 
 </section>
