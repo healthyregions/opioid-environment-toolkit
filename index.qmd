@@ -14,15 +14,20 @@ In addition to this workbook, you'll need a working instance of R and the data. 
 
 library(downloadthis)
 
-download_link(
-  link = "https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip",
-  button_label = "Download Workshop Data",
-  button_type = "primary",
-  has_icon = TRUE,
-  icon = "fa fa-save",
-  self_contained = FALSE
-)
+#download_link(
+#  link = "https://github.com/healthyregions/opioid-environment-toolkit/ra#w/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Works#hop-Part1-Data.zip",
+#  button_label = "Download All Data",
+#  button_type = "primary",
+#  has_icon = TRUE,
+#  icon = "fa fa-save",
+#  self_contained = TRUE
+#)
 ```
+
+| Section Topic | Workshop Data Access |
+|---------------------------------|---------------------------------------|
+| Part 1: Gaining the Basics | [Part 1 Data Download](https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/data-download/Part1.zip) (zip) |
+| Part 2: Finding Spatial Data | [Part 2 Data Download](https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/data-download/Part2.zip) (zip) |
 
 ## Software Basics {.unnumbered}
 
