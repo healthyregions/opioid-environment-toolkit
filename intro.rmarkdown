@@ -1,0 +1,318 @@
+# Intro to Spatial Data {#intro}
+
+## Overview
+
+We start our analysis with loading in our base data. Using Census tract boundaries downloaded from the City of Chicago data portal, we'll do the following:
+
+-   Read in a shapefile with the `sf` library & convert to a `sf` spatial object
+-   Inspect the spatial *and* non-spatial dimensions of the data
+-   Inspect and transform the coordinate reference system
+-   Write the data to a new spatial data format for future use
+-   Map the data using basics of the `tmap` library.
+
+## Environment Setup {#BA-setup}
+
+To replicate the code & functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language.
+
+### Input/Output {#BA-i-o}
+
+Our input will be a shapefile of Chicago census tracts, as downloaded from the City of Chicago data portal in the early 2020s. Note that at least four files are required (.dbf, .prj, .shp, and .shx) to consitute a shapefile.
+
+-   Chicago Census tracts, `Chicago_Tracts.shp`
+
+We will output a tract dataset geopackage (.gpkg) in a different coordinate reference system that can be used for future analyses.
+
+### Load Libraries
+
+We will use the following packages in this tutorial:
+
+-   `sf`: to manipulate spatial data
+-   `tmap`: to visualize and create maps
+
+First, load the required libraries. *Note:* You may see messages about GEOS, GDAL, and PROJ. These refer to software libraries that allow you to work with spatial data.
+
+
+
+
+
+
+```{r warning = FALSE, message=TRUE}
+library(sf)
+library(tmap)
+```
+
+
+
+
+
+
+### Load Data
+
+First we load in the shapefile containing the census tract data information and geographic boundaries.
+
+
+
+
+
+
+```{r load-tracts}
+Chi_tracts = st_read("data/Chicago_Tracts.shp")
+```
+
+
+
+
+
+
+## Data Inspection
+
+Always inspect data when loading in.
+
+### Non-Spatial View
+
+First we look at a non-spatial view.
+
+
+
+
+
+
+```{r non-spatial-view}
+head(Chi_tracts)
+```
+
+
+
+
+
+
+Try alternative view functions from the `tidyverse` like glimpse().
+
+Note the last column; this is a spatially enabled column. The data is no longer a `shapefile` but an `sf` object, comprised of polygons.
+
+### Spatial View
+
+We can use a *baseR* function to inspect the spatial dimension. The `sf` framework enables previews of each attribute in our spatial file.
+
+
+
+
+
+
+```{r spatial-view}
+plot(Chi_tracts)
+```
+
+
+
+
+
+
+### Structure Inspection
+
+Check out the data structure of this file... What object is it?
+
+
+
+
+
+
+```{r data-structure}
+str(Chi_tracts)
+
+```
+
+
+
+
+
+
+### CRS Inspection
+
+Check out the coordinate reference system. What is it? What are the units?
+
+
+
+
+
+
+```{r crs-inspect}
+st_crs(Chi_tracts)
+```
+
+
+
+
+
+
+## Explore Projections
+
+Lets see how switching CRS changes our object. First we'll try the Mollweide coordinate reference system that does a good job preserving area across the globe.
+
+### Transform CRS
+
+To transform our CRS, we use the `st_transform` function. To plot, we use baseR again but with some parameter updates. Finally, we check out the CRS of our new object. What are the units? Any other details to note? Will this be appropriate for our spatial analysis?
+
+
+
+
+
+
+```{r mollweide-crs}
+Chi_tracts.moll <- st_transform(Chi_tracts, crs="ESRI:54009")
+
+plot(st_geometry(Chi_tracts.moll), border = "gray", lwd = 2, main = "Mollweide", sub="preserves areas")
+st_crs(Chi_tracts.moll)
+```
+
+
+
+
+
+
+Next, we'll try the Winkel CRS, which is a compromise projection that facilitates minimal distortion for area, distance, and angles. We use the same approach, recyling the code with new inputs.
+
+
+
+
+
+
+```{r winkel-crs}
+Chi_tracts.54019 = st_transform(Chi_tracts, crs="ESRI:54019")
+plot(st_geometry(Chi_tracts.54019), border = "gray", lwd = 2, main = "Winkel", sub="minimal distortion")
+st_crs(Chi_tracts.54019)
+
+```
+
+
+
+
+
+
+We could also try a totally different projection, to see how that changes our spatial object. Let's use the "Old Hawaiian UTM Zone 4n" projection, with the EPSG identified from an online search. How does this fare?
+
+
+
+
+
+
+```{r hawaii-crs}
+Chi_tracts.Hawaii = st_transform(Chi_tracts, crs="ESRI:102114")
+plot(st_geometry(Chi_tracts.Hawaii), border = "gray", lwd = 2, main = "Old Hawaiian UTM Zone 4N", sub="wrong projection!")
+```
+
+
+
+
+
+
+Finally.. let's choose a projection that is focused on Illinois, and uses distance as feet or meters, to make it a bit more accessible for our work. EPSG:3435 is a good fit:
+
+
+
+
+
+
+```{r 3435-crs}
+Chi_tracts.3435 <- st_transform(Chi_tracts, "EPSG:3435")
+# Chi_tracts.3435 <- st_transform(Chi_tracts, 3435)
+st_crs(Chi_tracts.3435)
+
+plot(st_geometry(Chi_tracts.3435), border = "gray", lwd = 2, main = "NAD83 / Illinois East (ftUS)", sub="topo mapping & survey use")
+```
+
+
+
+
+
+
+## Write Data
+
+We transformed our Chicago tract spatial dataset to a coordinate reference system that is appropriate for Illinois-specific analysis, using a distance measure that is interpretable for our purposes. Let's write that file to our directory.
+
+We'll write to a new, elegant spatial data format, the *geopackage*. Uncomment the line, and run.
+
+
+
+
+
+
+```{r write-data}
+#st_write(Chi_tracts.3435, "data/ChiTracts-3435.gpkg")
+```
+
+
+
+
+
+
+Now we'll switch to a more extensive cartographic mapping package, `tmap`, to map our data.
+
+## Map the Basics
+
+We approach mapping with one layer at a time. Always start with the object you want to map by calling it with the `tm_shape` function. Then, at least one descriptive/styling function follows. There are hundreds of variations and paramater specifications, so take your time in exploring `tmap` and the options.
+
+Here we style the tracts with some semi-transparent borders.
+
+
+
+
+
+
+```{r }
+tm_shape(Chi_tracts.3435) + 
+  tm_borders(lwd = 0.5) 
+```
+
+
+
+
+
+
+Next we fill the tracts with a light gray, and adjust the color and transparency of borders. We also add a scale bar, positioning it to the left and having a thickness of 0.8 units, and turn off the frame. See more specifications for 'tm_polygons' at [tmap documentations](https://r-tmap.github.io/tmap/reference/tm_polygons.html?q=tm_polygons#null).
+
+
+
+
+
+
+```{r }
+tm_shape(Chi_tracts) + 
+  tm_polygons(
+    fill = "gray90", #fill color
+    col = "gray10", #border color
+    lwd = 0.5 #line width
+    ) + 
+  tm_scalebar(position = c("bottom","left"), lwd = 0.8) +
+  tm_layout(frame = FALSE)
+```
+
+
+
+
+
+
+Check out the [tmap Reference manual](https://r-tmap.github.io/tmap/reference) for more ideas!
+
+## More Resources {.unnumbered}
+
+On spatial data basics & sf:
+
+-   <https://r.geocompx.org/intro.html>
+
+-   <https://geodacenter.github.io/opioid-environment-toolkit/spatial-data-introduction.html>
+
+On projections:
+
+-   <https://desktop.arcgis.com/en/arcmap/10.3/guide-books/map-projections/projection-basics-for-gis-professionals.htm>
+
+-   <https://geocompr.robinlovelace.net/reproj-geo-data.html>
+
+-   <https://datacarpentry.org/organization-geospatial/03-crs/index.html>
+
+On tmap:
+
+-   <https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html>
+
+-   <https://geocompr.robinlovelace.net/adv-map.html>
+

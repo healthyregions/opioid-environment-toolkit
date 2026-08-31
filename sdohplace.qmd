@@ -1,32 +1,19 @@
-# SDOH & Place
+# Community Data Discovery
 
 ## Overview
 
-Finding data about the Social Determinants of Health (SDOH) and community context can be difficult. Data are often distributed across federal agencies, universities, local governments, research repositories, and other organizations. Even after identifying a useful dataset, additional work is usually required to understand the geographic scale, time period, file structure, identifiers, and documentation before the data can be integrated into a spatial analysis.
+Finding data about community context, the social determinants of health, & structural drivers of health outcomes is essential for research in opioid environments, but can be difficult. Data are often distributed across federal agencies, universities, local governments, research repositories, and other organizations. Even after identifying a useful dataset, additional work is usually required to understand the geographic scale, time period, file structure, identifiers, and documentation before the data can be integrated into a spatial analysis.
 
-The **SDOH & Place Project** was developed to make this process easier. The project brings together spatial data science, health equity research, and human-centered design to help researchers, advocates, students, planners, and community organizations find and use place-based SDOH data.
+There are multiple options for discovering new datasets needed for your search goals. In this tutorial, we'll share one resource that supports researchers in the discovery process, and work through the stages of inspection, download, and integration into a reproducible coding environment.
 
-Two major resources developed through the project are:
+Specifically, we'll use resources from the [SDOH & Place Project](sdohplace.org), a free site that brings together spatial data science, health equity research, and human-centered design to help researchers, advocates, students, planners, and community organizations find and use place-based SDOH data. The [Data Discovery Search Tool ](https://search.sdohplace.org/) includes pre-screened, national-level data to help users identify relevant datasets and directs them to the organization or repository where the underlying data can be downloaded.
 
--   the [Community Toolkit](https://toolkit.sdohplace.org/), which provides tutorials for working with SDOH data, place-based visualization, and community-centered GIS applications; and
--   the [Data Discovery](https://search.sdohplace.org/) search tool, which helps users identify curated SDOH datasets by topic, geography, place, and time period.
+In this tutorial, our objectives will be to:
 
-The Data Discovery platform is primarily a search and metadata tool. It helps users identify relevant datasets and directs them to the organization or repository where the underlying data can be downloaded.
-
-In this tutorial, we demonstrate how to use the Data Discovery platform to locate a community-level socioeconomic dataset, download the data from its source repository, inspect the downloaded files in R, connect the data to census tract boundaries, and map **neighborhood disadvantage**.
-
-Our objectives are to:
-
--   Search for community-level SDOH data using the SDOH & Place Data Discovery platform
--   Identify the appropriate dataset, geography, and time period
--   Navigate and inspect a downloaded data package in R
--   Load and explore an R data file
--   Prepare Census GEOIDs for integration
--   Join community data to a spatial census tract boundary
--   Select a specific county for analysis
--   Map neighborhood disadvantage for a county
--   Map neighborhood disadvantage for the contiguous United States
--   Save the resulting spatial data for future analysis
+- Demonstrate the SDOH & Place Data Discovery Search tool 
+- Download a relevant socioeconomic dataset from its source repository
+- Inspect, clean, and merge the downloaded files in R with spatial boundaries
+- Map neighborhood disadvantage at local and national scales
 
 The worked example uses the **National Neighborhood Data Archive (NaNDA)** socioeconomic and demographic dataset for 2018–2022 using 2022 Census tract geography.
 
@@ -38,9 +25,9 @@ To replicate the code and functions illustrated in this tutorial, you will need 
 
 Place your input data in yout desired folder location and neame them so it is easier to find.The main external inputs for this tutorial are:
 
--   the downloaded NaNDA socioeconomic and demographic dataset from ICPSR;
+-   the downloaded NaNDA socioeconomic and demographic dataset from ICPSR, as discovered at the SDOH & Place Search tool;
 -   the NaNDA codebook and documentation included with the download; and
--   a 2020 Census tract boundary shapefile or GeoJSON.
+-   a 2020 Census tract boundary shapefile or GeoJSON, downloaded via Data.gov.
 
 In this example, the downloaded NaNDA folder is stored as:
 
@@ -65,52 +52,21 @@ The main outputs will be:
 We will use the following packages in this tutorial:
 
 -   `sf`: to read, manipulate, transform, and write spatial objects
--   `dplyr`: to select, filter, transform, and join tabular and spatial data
--   `stringr`: to search and identify variables using text patterns
--   `ggplot2`: to create maps
+-   `tidyverse`: tidy data wrangling tools
+-   `ggplot2`: to create maps (as a break from tmap)
 -   `here`: to help construct reproducible project file paths
 
-Install the packages once if they are not already installed.
-
-```{r install-packages, eval=FALSE}
-packages <- c(
-  "sf",
-  "dplyr",
-  "stringr",
-  "ggplot2",
-  "here"
-)
-
-packages_to_install <- packages[
-  !packages %in% rownames(installed.packages())
-]
-
-if (length(packages_to_install) > 0) {
-  install.packages(packages_to_install)
-}
-```
+We'll be leveraging 'dyplyr' and 'stringr' within the tidyverse package, specifically.
 
 Load the required libraries.
 
 ```{r load-libraries, eval=FALSE}
 library(sf)
-library(dplyr)
-library(stringr)
+library(tidyverse)
 library(ggplot2)
 library(here)
 ```
 
-If `dplyr` returns an error indicating that an older version of `rlang` is loaded, restart R and update `rlang`.
-
-```{r rlang-fix, eval=FALSE}
-install.packages("rlang")
-```
-
-Then restart R and load `dplyr` again.
-
-```{r reload-dplyr, eval=FALSE}
-library(dplyr)
-```
 
 ## Discover Community Data
 
@@ -130,13 +86,15 @@ The Data Discovery platform helps answer several questions before we begin codin
 
 ### Search by Topic
 
-For this example, we are interested in neighborhood socioeconomic conditions.
+For this example, we are interested in neighborhood socioeconomic conditions that may influence community epxeriences that impact opioid risk environments.
 
 Open the Data Discovery platform and search for:
 
 ``` text
 economic
 ```
+
+We'll use the default search option, *keyword search*, in the Discovery Tool. For more complex tasks, you can expand your search with the AI option, and/or use the map to zoom into an area of interest and filter your data options accordingly. 
 
 Related searches might include:
 
@@ -1099,20 +1057,8 @@ ggplot(conus_disadvantage) +
 
 ### Resources
 
-SDOH & Place Project:
+- [SDOH & Place Project](https://sdohplace.org)
+- [SDOH & Place Data Discovery](https://search.sdohplace.org)
+- [National Neighborhood Data Archive Socioeconomic Dataset](https://www.icpsr.umich.edu/web/ICPSR/studies/38528)
 
-<https://sdohplace.org/>
-
-SDOH & Place Data Discovery:
-
-<https://search.sdohplace.org/>
-
-Community Toolkit:
-
-<https://toolkit.sdohplace.org/>
-
-National Neighborhood Data Archive socioeconomic dataset:
-
-<https://www.icpsr.umich.edu/web/ICPSR/studies/38528>
-
-When using NaNDA data in a research product, consult and cite the codebook, documentation, dataset version, and original data citation associated with the specific dataset used.
+When using published data in a research product, always be sure consult and cite the codebook, documentation, dataset version, and original data citation associated with the specific dataset used.

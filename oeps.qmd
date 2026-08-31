@@ -1,26 +1,45 @@
-# OEPS {#intro}
+# Opioid Environment Data {#intro}
 
 ## Overview
 
-The Opioid Environment Policy Scan Data Warehouse, otherwise known as OEPS, is a data resource and warehouse with nationwide health, policy, and community data related to the opioid crisis, available to download, analyze, and visualize at multiple spatial scales. It integrates social and structural determinants of health, which are grouped thematically. It currently includes more than 50 variable constructs with the data available for download as CSV files which can be easily merged with geographic shapefiles. This is a project led by the Healthy Regions and Policies Lab (HEROP) at the University of Illinois Urbana-Champaign.
+The [Opioid Environment Policy Scan Data Ecosystem](https://oeps.healthyregions.org/), otherwise known as OEPS, is a data resource and warehouse with nationwide health, policy, and community data related to the opioid epidemic, available to download, analyze, and visualize at multiple spatial scales. It integrates social and structural determinants of health, which are grouped thematically. It currently includes hundreds variable constructs with the data available for download as CSV files which can be easily merged with geographic shapefiles (that are also provided). 
 
-This tutorial will show you how to: \
+This tutorial will show you how to access data from OEPS and directly integrate it within your own R environment. Objectives include:
 
-1. Download Opioid Environment Policy Scan (OEPS) data directly from the website \
-2. Navigate the OEPS data suite \
-3. Set up an R project \
-4. Prepare the state-level data for analysis and visualization \
-5. Prepare the county-level data for analysis and visualization \
-6. Join OEPS data to outside data \
-7. Save outputs \
+- Navigating the most recent OEPS data suite
+- Cleaning, merging, and mapping OEPS data in R 
+- Integrating additional data to OEPS measures 
+
+## Environment Setup
+
+To replicate the code and functions illustrated in this tutorial, you will need to have R and RStudio installed on your system. This tutorial assumes some basic familiarity with the R programming language, such as creating objects and running code from an R script.
+
+### Input/Output
+
+We will download a data package from OEPS directly, and extract data from the 
+`state.csv` file for our analyses, and later merge with geospatial data from the same package, `state-2020-500k-shp`, for mapping and exploration.
+
+We'll also work with the data at the county level from the same data package, `county.csv` and `county-2020-500k-shp`, and bring in some measures from an external dataset, `NC_cty_foodstamps_2025.csv`.
+
+Our output will be a cleaned county-level CSV file, `final-county-data.csv`, to be used in further research & analyses, as well as several images of maps from our session.
+
+### Install Libraries
+
+We will use the following packages in this tutorial:
+
+-   `sf`: to read, manipulate, transform, and write spatial objects
+-   `tidyverse`: tidy data wrangling tools
+-   `tmap`: to create maps 
+
+If you have not already installed **tidyverse**, **sf**, and **tmap**, install them first using `install.packages("PackageName")`. Then load them with the `library()` function.
 
 ## Download OEPS Data
 
-First, go to the OEPS website: **[https://oeps.healthyregions.org/](https://oeps.healthyregions.org/){target="_blank"}**. If this is your first time visiting the site, take a moment to explore the **[About OEPS](https://oeps.healthyregions.org/about){target="_blank"}**, **[Methodology](https://oeps.healthyregions.org/methods){target="_blank"}**, and **[Data Standards](https://oeps.healthyregions.org/dataInclusion){target="_blank"}** tabs to get familiar with site.
+First, go to the OEPS website at [https://oeps.healthyregions.org/](https://oeps.healthyregions.org/){target="_blank"}. 
 
-Next, under the **Data** section, click **Data Download**, or go directly to  **[https://oeps.healthyregions.org/download](https://oeps.healthyregions.org/download){target="_blank"}**. 
+If this is your first time visiting the site, take a moment to explore the [About OEPS](https://oeps.healthyregions.org/about), [Methodology](https://oeps.healthyregions.org/methods), [Data Inventory](https://oeps.healthyregions.org/docs) and [Data Standards](https://oeps.healthyregions.org/dataInclusion) pages to get familiar with site.
 
-On this page, Click **Aggregated Data Packages**.
+Next, under the *Data Access* tab, click  [Download](https://oeps.healthyregions.org/download). On this page, Click *Aggregated Data Packages*.
 
 This tutorial uses data from the 2023 ACS release, which is a 5-year pooled estimate covering 2019-2023.
 
@@ -77,9 +96,9 @@ Next, open RStudio and create a new R script called **OEPS_Tutorial_RScript.R**.
 
 In the Files pane (usually on the bottom right-hand side), click the three dots on the right side, navigate to your **OEPS_Tutorial** folder, and click **Open**. Then click the gear icon and select **Set As Working Directory**.
 
-If the Files pane is not open, click **View** in the main toolbar and then click **Show Files**.
+If the Files pane is not open, click **View** in the main toolbar and then click **Show Files**. 
 
-If you have not already installed **tidyverse**, **sf**, and **tmap**, install them first using **install.packages("PackageName")**. Then load them with the library() function.
+At this stage, load the libraries referenced at the start of the tutorial.
 
 ```{r package, message=FALSE, warning=FALSE}
 ## Load required packages
@@ -87,6 +106,7 @@ library(tidyverse)
 library(sf)
 library(tmap)
 ```
+
 
 ## Prepare the State-Level Data for Analysis and Visualization {#BA-setup}
 

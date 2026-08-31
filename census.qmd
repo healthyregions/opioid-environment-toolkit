@@ -43,7 +43,7 @@ We will use the following packages in this tutorial:
 
 First, load the required libraries.
 
-```{r warning = FALSE, message=FALSE}
+```{r import-libraries-census, warning = FALSE, message=FALSE}
 library(sf)
 library(tidycensus)
 library(tidyverse)
@@ -56,8 +56,8 @@ To use the Census API, we first need to sign up for an API key. The API key allo
 
 Once you receive your key, install it by running the code below.
 
-```{r warning = FALSE, message=FALSE}
-#census_api_key("yourkeyhere", install = TRUE) # installs the key for future sessions.
+```{r api-key, warning = FALSE, message=FALSE}
+census_api_key("CENSUS_API_KEY", install = TRUE, overwrite=TRUE) # installs the key for future sessions.
 ```
 
 Setting `install = TRUE` saves the key to your .Renviron file so that it is available for future R sessions.
@@ -66,10 +66,11 @@ If you are working on a shared computer or do not want to save your API key, you
 
 To check whether a Census API key is already installed, run:
 
-```{r warning = FALSE, message=FALSE}
+```{r get-census-key, warning = FALSE, message=FALSE}
 Sys.getenv("CENSUS_API_KEY")
 ```
 
+Tip: If you don't see the Census API Key show up here: stop, save, and restart your R-studio session. 
 ## Load Data Dynamically
 
 5.4 Load Data Dynamically
@@ -90,7 +91,8 @@ For the examples covered in this tutorial, the four main inputs for the `get_acs
 
 To begin, we can download selected demographic characteristics for all states.
 
-```{r warning = FALSE, message=FALSE}
+```{r census-state, warning = FALSE, message=FALSE}
+
 stateDf <- get_acs(geography = "state",
                    variables = c(totalPop = "B01001_001",
                                  hispanic = "B03003_003",
@@ -100,6 +102,7 @@ stateDf <- get_acs(geography = "state",
                    year = 2024, geometry = FALSE)
 
 head(stateDf)
+
 ```
 
 As we can see, the data are available in tidy format. We can use other tools in the tidyverse to clean and manipulate the data.
