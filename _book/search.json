@@ -464,23 +464,23 @@
   {
     "objectID": "otherdata.html",
     "href": "otherdata.html",
-    "title": "5  Finding Data",
+    "title": "Finding Data",
     "section": "",
-    "text": "5.1 Overview\nblah blah blah",
+    "text": "Overview\nblah blah blah",
     "crumbs": [
       "PART 2",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Finding Data</span>"
+      "Finding Data"
     ]
   },
   {
     "objectID": "otherdata.html#overview",
     "href": "otherdata.html#overview",
-    "title": "5  Finding Data",
+    "title": "Finding Data",
     "section": "",
     "text": "blah\nblah",
     "crumbs": [
       "PART 2",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Finding Data</span>"
+      "Finding Data"
     ]
   },
   {

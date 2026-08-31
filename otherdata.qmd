@@ -1,4 +1,4 @@
-# Finding Data {#intro}
+# Finding Data {.unnumbered}
 
 ## Overview
 
