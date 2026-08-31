@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Healthy Regions &amp; Policies Lab">
-<meta name="dcterms.date" content="2025-10-16">
 
-<title>Opioid Environment Toolkit for R-Spatial</title>
+<title>5&nbsp; Census Data Wrangling – Opioid Environment Toolkit for R-Spatial</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +18,40 @@ ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -1670,7 +1702,8 @@ async function fuseSearch(query, fuse, fuseOptions) {
 }
 </script>
 <meta name="quarto:offset" content="./">
-<link href="./orientation.html" rel="next">
+<link href="./oeps.html" rel="next">
+<link href="./otherdata.html" rel="prev">
 <script>const sectionChanged = new CustomEvent("quarto-sectionChanged", {
   detail: {},
   bubbles: true,
@@ -4727,7 +4760,7 @@ vertical-align: -.125em;
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./otherdata.html">PART 2</a></li><li class="breadcrumb-item"><a href="./census.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Census Data Wrangling</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -4754,7 +4787,7 @@ vertical-align: -.125em;
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -4816,7 +4849,7 @@ vertical-align: -.125em;
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./census.html" class="sidebar-item-text sidebar-link">
+  <a href="./census.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Census Data Wrangling</span></span></a>
   </div>
 </li>
@@ -4844,41 +4877,47 @@ vertical-align: -.125em;
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">5.1</span> Overview</a></li>
+  <li><a href="#environment-setup" id="toc-environment-setup" class="nav-link" data-scroll-target="#environment-setup"><span class="header-section-number">5.2</span> Environment Setup</a>
   <ul class="collapse">
-  <li><a href="#what-youll-need" id="toc-what-youll-need" class="nav-link" data-scroll-target="#what-youll-need">What You’ll Need</a></li>
-  <li><a href="#software-basics" id="toc-software-basics" class="nav-link" data-scroll-target="#software-basics">Software Basics</a></li>
-  <li><a href="#author-team" id="toc-author-team" class="nav-link" data-scroll-target="#author-team">Author Team</a></li>
-  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+  <li><a href="#inputoutput" id="toc-inputoutput" class="nav-link" data-scroll-target="#inputoutput"><span class="header-section-number">5.2.1</span> Input/Output</a></li>
+  <li><a href="#load-libraries" id="toc-load-libraries" class="nav-link" data-scroll-target="#load-libraries"><span class="header-section-number">5.2.2</span> Load Libraries</a></li>
   </ul></li>
+  <li><a href="#enable-census-api-key" id="toc-enable-census-api-key" class="nav-link" data-scroll-target="#enable-census-api-key"><span class="header-section-number">5.3</span> Enable Census API Key</a>
+  <ul class="collapse">
+  <li><a href="#test-api-key" id="toc-test-api-key" class="nav-link" data-scroll-target="#test-api-key"><span class="header-section-number">5.3.1</span> Test API Key</a></li>
+  </ul></li>
+  <li><a href="#load-data-dynamically" id="toc-load-data-dynamically" class="nav-link" data-scroll-target="#load-data-dynamically"><span class="header-section-number">5.4</span> Load Data Dynamically</a>
+  <ul class="collapse">
+  <li><a href="#state-level" id="toc-state-level" class="nav-link" data-scroll-target="#state-level"><span class="header-section-number">5.4.1</span> State Level</a></li>
+  <li><a href="#county-level" id="toc-county-level" class="nav-link" data-scroll-target="#county-level"><span class="header-section-number">5.4.2</span> County Level</a></li>
+  <li><a href="#census-tract-level" id="toc-census-tract-level" class="nav-link" data-scroll-target="#census-tract-level"><span class="header-section-number">5.4.3</span> Census tract Level</a></li>
+  <li><a href="#zipcode-level" id="toc-zipcode-level" class="nav-link" data-scroll-target="#zipcode-level"><span class="header-section-number">5.4.4</span> Zipcode Level</a></li>
+  <li><a href="#save-data" id="toc-save-data" class="nav-link" data-scroll-target="#save-data"><span class="header-section-number">5.4.5</span> Save Data</a></li>
+  </ul></li>
+  <li><a href="#get-geometry" id="toc-get-geometry" class="nav-link" data-scroll-target="#get-geometry"><span class="header-section-number">5.5</span> Get Geometry</a>
+  <ul class="collapse">
+  <li><a href="#using-tigris" id="toc-using-tigris" class="nav-link" data-scroll-target="#using-tigris"><span class="header-section-number">5.5.1</span> Using tigris</a></li>
+  <li><a href="#using-tidycensus" id="toc-using-tidycensus" class="nav-link" data-scroll-target="#using-tidycensus"><span class="header-section-number">5.5.2</span> Using tidycensus</a></li>
+  <li><a href="#save-data-1" id="toc-save-data-1" class="nav-link" data-scroll-target="#save-data-1"><span class="header-section-number">5.5.3</span> Save Data</a></li>
+  </ul></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="header-section-number">5.6</span> Appendix</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./otherdata.html">PART 2</a></li><li class="breadcrumb-item"><a href="./census.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Census Data Wrangling</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Opioid Environment Toolkit for R-Spatial</h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Census Data Wrangling</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Healthy Regions &amp; Policies Lab </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">October 16, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -4888,80 +4927,652 @@ vertical-align: -.125em;
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This toolkit provides an <strong>introduction to GIS and spatial analysis</strong> for health applications that will allow researchers, analysts, and practitioners to support their communities with better data analytics and visualization services.</p>
-<p>We introduce basic spatial analytic functionalities using <strong>open source tools</strong>, mainly in R, using applied examples for visualizing, mapping, and understanding the community environment. As a project of the Justice Community Overdose Innovation network, applications covered consider the opioid and overdose risk environment.</p>
-<p>The <a href="https://geodacenter.github.io/opioid-environment-toolkit/index.html">original</a> toolkit version was published in 2020. This version was updated in 2025 and will continue to be expanded through the end of 2029.</p>
-<section id="what-youll-need" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="what-youll-need">What You’ll Need</h2>
-<p>In addition to this workbook, you’ll need a working instance of R and the data. You can also clone the <a href="https://github.com/healthyregions/opioid-environment-toolkit">Github repository</a> that hosts this workbook to get direct access to all the working code, <a href="https://github.com/healthyregions/opioid-environment-toolkit/tree/master/data">data</a>, and additional items.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Section Topic</th>
-<th>Workshop Data Access</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Part 1: Gaining the Basics</td>
-<td><a href="https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip">Part 1 Data Download</a> (zip)</td>
-</tr>
-<tr class="even">
-<td>Part 2: Finding Spatial Data</td>
-<td><a href="https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip">Part 2 Data Download</a> (zip)</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="software-basics" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="software-basics">Software Basics</h2>
-<p>We assume a basic knowledge of R and coding languages for most sections. For most of the tutorials in this toolkit, you’ll need to have R and RStudio downloaded and installed on your system. You should be able to install packages, know how to find the address to a folder on your computer system, and have very basic familiarity with R. If you are new to R, we recommend the following <a href="https://support.posit.co/hc/en-us/articles/201141096-Getting-Started-with-R">intro-level tutorials</a> provided through <a href="https://rstudio-education.github.io/hopr/starting.html">installation</a> guides. You can also refer to this <a href="https://datacarpentry.org/r-socialsci/">R for Social Scientists</a> tutorial developed by <em>Data Carpentry</em> for a refresher.</p>
-<p>We will work with following libraries, so please be sure to install:</p>
+<section id="overview" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">5.1</span> Overview</h2>
+<p>So far, we have used spatial data to characterize access to opioid treatment resources and link those patterns with community-level information. Adding demographic, social, and economic context can help us identify whether disparities in access exist across different populations and better understand factors that may contribute to observed spatial patterns. Many of these community characteristics are available from the U.S. Census Bureau.</p>
+<p>The American Community Survey (ACS) is an ongoing survey that provides annually updated estimates of population and housing characteristics. ACS estimates are available as 1-year and 5-year products. We generally recommend using the 5-year estimates for small geographic areas because they provide greater statistical reliability, particularly for less populated areas and smaller population subgroups. In this tutorial, we use the 2020–2024 ACS 5-year estimates, referred to as the 2024 ACS 5-year estimates.</p>
+<p>In this tutorial, we demonstrate how to use the tidycensus package to explore and download commonly used ACS variables at multiple geographic levels, both with and without spatial geometries. We will also wrangle these data into formats that can be integrated with other spatial datasets for further analysis. This tutorial focuses on ACS data available through the Census Bureau API. Additional tutorials and documentation for tidycensus are available from the package authors.</p>
+<p>Our objectives are thus to:</p>
 <ul>
-<li><code>tidyverse</code> or <code>dplyr</code></li>
-<li><code>sf</code></li>
-<li><code>tmap</code></li>
-<li><code>tidygeocoder</code></li>
-<li><code>tidycensus</code></li>
+<li>Download ACS data through the Census API</li>
+<li>Download Census geographic boundaries</li>
+<li>Explore ACS data at multiple geographic levels</li>
+<li>Wrangle, clean, and merge Census data for further spatial analysis</li>
 </ul>
-<p>To install a package in R, input <code>install.packages("dplyr")</code> in your console. You generally only need to install a library once, but you’ll call it every time you work with a new R session.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Setting up your environment
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>We recommend setting up your working directory as soon as you can! Create a new folder called “data” to put all the data you’ve downloaded for the workshop.</p>
-</div>
-</div>
-<p>There are differing spatial ecosystems in R. We use the <code>sf</code> ecosystem that is compatible with the <code>tidyverse</code>. If you need to work between these two R spatial ecosystems, see <a href="https://github.com/r-spatial/sf/wiki/Migrating">this guide</a> for a translation of <code>sp</code> to <code>sf</code> commands.</p>
 </section>
-<section id="author-team" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="author-team">Author Team</h2>
-<p>This toolkit was developed for the <a href="https://heal.nih.gov/research/research-to-practice/jcoin">JCOIN Network</a> by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions &amp; Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). Susan Paykin and Yilin Liu have contributed substantially as workshop facilitators. The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.</p>
-<p>JCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide range of programs to develop new or improved prevention and treatment strategies for opioid addiction.</p>
+<section id="environment-setup" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="environment-setup"><span class="header-section-number">5.2</span> Environment Setup</h2>
+<p>To replicate the code and functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language.</p>
+<section id="inputoutput" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="inputoutput"><span class="header-section-number">5.2.1</span> Input/Output</h3>
+<p>Our only external input will be a GeoJSON file of the Chicago city boundary. All ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.</p>
+<ul>
+<li>Chicago City Boundary: <code>boundaries_chicago.geojson</code></li>
+</ul>
+<p>We will generate Census datasets at multiple geographic levels throughout this tutorial. Our final outputs will include:</p>
+<ul>
+<li>A CSV file and spatial file with selected ACS characteristics at the county level for the state of Illinois.</li>
+<li>A CSV file and spatial file with selected ACS characteristics for zipcodes within the city of Chicago.</li>
+</ul>
+<p>These outputs can be used for further spatial analysis or linked with other datasets using their geographic identifiers.</p>
 </section>
-<section id="acknowledgements" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
-<p>This research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number <a href="https://reporter.nih.gov/search/3wdLGk3ipEyheDa26AEwDA/project-details/9882805#description">1U2CDA050098-01</a> and <a href="https://reporter.nih.gov/project-details/11129703#description">5UM1DA050098-03</a>. The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.</p>
+<section id="load-libraries" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="load-libraries"><span class="header-section-number">5.2.2</span> Load Libraries</h3>
+<p>We will use the following packages in this tutorial:</p>
+<ul>
+<li><code>sf</code>: to manipulate spatial data</li>
+<li><code>tidycensus</code>: to download Census data using the ACS API</li>
+<li><code>tidyverse</code>: to manipulate and clean data</li>
+<li><code>tigris</code>: to download Census TIGER/Line geographic boundaries</li>
+</ul>
+<p>First, load the required libraries.</p>
 <div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img role="img" src="data:image/jpeg;base64,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" class="img-fluid figure-img"></p>
-</figure>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidycensus)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tigris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-</div>
-
-
 </section>
+</section>
+<section id="enable-census-api-key" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="enable-census-api-key"><span class="header-section-number">5.3</span> Enable Census API Key</h2>
+<p>To use the Census API, we first need to sign up for an API key. The API key allows the Census Bureau API to identify and authorize requests from your R session. A Census API key can be requested <a href="https://api.census.gov/data/key_signup.html">here</a>.</p>
+<p>Once you receive your key, install it by running the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#census_api_key("YourAPIKeyHere", install = TRUE) # installs the key for future sessions.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Setting <code>install = TRUE</code> saves the key to your .Renviron file so that it is available for future R sessions.</p>
+<p>If you are working on a shared computer or do not want to save your API key, you can use the same function with <code>install = FALSE</code>.</p>
+<p>To check whether a Census API key is already installed, run:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Sys.getenv("CENSUS_API_KEY")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The output should be a long string of characters and numbers. If not, save and restart R, as that may be required with installing for the first time. Continue to test the API key to ensure it’s working correctly before continuing.</p>
+<section id="test-api-key" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="test-api-key"><span class="header-section-number">5.3.1</span> Test API Key</h3>
+<p>Using API services can at require patience. Before diving into the rest of the tutorial, let’s test the API first. Run the line of code below to get a view of population data from 2020, at the state level. If you get an error, troubleshoot to resolve!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pop2020 <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"state"</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">variables =</span> <span class="st">"B01001_001"</span>, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">year =</span> <span class="dv">2020</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pop2020)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  GEOID NAME       variable   estimate   moe
+  &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+1 01    Alabama    B01001_001  4893186    NA
+2 02    Alaska     B01001_001   736990    NA
+3 04    Arizona    B01001_001  7174064    NA
+4 05    Arkansas   B01001_001  3011873    NA
+5 06    California B01001_001 39346023    NA
+6 08    Colorado   B01001_001  5684926    NA</code></pre>
+</div>
+</div>
+<p>Troubleshooting tips include:</p>
+<ul>
+<li>You may need to overwrite an older Census API key.</li>
+<li>Your API key may not have been updated correctly. Use a different email address to generate a new API key, or wait 48 hours and use the same email address.</li>
+<li>Search your error in Google, check <em>StackOverflow</em> tips, &amp; restart as needed.</li>
+<li>Wait a few hours or a day, come back, and try again.</li>
+</ul>
+</section>
+</section>
+<section id="load-data-dynamically" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="load-data-dynamically"><span class="header-section-number">5.4</span> Load Data Dynamically</h2>
+<p>We can now start using the <code>tidycensus</code> package to download demographic and socioeconomic data from the U.S. Census Bureau. In this tutorial, we will cover methods to download ACS data at the state, county, census tract, and ZIP Code Tabulation Area (ZCTA) levels. We will also demonstrate how to download the data with and without spatial geometry.</p>
+<p>To download a particular variable or table using tidycensus, we need the relevant variable ID. We can identify these IDs by reviewing the variables available through the <code>load_variables()</code> function. For details on exploring available ACS variables and identifying their variable IDs, see the Explore Variables section in the Appendix.</p>
+<p>We can download ACS variables using the <code>get_acs()</code> function. Because ACS data are based on survey samples, estimates are provided along with a margin of error (moe). The <code>tidycensus</code> package returns both values for each requested variable in tidy format.</p>
+<p>For the examples covered in this tutorial, the four main inputs for the <code>get_acs()</code> function are:</p>
+<ul>
+<li><code>geography</code>: the geographic level at which to retrieve the data (state, county, tract, or zcta)</li>
+<li><code>variables</code>: a character string or vector of variable IDs to retrieve</li>
+<li><code>year</code>: the ACS data year to retrieve</li>
+<li><code>geometry</code>: whether to include spatial geometry in the returned data (TRUE / FALSE)</li>
+</ul>
+<section id="state-level" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="state-level"><span class="header-section-number">5.4.1</span> State Level</h3>
+<p>To begin, we can download selected demographic characteristics for all states.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>stateDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"state"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stateDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  GEOID NAME    variable estimate   moe
+  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+1 01    Alabama totalPop  5086768    NA
+2 01    Alabama white     3284260  4017
+3 01    Alabama black     1311062  3846
+4 01    Alabama asian       74435  1388
+5 01    Alabama hispanic   284135   217
+6 02    Alaska  totalPop   735706    NA</code></pre>
+</div>
+</div>
+<p>As we can see, the data are available in tidy format. We can use other tools in the tidyverse to clean and manipulate the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>stateDf <span class="ot">&lt;-</span> stateDf <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stateDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID totalPop hispanicPr whitePr blackPr asianPr
+  &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1 01     5086768     0.0559   0.646  0.258   0.0146
+2 02      735706     0.0731   0.596  0.0300  0.0645
+3 04     7378838     0.314    0.590  0.0460  0.0358
+4 05     3049391     0.0904   0.691  0.147   0.0163
+5 06    39287377     0.402    0.397  0.0543  0.155 
+6 08     5862189     0.225    0.705  0.0405  0.0329</code></pre>
+</div>
+</div>
+</section>
+<section id="county-level" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="county-level"><span class="header-section-number">5.4.2</span> County Level</h3>
+<p>Similarly, for county-level data:</p>
+<ul>
+<li>use <code>geography = "county"</code> to download all counties in the U.S.</li>
+<li>use <code>geography = "county"</code>, <code>state = sampleStateName</code> to download all counties within a state</li>
+<li>use <code>geography = "county"</code>, <code>state = sampleStateName</code>, <code>county = sampleCountyName</code> to download a specific county</li>
+</ul>
+<p>For example, the code below downloads selected demographic characteristics for all counties in Illinois.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>countyDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"county"</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                                <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                                <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                                <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(countyDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID totalPop hispanicPr whitePr blackPr  asianPr
+  &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+1 17001    64754    0.0208    0.906 0.0284  0.00672 
+2 17003     4875    0.00677   0.630 0.331   0.00431 
+3 17005    16716    0.0201    0.867 0.0612  0.00658 
+4 17007    53230    0.256     0.718 0.0305  0.00960 
+5 17009     6322    0.0671    0.745 0.179   0.000475
+6 17011    32866    0.102     0.875 0.00587 0.00873 </code></pre>
+</div>
+</div>
+</section>
+<section id="census-tract-level" class="level3" data-number="5.4.3">
+<h3 data-number="5.4.3" class="anchored" data-anchor-id="census-tract-level"><span class="header-section-number">5.4.3</span> Census tract Level</h3>
+<p>For census tract-level data, at minimum a state must be provided.</p>
+<ul>
+<li>use <code>geography = "tract"</code>, <code>state = sampleStateName</code> to download all census tracts within a state</li>
+<li>use <code>geography = "tract"</code>, <code>state = sampleStateName</code>, <code>county = sampleCountyName</code> to download all census tracts within a specific county</li>
+</ul>
+<p>The code below downloads selected demographic characteristics for all census tracts in Illinois.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tractDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"tract"</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tractDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID       totalPop hispanicPr whitePr blackPr asianPr
+  &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+1 17001000100     4219    0         0.882  0.0356 0.0166 
+2 17001000201     1889    0.00159   0.931  0.0291 0      
+3 17001000202     3033    0.0310    0.778  0.0633 0.0501 
+4 17001000400     3451    0.0151    0.770  0.143  0      
+5 17001000500     1808    0.137     0.877  0.0271 0.0144 
+6 17001000600     3931    0.0231    0.907  0.0237 0.00254</code></pre>
+</div>
+</div>
+</section>
+<section id="zipcode-level" class="level3" data-number="5.4.4">
+<h3 data-number="5.4.4" class="anchored" data-anchor-id="zipcode-level"><span class="header-section-number">5.4.4</span> Zipcode Level</h3>
+<p>For zipcode-level data, use <code>geography = "zcta"</code>. ZIP Code Tabulation Areas (ZCTAs) are Census Bureau approximations of U.S. Postal Service ZIP Codes. Because ZCTAs can cross county and state boundaries, tidycensus retrieves ZCTA data for the entire U.S.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>zctaDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"zcta"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>          <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>          <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>                 <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Inspect the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zctaDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  GEOID totalPop hispanicPr whitePr blackPr  asianPr
+  &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+1 00601    16669      0.993   0.798 0.0145  0.00108 
+2 00602    37233      0.972   0.272 0.0180  0.00118 
+3 00603    48448      0.984   0.729 0.0333  0.000186
+4 00606     5163      0.997   0.666 0.00136 0.00232 
+5 00610    25357      0.964   0.187 0.0189  0       
+6 00611     1383      0.974   0.612 0.0253  0       </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(zctaDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 33772     6</code></pre>
+</div>
+</div>
+<p>Because ZCTA data are retrieved for the entire nation, we can filter the results to a particular region after downloading them. For example, Chicago ZIP Codes commonly begin with 606, so we can use <code>str_detect()</code> as a simple non-spatial filter. If geometry information is available, we can instead overlay the ZCTA geometries with a city boundary to identify the required region. We will illustrate this approach in the Get Geometry section.</p>
+<p>In addition to demographic characteristics, ACS data can provide community context that may help us better understand geographic patterns in healthcare access. Here, we use poverty and household vehicle availability as two examples of access-relevant community characteristics.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>zipChicagoDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"zcta"</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">povertyTotal =</span> <span class="st">"B17001_001"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">povertyBelow =</span> <span class="st">"B17001_002"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">households =</span> <span class="st">"B08201_001"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">noVehicle =</span> <span class="st">"B08201_002"</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">filter</span>(<span class="fu">str_detect</span>(GEOID, <span class="st">"^606"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">mutate</span>(<span class="at">povertyPr =</span> povertyBelow <span class="sc">/</span> povertyTotal,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">noVehiclePr =</span> noVehicle <span class="sc">/</span> households) <span class="sc">%&gt;%</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>                <span class="fu">select</span>(GEOID, povertyPr, noVehiclePr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Inspect the Chicago ZCTA data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zipChicagoDf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  GEOID povertyPr noVehiclePr
+  &lt;chr&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+1 60601    0.0564       0.454
+2 60602    0.113        0.552
+3 60603    0.141        0.367
+4 60604    0.125        0.206
+5 60605    0.0979       0.391
+6 60606    0.0453       0.549</code></pre>
+</div>
+</div>
+</section>
+<section id="save-data" class="level3" data-number="5.4.5">
+<h3 data-number="5.4.5" class="anchored" data-anchor-id="save-data"><span class="header-section-number">5.4.5</span> Save Data</h3>
+<p>We can now save the county and Chicago zipcode datasets as CSV files using the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(countyDf, <span class="st">"data/ilcounty_24_demographic.csv"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(zipChicagoDf, <span class="st">"data/chizips_24_context.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="get-geometry" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="get-geometry"><span class="header-section-number">5.5</span> Get Geometry</h2>
+<p>Geometry and geographic boundaries are key components of American Community Survey data because they provide the spatial framework used to map and analyze Census estimates. Geographic boundaries may be updated over time, and Census data for a given year generally correspond to geographic definitions available for that data vintage. In this tutorial, we use 2024 Census geographic boundaries to correspond with the 2024 ACS 5-year estimates.</p>
+<p>The datasets downloaded so far do not include spatial geometry. To conduct spatial analysis, we need to join these data frames to spatially enabled <code>sf</code> objects using a common geographic identifier such as GEOID.</p>
+<p>We can download Census geographic boundaries using two methods: - using <code>tigris</code> - using <code>tidycensus</code></p>
+<section id="using-tigris" class="level3" data-number="5.5.1">
+<h3 data-number="5.5.1" class="anchored" data-anchor-id="using-tigris"><span class="header-section-number">5.5.1</span> Using tigris</h3>
+<p>To download TIGER/Line geographic boundaries provided by the <a href="https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html">U.S. Census Bureau</a>, we can use the <code>tigris</code> package. Setting <code>cb = TRUE</code> downloads generalized cartographic boundary files, which have less spatial detail and smaller file sizes than full-resolution TIGER/Line files.</p>
+<p>For states, counties, and census tracts, we use 2024 boundary files. The 2024 cartographic boundary file for ZCTAs is not currently available, so we use the 2020 ZCTA boundaries.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>yearToFetch <span class="ot">&lt;-</span> <span class="dv">2024</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>stateShp <span class="ot">&lt;-</span> <span class="fu">states</span>(<span class="at">year =</span> yearToFetch, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>countyShp <span class="ot">&lt;-</span> <span class="fu">counties</span>(<span class="at">year =</span> yearToFetch, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">tracts</span>(<span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">year =</span> yearToFetch, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">zctas</span>(<span class="at">year =</span> <span class="dv">2020</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After downloading the geometry files, we can merge these shapes with the demographic data downloaded in the previous section.</p>
+<p>For states:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check object types &amp; identifier variable type</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># str(stateShp)</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># str(stateDf)</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>stateShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(stateShp, stateDf, <span class="at">by.x =</span> <span class="st">"STATEFP"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(stateShp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 14 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -179.1467 ymin: 30.22333 xmax: 179.7785 ymax: 71.38782
+Geodetic CRS:  NAD83
+  STATEFP  STATENS     GEOIDFQ GEOID STUSPS       NAME LSAD        ALAND
+1      01 01779775 0400000US01    01     AL    Alabama   00 1.311856e+11
+2      02 01785533 0400000US02    02     AK     Alaska   00 1.479509e+12
+3      04 01779777 0400000US04    04     AZ    Arizona   00 2.943661e+11
+4      05 00068085 0400000US05    05     AR   Arkansas   00 1.346585e+11
+5      06 01779778 0400000US06    06     CA California   00 4.036734e+11
+6      08 01779779 0400000US08    08     CO   Colorado   00 2.684190e+11
+        AWATER totalPop hispanicPr   whitePr    blackPr    asianPr
+1   4581813708  5086768 0.05585767 0.6456477 0.25773969 0.01463306
+2 244710526650   735706 0.07313111 0.5955885 0.02999976 0.06445917
+3    853991999  7378838 0.31357322 0.5900494 0.04601849 0.03578057
+4   3122715710  3049391 0.09036919 0.6914810 0.14713528 0.01629375
+5  20291632828 39287377 0.40162933 0.3971951 0.05433084 0.15528041
+6   1185541418  5862189 0.22533170 0.7051564 0.04049835 0.03287117
+                        geometry
+1 MULTIPOLYGON (((-88.05338 3...
+2 MULTIPOLYGON (((-132.4825 5...
+3 MULTIPOLYGON (((-114.8163 3...
+4 MULTIPOLYGON (((-94.61792 3...
+5 MULTIPOLYGON (((-118.6044 3...
+6 MULTIPOLYGON (((-109.0603 3...</code></pre>
+</div>
+</div>
+<p>Similarly for counties, zctas &amp; census tracts we can use the code below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>countyShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(countyShp, countyDf, <span class="at">by.x =</span> <span class="st">"GEOID"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(tractShp, tractDf, <span class="at">by.x =</span> <span class="st">"GEOID"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The 2024 cartographic boundary file for ZCTAs is not currently available, so we use the 2020 ZCTA boundaries, which correspond to the current ZCTA geography used by the 2024 ACS.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(zctaShp, zctaDf, <span class="at">by.x =</span> <span class="st">"GEOID20"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(GEOID20, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="using-tidycensus" class="level3" data-number="5.5.2">
+<h3 data-number="5.5.2" class="anchored" data-anchor-id="using-tidycensus"><span class="header-section-number">5.5.2</span> Using tidycensus</h3>
+<p>The previous method adds an additional step of using the <code>tigris</code> package to download geographic boundary files. The <code>tidycensus</code> package can also invoke <code>tigris</code> within the <code>get_acs()</code> function, allowing us to download ACS data with geometry by setting <code>geometry = TRUE</code>.</p>
+<p>Adding geometry to each variable can increase the size of intermediate datasets and slow down processing, particularly when downloading many variables. For larger requests, we recommend downloading the ACS variables without geometry and then downloading a single variable with <code>geometry = TRUE</code>. The resulting spatial object can then be merged with the larger ACS dataset. We illustrate this approach below.</p>
+<p>First, download the census tract demographic data without geometry.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>tractDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"tract"</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">hispanic =</span> <span class="st">"B03003_003"</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">white =</span> <span class="st">"B02001_002"</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">black =</span> <span class="st">"B02001_003"</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">asian =</span> <span class="st">"B02001_005"</span>),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>           <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>           <span class="fu">mutate</span>(<span class="at">hispanicPr =</span> hispanic <span class="sc">/</span> totalPop,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">whitePr =</span> white <span class="sc">/</span> totalPop,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">blackPr =</span> black <span class="sc">/</span> totalPop,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">asianPr =</span> asian <span class="sc">/</span> totalPop) <span class="sc">%&gt;%</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can then download a single variable with geometry.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"tract"</span>,</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">totalPop =</span> <span class="st">"B01001_001"</span>),</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">year =</span> <span class="dv">2024</span>, <span class="at">state =</span> <span class="st">"IL"</span>, <span class="at">geometry =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>            <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Merge the geometry with the demographic data using GEOID.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>tractShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(tractShp, tractDf, <span class="at">by.x =</span> <span class="st">"GEOID"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tractShp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 8 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -91.42005 ymin: 39.92603 xmax: -91.32937 ymax: 39.97247
+Geodetic CRS:  NAD83
+        GEOID                                      NAME totalPop.x totalPop.y
+1 17001000100    Census Tract 1; Adams County; Illinois       4219       4219
+2 17001000201 Census Tract 2.01; Adams County; Illinois       1889       1889
+3 17001000202 Census Tract 2.02; Adams County; Illinois       3033       3033
+4 17001000400    Census Tract 4; Adams County; Illinois       3451       3451
+5 17001000500    Census Tract 5; Adams County; Illinois       1808       1808
+6 17001000600    Census Tract 6; Adams County; Illinois       3931       3931
+   hispanicPr   whitePr    blackPr     asianPr                       geometry
+1 0.000000000 0.8824366 0.03555345 0.016591609 MULTIPOLYGON (((-91.37766 3...
+2 0.001588142 0.9311805 0.02911593 0.000000000 MULTIPOLYGON (((-91.39646 3...
+3 0.030992417 0.7777778 0.06330366 0.050115397 MULTIPOLYGON (((-91.3937 39...
+4 0.015068096 0.7696320 0.14256737 0.000000000 MULTIPOLYGON (((-91.42005 3...
+5 0.137168142 0.8772124 0.02710177 0.014380531 MULTIPOLYGON (((-91.4034 39...
+6 0.023149326 0.9071483 0.02365810 0.002543882 MULTIPOLYGON (((-91.39655 3...</code></pre>
+</div>
+</div>
+<p>To get ZCTA-level data for a specific region, we first download the required dataset for the entire country and then filter the relevant ZCTAs by overlaying the downloaded dataset with the geometry of the region of interest.</p>
+<p>Here, we download the poverty and household vehicle availability measures used in the previous section without geometry.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>zctaContextDf <span class="ot">&lt;-</span> <span class="fu">get_acs</span>(<span class="at">geography =</span> <span class="st">"zcta"</span>,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">variables =</span> <span class="fu">c</span>(<span class="at">povertyTotal =</span> <span class="st">"B17001_001"</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">povertyBelow =</span> <span class="st">"B17001_002"</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">households =</span> <span class="st">"B08201_001"</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">noVehicle =</span> <span class="st">"B08201_002"</span>),</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">year =</span> <span class="dv">2024</span>,<span class="at">geometry =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>               <span class="fu">select</span>(GEOID, NAME, variable, estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>               <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> variable, <span class="at">values_from =</span> estimate) <span class="sc">%&gt;%</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mutate</span>(<span class="at">povertyPr =</span> povertyBelow <span class="sc">/</span> povertyTotal,</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">noVehiclePr =</span> noVehicle <span class="sc">/</span> households) <span class="sc">%&gt;%</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>               <span class="fu">select</span>(GEOID, povertyPr, noVehiclePr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Download the 2020 ZCTA boundaries and merge them with the 2024 ACS data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">zctas</span>(<span class="at">year =</span> <span class="dv">2020</span>, <span class="at">cb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">merge</span>(zctaShp, zctaContextDf, <span class="at">by.x =</span> <span class="st">"GEOID20"</span>, <span class="at">by.y =</span> <span class="st">"GEOID"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>           <span class="fu">select</span>(GEOID20, povertyPr, noVehiclePr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Inspect the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zctaShp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 3 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -67.23915 ymin: 18.11201 xmax: -66.66106 ymax: 18.51335
+Geodetic CRS:  NAD83
+  GEOID20 povertyPr noVehiclePr                       geometry
+1   00601 0.5990141  0.12014563 MULTIPOLYGON (((-66.83637 1...
+2   00602 0.4695903  0.12575266 MULTIPOLYGON (((-67.23915 1...
+3   00603 0.4442137  0.15985296 MULTIPOLYGON (((-67.16914 1...
+4   00606 0.5448383  0.08978495 MULTIPOLYGON (((-67.05134 1...
+5   00610 0.4226457  0.08923365 MULTIPOLYGON (((-67.22534 1...
+6   00611 0.3984093  0.12812960 MULTIPOLYGON (((-66.82743 1...</code></pre>
+</div>
+</div>
+<p>Read in the Chicago city boundary file, which can be download <a href="https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data">here</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>chiCityBoundary <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/boundaries_chicago.geojson"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `boundaries_chicago' from data source 
+  `/Users/maryniakolak/Code/opioid-environment-toolkit/data/boundaries_chicago.geojson' 
+  using driver `GeoJSON'
+Simple feature collection with 1 feature and 4 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: -87.94011 ymin: 41.64454 xmax: -87.52414 ymax: 42.02304
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>Set the same coordinate reference system for both spatial datasets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>chiCityBoundary <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(chiCityBoundary, <span class="dv">4326</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>zctaShp <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(zctaShp, <span class="dv">4326</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Only keep ZCTAs that intersect the Chicago city boundary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>zipChicagoShp <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(zctaShp, chiCityBoundary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Inspect data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(zipChicagoShp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 6 features and 7 fields
+Geometry type: GEOMETRY
+Dimension:     XY
+Bounding box:  xmin: -87.94011 ymin: 41.68284 xmax: -87.52454 ymax: 42.01914
+Geodetic CRS:  WGS 84
+      GEOID20  povertyPr noVehiclePr    name objectid    shape_area
+15446   46394 0.15652542  0.07039934 CHICAGO        1 6450276623.31
+20826   60007 0.07980461  0.05677877 CHICAGO        1 6450276623.31
+20834   60018 0.06665457  0.05746167 CHICAGO        1 6450276623.31
+20864   60068 0.02912086  0.04585859 CHICAGO        1 6450276623.31
+20872   60076 0.06489307  0.05527768 CHICAGO        1 6450276623.31
+20873   60077 0.14556758  0.09126948 CHICAGO        1 6450276623.31
+          shape_len                       geometry
+15446 845282.931362 MULTIPOLYGON (((-87.52454 4...
+20826 845282.931362 MULTIPOLYGON (((-87.93993 4...
+20834 845282.931362 MULTIPOLYGON (((-87.93523 4...
+20864 845282.931362 MULTIPOLYGON (((-87.85584 4...
+20872 845282.931362 POLYGON ((-87.70919 42.0118...
+20873 845282.931362 POLYGON ((-87.76167 42.0082...</code></pre>
+</div>
+</div>
+</section>
+<section id="save-data-1" class="level3" data-number="5.5.3">
+<h3 data-number="5.5.3" class="anchored" data-anchor-id="save-data-1"><span class="header-section-number">5.5.3</span> Save Data</h3>
+<p>We previously saved our datasets without geometry information as CSV files. Now we can save the Illinois county demographic data and Chicago ZCTA community context data with geometries as shapefiles using <code>write_sf()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(countyShp, <span class="st">"data/ilcounty_24_demographic.shp"</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_sf</span>(zipChicagoShp, <span class="st">"data/chizips_24_context.shp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="appendix" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="appendix"><span class="header-section-number">5.6</span> Appendix</h2>
+<p>5.6.1 Explore Variables</p>
+<p>Using tidycensus, we can download ACS variables from several types of tables. Some commonly used products include:</p>
+<ul>
+<li><code>Data Profiles</code>: Broad collections of social, economic, housing, and demographic characteristics, such as Social Characteristics (DP02), Economic Characteristics (DP03), Housing Characteristics (DP04), and Demographic and Housing Estimates (DP05).</li>
+<li><code>Subject Tables</code>: Topic-specific tables that provide estimates and percentages for subjects such as age and sex (S0101), employment, education, income, and disability.</li>
+<li><code>Detailed Tables</code>: Detailed ACS tables identified primarily by B and C table IDs. These tables provide the variables used throughout this tutorial.</li>
+</ul>
+<p>We can explore the variables available for our year of interest using <code>load_variables()</code>. Variable IDs and table structures may change over time, so it is important to check the variables for the ACS year being used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>sVarNames <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2024</span>, <span class="st">"acs5/subject"</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>pVarNames <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2024</span>, <span class="st">"acs5/profile"</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>otherVarNames <span class="ot">&lt;-</span> <span class="fu">load_variables</span>(<span class="dv">2024</span>, <span class="st">"acs5"</span>, <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pVarNames)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  name         label                                                     concept
+  &lt;chr&gt;        &lt;chr&gt;                                                     &lt;chr&gt;  
+1 DP02PR_0001  Estimate!!HOUSEHOLDS BY TYPE!!Total households            Select…
+2 DP02PR_0001P Percent!!HOUSEHOLDS BY TYPE!!Total households             Select…
+3 DP02PR_0002  Estimate!!HOUSEHOLDS BY TYPE!!Total households!!Married-… Select…
+4 DP02PR_0002P Percent!!HOUSEHOLDS BY TYPE!!Total households!!Married-c… Select…
+5 DP02PR_0003  Estimate!!HOUSEHOLDS BY TYPE!!Total households!!Married-… Select…
+6 DP02PR_0003P Percent!!HOUSEHOLDS BY TYPE!!Total households!!Married-c… Select…</code></pre>
+</div>
+</div>
+<p>A tibble containing table and variable information includes three main columns: name, label, and concept.</p>
+<p>name identifies the ACS variable. concept generally identifies the table or topic associated with the variable, while label provides a description of the variable.</p>
+<p>We can explore these tibbles to identify the appropriate variable ID for use with <code>get_acs()</code>. For example, we can search the Subject Tables for variables related to children under 5 years of age.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>sVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(concept, <span class="st">"AGE AND SEX"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Under 5 years"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variableId =</span> name, label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 2
+# ℹ 2 variables: variableId &lt;chr&gt;, label &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>We can also search directly within a specific Subject Table, such as S0101.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>sVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_sub</span>(name, <span class="dv">1</span>, <span class="dv">5</span>) <span class="sc">==</span> <span class="st">"S0101"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Under 5 years"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variableId =</span> name, label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  variableId    label                                               
+  &lt;chr&gt;         &lt;chr&gt;                                               
+1 S0101_C01_002 Total!!Total population!!AGE!!Under 5 years         
+2 S0101_C02_002 Percent!!Total population!!AGE!!Under 5 years       
+3 S0101_C03_002 Male!!Total population!!AGE!!Under 5 years          
+4 S0101_C04_002 Percent Male!!Total population!!AGE!!Under 5 years  
+5 S0101_C05_002 Female!!Total population!!AGE!!Under 5 years        
+6 S0101_C06_002 Percent Female!!Total population!!AGE!!Under 5 years</code></pre>
+</div>
+</div>
+<p>Similarly, we can explore Data Profile variables. For example, the following code searches for per capita income variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>pVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Per capita"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variable =</span> name, label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  variable   label                                                              
+  &lt;chr&gt;      &lt;chr&gt;                                                              
+1 DP03_0088  INCOME AND BENEFITS (IN 2024 INFLATION-ADJUSTED DOLLARS)!!Per capi…
+2 DP03_0088P Percent!!INCOME AND BENEFITS (IN 2024 INFLATION-ADJUSTED DOLLARS)!…</code></pre>
+</div>
+</div>
+<p>We can also search for age-related variables in the Demographic and Housing Estimates profile.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>pVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Under 5 years"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variable =</span> name, label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  variable   label                                                
+  &lt;chr&gt;      &lt;chr&gt;                                                
+1 DP05_0005  SEX AND AGE!!Total population!!Under 5 years         
+2 DP05_0005P Percent!!SEX AND AGE!!Total population!!Under 5 years</code></pre>
+</div>
+</div>
+<p>Because variable IDs and table structures can change across ACS releases, users should verify the appropriate variable IDs for each year. For analyses across multiple years, Detailed Tables can often provide a more consistent basis for identifying comparable variables. The examples in this tutorial primarily use Detailed Table variables.</p>
+<p>For example, we can search the Detailed Tables for per capita income.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>otherVarNames <span class="sc">%&gt;%</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(label, <span class="st">"Per capita income"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">sub</span>(<span class="st">"^Estimate!!"</span>, <span class="st">""</span>, label)) <span class="sc">%&gt;%</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">variable =</span> name, label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 2
+   variable    label                                                            
+   &lt;chr&gt;       &lt;chr&gt;                                                            
+ 1 B19301A_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 2 B19301B_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 3 B19301C_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 4 B19301D_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 5 B19301E_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 6 B19301F_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 7 B19301G_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 8 B19301H_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+ 9 B19301I_001 Per capita income in the past 12 months (in 2024 inflation-adjus…
+10 B19301_001  Per capita income in the past 12 months (in 2024 inflation-adjus…</code></pre>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -5387,10 +5998,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./otherdata.html" class="pagination-link" aria-label="Finding Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Finding Data</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./orientation.html" class="pagination-link" aria-label="Orientation">
-        <span class="nav-page-text">Orientation</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./oeps.html" class="pagination-link" aria-label="Opioid Environment Data">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Opioid Environment Data</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
