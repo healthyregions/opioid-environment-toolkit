@@ -1,8 +1,57 @@
 # Finding Data {.unnumbered}
 
-## Overview
+## What data do we need?
 
-blah blah blah 
+We ended Part 1 of this toolkit by integrating community data to add meaning, context, and generate new hypotheses when considering opioid environments. Data on opioid health outcomes are incomplete without understanding the complex phenomena taking place within and across multiple scales (individual, interpersonal, community-level, regional) that may influence outcomes.
 
-- blah
-- blah
+At the **community scale**, why may some areas experience worse health outcomes than others? Is it due to population distributions alone? Would unique population groups, like areas with more pensioners or college-aged students, change that calculus? What about spatial access to health resources? Or, what about access to income opportunities to leverage those health resources, or wider economic stability patterns? Are there specific needs within a community to be considered to ensure equitable access, like English language proficiency for recent immigrant groups? Or, what about areas of historic, chronic disinvestment or segregation patterns; how may that influence the likelihood of access to resources, or trust in providers? Finally, would exposures to environmental challenges, like fewer greenspaces or parks within walking distance, influence the wellbeing of a community and how it responds to adversity? Spatial data at community scales often links back to **individual** and **interpersonal** experiences, and is likewise influenced by wider **regional** factors like policy.
+
+## Spatial is Special
+
+All data has a spatial dimensions, at each scale, whether or not it is made explicit in research. With a geographic view, integrating this dimension when needed can aid research. For example, the *Bronfenbrenner* ecological framework for human development is often used with a spatial perspective when the dimensions of place are made explicit.
+
+[![Illustration of Bronfenbrenner's ecological framework for human development.](images/Bronfenbrenner's_Ecological_Theory_of_Development_(English).jpg)](https://en.wikipedia.org/wiki/Social_ecological_model)
+
+When considering what data we need for analyses, informed literature reviews and domain expertise often guide research directions. Building tools, new approaches, and confidence in accessing different types of data in a geospatial analytic environment can aid in that search.
+
+### What is your Spatial Scale?
+
+Having data at a specific geographic scale (e.g. census tract, county, state) is just the start of your inquiry. If you have county-level data, you'll need to consider what processes may emerge at that scale, and how those same processes may look different when aggregated at state-levels, or zoomed into smaller neighborhoods. Accordingly, consider what the **scale of phenomenon** is for your topic of interest, and how that may be different from the **scale of analysis**. 
+
+Well known errors may occur that can bias results, alter interpretations, and disallow meaningful understanding. [Examples of scale and zoning problems](https://gistbok-topics.ucgis.org/FC-07-026l) include:
+
+- Ecological Fallacy
+- Modifiable Area Unit Problem
+- Simpson's Paradox
+- Uncertain Geographic Context Problem
+
+Always consider and report on limitations in your analyses. 
+
+### Space as a Key
+
+Once you view your data as spatial, you can begin to conceptualize merging in measures using space as a key. That means integrating data based on location. This could mean:
+
+- **Integrating data by GEOID:** If your data has a spatial identifier, you can use that same spatial ID to link data from other resources. This part of the toolkit will highlight how to find data for your needs.
+- **Spatially join data:** Sometimes, you won't have a spatial ID for datasets that are common to both. In those cases, you can use what's called a *spatial join* to merge data by spatial location.
+- **Interpolations & Imputations**: When geographic boundaries don't match nicely, you may need to bring in additional statistics and tools like dasymetric mapping for more complex joins. Sometimes a cross-walk key is available for this already, like Census Tract to Zip Code files. 
+
+While we'll just cover the first topic in this part of the toolkit, you can begin to see how geocomputational appraoches can expand your data resources considerably.
+
+## Where do I get the data?
+
+Finding data to explore, generate, and test hypotheses is crucial for  gaining new understanding. Once you're familiar with the basics of spatial data wrangling, you can begin to make that happen!
+
+This Toolkit highlights a few key resources that were designed to making data access a bit more, well, accessible. We'll cover:
+
+- **Census Data** access using the `tidycensus` R package and Census API.
+- **Opioid Environment Policy Scan** spatial data resources, pre-defined and curated  from a wide variety of sources as potentially useful for opioid environment research
+- **SDOH & Place Discovery Tool** searches to uncover new spatial datasets for community context that cover the expanse of the U.S.
+
+In the last tool, we'll find additional resources like the National Neighborhood Data Archive and ICPSR, a massive research science data search database.
+
+### More Options
+In addition to these, you can also find more options at your local city, county, and/or state **data portal**, university libraries and data portals like the [Big10 Geoportal](https://geo.btaa.org/), and multiple federal data resources like [Data.gov](data.gov). 
+
+Different governmental, public sector, and localized sites may have different veracity in spatial data standards and spatial data quality. It is common for data issues to arise, so always plan to troubleshoot. 
+
+For federal data archived in January 2025, check out the [SDOH Data Refuge](https://sdohplace.org/data-refuge), in addition to countless additional copies across the university and non-profit sectors. 
