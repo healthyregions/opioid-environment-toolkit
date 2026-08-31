@@ -53,7 +53,7 @@ There are differing spatial ecosystems in R. We use the `sf` ecosystem that is c
 
 ## Author Team {.unnumbered}
 
-This toolkit was developed for the [JCOIN Network](https://heal.nih.gov/research/research-to-practice/jcoin) by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). Susan Paykin and Yilin Liu have contributed substantially as workshop facilitators. The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.
+This toolkit was developed for the [JCOIN Network](https://heal.nih.gov/research/research-to-practice/jcoin) by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions & Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). Susan Paykin and Yilin Lyu have contributed substantially as workshop facilitators. The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.
 
 In Part 2, we welcomed new chapters by Mahjabin Kabir Adrita, Hilary Sanborn (Fath), and updates by Yilin and Marynia. Marc Astacio-Palmer joined as a workshop facilitator.
 
