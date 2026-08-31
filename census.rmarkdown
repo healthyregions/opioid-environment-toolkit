@@ -21,7 +21,7 @@ To replicate the code and functions illustrated in this tutorial, you’ll need 
 
 ### Input/Output
 
-Our only external input will be a GeoJSON file of the Chicago city boundary. All ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.
+Our only external input will be a GeoJSON file of the Chicago city boundary. This file can be found here, though all ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.
 
 -   Chicago City Boundary: `boundaries_chicago.geojson`
 
@@ -43,6 +43,11 @@ We will use the following packages in this tutorial:
 
 First, load the required libraries.
 
+
+
+
+
+
 ```{r import-libraries-census, warning = FALSE, message=FALSE}
 library(sf)
 library(tidycensus)
@@ -50,15 +55,30 @@ library(tidyverse)
 library(tigris)
 ```
 
+
+
+
+
+
 ## Enable Census API Key
 
 To use the Census API, we first need to sign up for an API key. The API key allows the Census Bureau API to identify and authorize requests from your R session. A Census API key can be requested [here](https://api.census.gov/data/key_signup.html).
 
 Once you receive your key, install it by running the code below.
 
+
+
+
+
+
 ```{r api-key, warning = FALSE, message=FALSE}
 #census_api_key("YourAPIKeyHere", install = TRUE) # installs the key for future sessions.
 ```
+
+
+
+
+
 
 Setting `install = TRUE` saves the key to your .Renviron file so that it is available for future R sessions.
 
@@ -66,15 +86,30 @@ If you are working on a shared computer or do not want to save your API key, you
 
 To check whether a Census API key is already installed, run:
 
+
+
+
+
+
 ```{r get-census-key, warning = FALSE, message=FALSE}
 #Sys.getenv("CENSUS_API_KEY")
 ```
+
+
+
+
+
 
 The output should be a long string of characters and numbers. If not, save and restart R, as that may be required with installing for the first time. Continue to test the API key to ensure it's working correctly before continuing.
 
 ### Test API Key
 
 Using API services can at require patience. Before diving into the rest of the tutorial, let's test the API first. Run the line of code below to get a view of population data from 2020, at the state level. If you get an error, troubleshoot to resolve!
+
+
+
+
+
 
 ```{r test, warning = FALSE, message=FALSE}
 pop2020 <- get_acs(geography = "state", 
@@ -83,6 +118,11 @@ pop2020 <- get_acs(geography = "state",
 
 head(pop2020)
 ```
+
+
+
+
+
 Troubleshooting tips include:
  
 - You may need to overwrite an older Census API key.
@@ -109,6 +149,11 @@ For the examples covered in this tutorial, the four main inputs for the `get_acs
 
 To begin, we can download selected demographic characteristics for all states.
 
+
+
+
+
+
 ```{r census-state, warning = FALSE, message=FALSE}
 
 stateDf <- get_acs(geography = "state",
@@ -123,7 +168,17 @@ head(stateDf)
 
 ```
 
+
+
+
+
+
 As we can see, the data are available in tidy format. We can use other tools in the tidyverse to clean and manipulate the data.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 stateDf <- stateDf %>%
@@ -138,6 +193,11 @@ stateDf <- stateDf %>%
 head(stateDf)
 ```
 
+
+
+
+
+
 ### County Level
 
 Similarly, for county-level data:
@@ -147,6 +207,11 @@ Similarly, for county-level data:
 -   use `geography = "county"`, `state = sampleStateName`, `county = sampleCountyName` to download a specific county
 
 For example, the code below downloads selected demographic characteristics for all counties in Illinois.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 countyDf <- get_acs(geography = "county",
@@ -167,6 +232,11 @@ countyDf <- get_acs(geography = "county",
 head(countyDf)
 ```
 
+
+
+
+
+
 ### Census tract Level
 
 For census tract-level data, at minimum a state must be provided.
@@ -175,6 +245,11 @@ For census tract-level data, at minimum a state must be provided.
 -   use `geography = "tract"`, `state = sampleStateName`, `county = sampleCountyName` to download all census tracts within a specific county
 
 The code below downloads selected demographic characteristics for all census tracts in Illinois.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 tractDf <- get_acs(geography = "tract",
@@ -195,9 +270,19 @@ tractDf <- get_acs(geography = "tract",
 head(tractDf)
 ```
 
+
+
+
+
+
 ### Zipcode Level
 
 For zipcode-level data, use `geography = "zcta"`. ZIP Code Tabulation Areas (ZCTAs) are Census Bureau approximations of U.S. Postal Service ZIP Codes. Because ZCTAs can cross county and state boundaries, tidycensus retrieves ZCTA data for the entire U.S.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 zctaDf <- get_acs(geography = "zcta",
@@ -216,16 +301,36 @@ zctaDf <- get_acs(geography = "zcta",
           select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
 ```
 
+
+
+
+
+
 Inspect the data.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 head(zctaDf)
 dim(zctaDf)
 ```
 
+
+
+
+
+
 Because ZCTA data are retrieved for the entire nation, we can filter the results to a particular region after downloading them. For example, Chicago ZIP Codes commonly begin with 606, so we can use `str_detect()` as a simple non-spatial filter. If geometry information is available, we can instead overlay the ZCTA geometries with a city boundary to identify the required region. We will illustrate this approach in the Get Geometry section.
 
 In addition to demographic characteristics, ACS data can provide community context that may help us better understand geographic patterns in healthcare access. Here, we use poverty and household vehicle availability as two examples of access-relevant community characteristics.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 zipChicagoDf <- get_acs(geography = "zcta",
@@ -242,20 +347,45 @@ zipChicagoDf <- get_acs(geography = "zcta",
                 select(GEOID, povertyPr, noVehiclePr)
 ```
 
+
+
+
+
+
 Inspect the Chicago ZCTA data.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 head(zipChicagoDf)
 ```
 
+
+
+
+
+
 ### Save Data
 
 We can now save the county and Chicago zipcode datasets as CSV files using the code below.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 write.csv(countyDf, "data/ilcounty_24_demographic.csv")
 write.csv(zipChicagoDf, "data/chizips_24_context.csv")
 ```
+
+
+
+
+
 
 ## Get Geometry
 
@@ -267,15 +397,30 @@ We can download Census geographic boundaries using two methods:
 -   using `tigris`
 -   using `tidycensus`
 
+
+
+
+
+
 ```{r warning = FALSE, message=FALSE}
 
 ```
+
+
+
+
+
 
 ### Using tigris
 
 To download TIGER/Line geographic boundaries provided by the [U.S. Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html), we can use the `tigris` package. Setting `cb = TRUE` downloads generalized cartographic boundary files, which have less spatial detail and smaller file sizes than full-resolution TIGER/Line files.
 
 For states, counties, and census tracts, we use 2024 boundary files. The 2024 cartographic boundary file for ZCTAs is not currently available, so we use the 2020 ZCTA boundaries.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE, output=FALSE}
 yearToFetch <- 2024
@@ -286,9 +431,19 @@ tractShp <- tracts(state = "IL", year = yearToFetch, cb = TRUE)
 zctaShp <- zctas(year = 2020, cb = TRUE)
 ```
 
+
+
+
+
+
 After downloading the geometry files, we can merge these shapes with the demographic data downloaded in the previous section.
 
 For states:
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 # check object types & identifier variable type
@@ -300,7 +455,17 @@ stateShp <- merge(stateShp, stateDf, by.x = "STATEFP", by.y = "GEOID", all.x = T
 head(stateShp)
 ```
 
+
+
+
+
+
 Similarly for counties, zctas & census tracts we can use the code below.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 countyShp <- merge(countyShp, countyDf, by.x = "GEOID", by.y = "GEOID", all.x = TRUE)%>%
@@ -310,12 +475,27 @@ tractShp <- merge(tractShp, tractDf, by.x = "GEOID", by.y = "GEOID", all.x = TRU
             select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
 ```
 
+
+
+
+
+
 The 2024 cartographic boundary file for ZCTAs is not currently available, so we use the 2020 ZCTA boundaries, which correspond to the current ZCTA geography used by the 2024 ACS.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 zctaShp <- merge(zctaShp, zctaDf, by.x = "GEOID20", by.y = "GEOID", all.x = TRUE) %>%
               select(GEOID20, totalPop, hispanicPr, whitePr, blackPr, asianPr)
 ```
+
+
+
+
+
 
 ### Using tidycensus
 
@@ -324,6 +504,11 @@ The previous method adds an additional step of using the `tigris` package to dow
 Adding geometry to each variable can increase the size of intermediate datasets and slow down processing, particularly when downloading many variables. For larger requests, we recommend downloading the ACS variables without geometry and then downloading a single variable with `geometry = TRUE`. The resulting spatial object can then be merged with the larger ACS dataset. We illustrate this approach below.
 
 First, download the census tract demographic data without geometry.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 tractDf <- get_acs(geography = "tract",
@@ -342,7 +527,17 @@ tractDf <- get_acs(geography = "tract",
            select(GEOID, totalPop, hispanicPr, whitePr, blackPr, asianPr)
 ```
 
+
+
+
+
+
 We can then download a single variable with geometry.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 tractShp <- get_acs(geography = "tract",
@@ -352,16 +547,36 @@ tractShp <- get_acs(geography = "tract",
             pivot_wider(names_from = variable, values_from = estimate)
 ```
 
+
+
+
+
+
 Merge the geometry with the demographic data using GEOID.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 tractShp <- merge(tractShp, tractDf, by.x = "GEOID", by.y = "GEOID", all.x = TRUE)
 head(tractShp)
 ```
 
+
+
+
+
+
 To get ZCTA-level data for a specific region, we first download the required dataset for the entire country and then filter the relevant ZCTAs by overlaying the downloaded dataset with the geometry of the region of interest.
 
 Here, we download the poverty and household vehicle availability measures used in the previous section without geometry.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 zctaContextDf <- get_acs(geography = "zcta",
@@ -377,7 +592,17 @@ zctaContextDf <- get_acs(geography = "zcta",
                select(GEOID, povertyPr, noVehiclePr)
 ```
 
+
+
+
+
+
 Download the 2020 ZCTA boundaries and merge them with the 2024 ACS data.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 zctaShp <- zctas(year = 2020, cb = TRUE)
@@ -386,45 +611,110 @@ zctaShp <- merge(zctaShp, zctaContextDf, by.x = "GEOID20", by.y = "GEOID", all.x
            select(GEOID20, povertyPr, noVehiclePr)
 ```
 
+
+
+
+
+
 Inspect the data.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 head(zctaShp)
 ```
 
+
+
+
+
+
 Read in the Chicago city boundary file, which can be download [here](https://github.com/GeoDaCenter/opioid-environment-toolkit/tree/master/data).
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 chiCityBoundary <- st_read("data/boundaries_chicago.geojson")
 ```
 
+
+
+
+
+
 Set the same coordinate reference system for both spatial datasets.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 chiCityBoundary <- st_transform(chiCityBoundary, 4326)
 zctaShp <- st_transform(zctaShp, 4326)
 ```
 
+
+
+
+
+
 Only keep ZCTAs that intersect the Chicago city boundary.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 zipChicagoShp <- st_intersection(zctaShp, chiCityBoundary)
 ```
 
+
+
+
+
+
 Inspect data.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 head(zipChicagoShp)
 ```
 
+
+
+
+
+
 ### Save Data
 
 We previously saved our datasets without geometry information as CSV files. Now we can save the Illinois county demographic data and Chicago ZCTA community context data with geometries as shapefiles using `write_sf()`.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 write_sf(countyShp, "data/ilcounty_24_demographic.shp")
 write_sf(zipChicagoShp, "data/chizips_24_context.shp")
 ```
+
+
+
+
+
 
 ## Appendix
 
@@ -438,6 +728,11 @@ Using tidycensus, we can download ACS variables from several types of tables. So
 
 We can explore the variables available for our year of interest using `load_variables()`. Variable IDs and table structures may change over time, so it is important to check the variables for the ACS year being used.
 
+
+
+
+
+
 ```{r warning = FALSE, message=FALSE}
 sVarNames <- load_variables(2024, "acs5/subject", cache = TRUE)
 pVarNames <- load_variables(2024, "acs5/profile", cache = TRUE)
@@ -446,11 +741,21 @@ otherVarNames <- load_variables(2024, "acs5", cache = TRUE)
 head(pVarNames)
 ```
 
+
+
+
+
+
 A tibble containing table and variable information includes three main columns: name, label, and concept.
 
 name identifies the ACS variable. concept generally identifies the table or topic associated with the variable, while label provides a description of the variable.
 
 We can explore these tibbles to identify the appropriate variable ID for use with `get_acs()`. For example, we can search the Subject Tables for variables related to children under 5 years of age.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 sVarNames %>%
@@ -460,7 +765,17 @@ sVarNames %>%
   select(variableId = name, label)
 ```
 
+
+
+
+
+
 We can also search directly within a specific Subject Table, such as S0101.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 sVarNames %>%
@@ -470,7 +785,17 @@ sVarNames %>%
   select(variableId = name, label)
 ```
 
+
+
+
+
+
 Similarly, we can explore Data Profile variables. For example, the following code searches for per capita income variables.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 pVarNames %>%
@@ -479,7 +804,17 @@ pVarNames %>%
   select(variable = name, label)
 ```
 
+
+
+
+
+
 We can also search for age-related variables in the Demographic and Housing Estimates profile.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 pVarNames %>%
@@ -488,9 +823,19 @@ pVarNames %>%
   select(variable = name, label)
 ```
 
+
+
+
+
+
 Because variable IDs and table structures can change across ACS releases, users should verify the appropriate variable IDs for each year. For analyses across multiple years, Detailed Tables can often provide a more consistent basis for identifying comparable variables. The examples in this tutorial primarily use Detailed Table variables.
 
 For example, we can search the Detailed Tables for per capita income.
+
+
+
+
+
 
 ```{r warning = FALSE, message=FALSE}
 otherVarNames %>%
@@ -498,3 +843,4 @@ otherVarNames %>%
   mutate(label = sub("^Estimate!!", "", label)) %>%
   select(variable = name, label)
 ```
+

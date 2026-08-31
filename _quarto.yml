@@ -16,10 +16,10 @@ book:
       - linking.qmd
     - part: "PART 2"
       chapters:
+      - otherdata.qmd
       - census.qmd
       - oeps.qmd
       - sdohplace.qmd
-      - otherdata.qmd
 
 bibliography: references.bib
 

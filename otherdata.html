@@ -1,17 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-<head>
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
 
-<meta charset="utf-8" />
-<meta name="generator" content="quarto-1.5.57" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
-<meta name="author" content="Healthy Regions &amp; Policies Lab" />
-<meta name="dcterms.date" content="2025-10-16" />
-
-<title>Opioid Environment Toolkit for R-Spatial</title>
+<title>5&nbsp; Finding Data – Opioid Environment Toolkit for R-Spatial</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -26,7 +22,25 @@ ul.task-list li input[type="checkbox"] {
 }
 </style>
 
-<!-- htmldependencies:E3FAD763 -->
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./census.html" rel="next">
+<link href="./linking.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -54,33 +68,27 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script async src="https://hypothes.is/embed.js"></script>
+<script async="" src="https://hypothes.is/embed.js"></script>
 <script>
   window.document.addEventListener("DOMContentLoaded", function (_event) {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
-<script src="site_libs/font-awesome-6.7.2/js/script.js"></script>
 
 
 </head>
 
-<body>
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn"
-      data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" 
-      aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation"
-      onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <h1 class="quarto-secondary-nav-title no-breadcrumbs"></h1>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" role="link"
-        aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation"
-        onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./otherdata.html">PART 2</a></li><li class="breadcrumb-item"><a href="./otherdata.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Finding Data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
@@ -94,9 +102,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="/">
-      Opioid Environment Toolkit for R-Spatial
-      </a> 
+      <a href="./">Opioid Environment Toolkit for R-Spatial</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -108,19 +114,19 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/orientation.html" class="sidebar-item-text sidebar-link">
+  <a href="./orientation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Orientation</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1"  role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">PART 1</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -129,33 +135,33 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>1</span>  <span class='chapter-title'>Intro to Spatial Data</span></span></a>
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro to Spatial Data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/geocoding.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>2</span>  <span class='chapter-title'>Geocoding Locations</span></span></a>
+  <a href="./geocoding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Geocoding Locations</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/buffers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>3</span>  <span class='chapter-title'>Buffer Analysis</span></span></a>
+  <a href="./buffers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Buffer Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/linking.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>4</span>  <span class='chapter-title'>Link Community Data</span></span></a>
+  <a href="./linking.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Link Community Data</span></span></a>
   </div>
 </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2"  role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">PART 2</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -164,26 +170,26 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/census.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>5</span>  <span class='chapter-title'>Census</span></span></a>
+  <a href="./otherdata.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Finding Data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/oeps.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>6</span>  <span class='chapter-title'>OEPS</span></span></a>
+  <a href="./census.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Census Data Wrangling</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/sdohplace.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>7</span>  <span class='chapter-title'>SDOH & Place</span></span></a>
+  <a href="./oeps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Opioid Environment Data</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/otherdata.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class='chapter-number'>8</span>  <span class='chapter-title'>Other Data</span></span></a>
+  <a href="./sdohplace.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Community Data Discovery</span></span></a>
   </div>
 </li>
       </ul>
@@ -191,36 +197,30 @@ ul.task-list li input[type="checkbox"] {
     </ul>
     </div>
 </nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" ></div>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <div id="quarto-toc-target"></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">5.1</span> Overview</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./otherdata.html">PART 2</a></li><li class="breadcrumb-item"><a href="./otherdata.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Finding Data</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Opioid Environment Toolkit for R-Spatial</h1>
+<h1 class="title"><span id="intro" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Finding Data</span></span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Healthy Regions &amp; Policies Lab </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">October 16, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -229,90 +229,20 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<nav id="TOC" role="doc-toc">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#preface" id="toc-preface">Preface</a>
-  <ul>
-  <li><a href="#what-youll-need" id="toc-what-youll-need">What You’ll Need</a></li>
-  <li><a href="#software-basics" id="toc-software-basics">Software Basics</a></li>
-  <li><a href="#author-team" id="toc-author-team">Author Team</a></li>
-  <li><a href="#acknowledgements" id="toc-acknowledgements">Acknowledgements</a></li>
-  </ul></li>
-  </ul>
-</nav>
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This toolkit provides an <strong>introduction to GIS and spatial analysis</strong> for health applications that will allow researchers, analysts, and practitioners to support their communities with better data analytics and visualization services.</p>
-<p>We introduce basic spatial analytic functionalities using <strong>open source tools</strong>, mainly in R, using applied examples for visualizing, mapping, and understanding the community environment. As a project of the Justice Community Overdose Innovation network, applications covered consider the opioid and overdose risk environment.</p>
-<p>The <a href="https://geodacenter.github.io/opioid-environment-toolkit/index.html">original</a> toolkit version was published in 2020. This version was updated in 2025 and will continue to be expanded through the end of 2029.</p>
-<section id="what-youll-need" class="level2 unnumbered">
-<h2 class="unnumbered">What You’ll Need</h2>
-<p>In addition to this workbook, you’ll need a working instance of R and the data. You can also clone the <a href="https://github.com/healthyregions/opioid-environment-toolkit">Github repository</a> that hosts this workbook to get direct access to all the working code, <a href="https://github.com/healthyregions/opioid-environment-toolkit/tree/master/data">data</a>, and additional items.</p>
-<div class="cell">
-<div class="cell-output-display">
-<a href="https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip">
-<button class="btn btn-primary"><i class="fa fa-save"></i> Download Workshop Data</button>
-</a>
-</div>
-</div>
-</section>
-<section id="software-basics" class="level2 unnumbered">
-<h2 class="unnumbered">Software Basics</h2>
-<p>We assume a basic knowledge of R and coding languages for most sections. For most of the tutorials in this toolkit, you’ll need to have R and RStudio downloaded and installed on your system. You should be able to install packages, know how to find the address to a folder on your computer system, and have very basic familiarity with R. If you are new to R, we recommend the following <a href="https://support.posit.co/hc/en-us/articles/201141096-Getting-Started-with-R">intro-level tutorials</a> provided through <a href="https://rstudio-education.github.io/hopr/starting.html">installation</a> guides. You can also refer to this <a href="https://datacarpentry.org/r-socialsci/">R for Social Scientists</a> tutorial developed by <em>Data Carpentry</em> for a refresher.</p>
-<p>We will work with following libraries, so please be sure to install:</p>
+
+<section id="overview" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">5.1</span> Overview</h2>
+<p>blah blah blah</p>
 <ul>
-<li><code>tidyverse</code> or <code>dplyr</code></li>
-<li><code>sf</code></li>
-<li><code>tmap</code></li>
-<li><code>tidygeocoder</code></li>
-<li><code>tidycensus</code></li>
+<li>blah</li>
+<li>blah</li>
 </ul>
-<p>To install a package in R, input <code>install.packages("dplyr")</code> in your console. You generally only need to install a library once, but you’ll call it every time you work with a new R session.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class='callout-icon'></i>
-</div>
-<div class="callout-title-container flex-fill">
-Setting up your environment
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>We recommend setting up your working directory as soon as you can! Create a new folder called “data” to put all the data you’ve downloaded for the workshop.</p>
-</div>
-</div>
-<p>There are differing spatial ecosystems in R. We use the <code>sf</code> ecosystem that is compatible with the <code>tidyverse</code>. If you need to work between these two R spatial ecosystems, see <a href="https://github.com/r-spatial/sf/wiki/Migrating">this guide</a> for a translation of <code>sp</code> to <code>sf</code> commands.</p>
-</section>
-<section id="author-team" class="level2 unnumbered">
-<h2 class="unnumbered">Author Team</h2>
-<p>This toolkit was developed for the <a href="https://heal.nih.gov/research/research-to-practice/jcoin">JCOIN Network</a> by Marynia Kolak, Moksha Menghaney, Qinyun Lin, and Angela Li at the Healthy Regions &amp; Policies Lab as part of the Methodology and Advanced Analytics Resource Center (MAARC). Susan Paykin and Yilin Liu have contributed substantially as workshop facilitators. The Healthy Regions Lab is based out the University of Illinois at Urbana-Champaign, and serves as the Geospatial Core home of the MAARC, which is situated at the University of Chicago.</p>
-<p>JCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Long-term Initiative, or NIH HEAL Initiative, supports a wide range of programs to develop new or improved prevention and treatment strategies for opioid addiction.</p>
-</section>
-<section id="acknowledgements" class="level2 unnumbered">
-<h2 class="unnumbered">Acknowledgements</h2>
-<p>This research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number <a href="https://reporter.nih.gov/search/3wdLGk3ipEyheDa26AEwDA/project-details/9882805#description">1U2CDA050098-01</a> and <a href="https://reporter.nih.gov/project-details/11129703#description">5UM1DA050098-03</a>. The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img src="img/JCOIN-logo-web.jpg" class="img-fluid" /></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="quarto-navigation-envelope" class="hidden">
-<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar-title">Opioid Environment Toolkit for R-Spatial</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-navbar-title">Opioid Environment Toolkit for R-Spatial</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-next">Orientation</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/index.htmlPreface">Preface</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/orientation.htmlOrientation">Orientation</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:quarto-sidebar-section-1">PART 1</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/intro.html&lt;span-class=&#39;chapter-number&#39;&gt;1&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;Intro-to-Spatial-Data&lt;/span&gt;"><span class="chapter-number">1</span>  <span class="chapter-title">Intro to Spatial Data</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/geocoding.html&lt;span-class=&#39;chapter-number&#39;&gt;2&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;Geocoding-Locations&lt;/span&gt;"><span class="chapter-number">2</span>  <span class="chapter-title">Geocoding Locations</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/buffers.html&lt;span-class=&#39;chapter-number&#39;&gt;3&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;Buffer-Analysis&lt;/span&gt;"><span class="chapter-number">3</span>  <span class="chapter-title">Buffer Analysis</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/linking.html&lt;span-class=&#39;chapter-number&#39;&gt;4&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;Link-Community-Data&lt;/span&gt;"><span class="chapter-number">4</span>  <span class="chapter-title">Link Community Data</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:quarto-sidebar-section-2">PART 2</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/census.html&lt;span-class=&#39;chapter-number&#39;&gt;5&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;Census&lt;/span&gt;"><span class="chapter-number">5</span>  <span class="chapter-title">Census</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/oeps.html&lt;span-class=&#39;chapter-number&#39;&gt;6&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;OEPS&lt;/span&gt;"><span class="chapter-number">6</span>  <span class="chapter-title">OEPS</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/sdohplace.html&lt;span-class=&#39;chapter-number&#39;&gt;7&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;SDOH-&amp;-Place&lt;/span&gt;"><span class="chapter-number">7</span>  <span class="chapter-title">SDOH &amp; Place</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-int-sidebar:/otherdata.html&lt;span-class=&#39;chapter-number&#39;&gt;8&lt;/span&gt;--&lt;span-class=&#39;chapter-title&#39;&gt;Other-Data&lt;/span&gt;"><span class="chapter-number">8</span>  <span class="chapter-title">Other Data</span></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-breadcrumbs-Preface">Preface</span></p>
-</div>
-<div id="quarto-meta-markdown" class="hidden">
-<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-metatitle">Opioid Environment Toolkit for R-Spatial</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-twittercardtitle">Opioid Environment Toolkit for R-Spatial</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-ogcardtitle">Opioid Environment Toolkit for R-Spatial</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-metasitename">Opioid Environment Toolkit for R-Spatial</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-twittercarddesc"></span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="quarto-ogcardddesc"></span></p>
-</div>
-</section>
+
+
 </section>
 
 </main> <!-- /main -->
-<script id = "quarto-html-after-body" type="application/javascript">
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -734,15 +664,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./linking.html" class="pagination-link" aria-label="Link Community Data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Link Community Data</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a  href="/orientation.html" class="pagination-link" aria-label="Orientation">
-        <span class="nav-page-text">Orientation</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./census.html" class="pagination-link" aria-label="Census Data Wrangling">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Census Data Wrangling</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
 
-</body>
 
-</html>
+
+
+</body></html>
