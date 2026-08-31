@@ -10,6 +10,11 @@ The [original](https://geodacenter.github.io/opioid-environment-toolkit/index.ht
 
 In addition to this workbook, you'll need a working instance of R and the data. You can also clone the [Github repository](https://github.com/healthyregions/opioid-environment-toolkit) that hosts this workbook to get direct access to all the working code, [data](https://github.com/healthyregions/opioid-environment-toolkit/tree/master/data), and additional items.
 
+
+
+
+
+
 ```{r echo=FALSE}
 
 library(downloadthis)
@@ -24,10 +29,15 @@ library(downloadthis)
 #)
 ```
 
+
+
+
+
+
 | Section Topic | Workshop Data Access |
 |---------------------------------|---------------------------------------|
-| Part 1: Gaining the Basics | [Part 1 Data Download](https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/data-download/Part1.zip) (zip) |
-| Part 2: Finding Spatial Data | [Part 2 Data Download](https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/data-download/Part2.zip) (zip) |
+| Part 1: Gaining the Basics | [Part 1 Data Download](https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip) (zip) |
+| Part 2: Finding Spatial Data | [Part 2 Data Download](https://github.com/healthyregions/opioid-environment-toolkit/raw/refs/heads/master/data/Data%20for%20Workshop%20Part%201/HealthEnv-Workshop-Part1-Data.zip) (zip) |
 
 ## Software Basics {.unnumbered}
 
@@ -61,7 +71,13 @@ JCOIN is part of the of the NIH HEAL Initiative. The Helping to End Addiction Lo
 
 This research was supported by the National Institutes of Health through the NIH HEAL Initiative under award number [1U2CDA050098-01](https://reporter.nih.gov/search/3wdLGk3ipEyheDa26AEwDA/project-details/9882805#description) and [5UM1DA050098-03](https://reporter.nih.gov/project-details/11129703#description). The contents of this publication are solely the responsibility of the authors and do not necessarily represent the official views of the NIH, the NIH HEAL Initiative, or the participating sites.
 
+
+
+
+
+
 ```{r, echo=F}
 
 knitr::include_graphics('img/JCOIN-logo-web.jpg')
 ```
+

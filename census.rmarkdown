@@ -21,7 +21,7 @@ To replicate the code and functions illustrated in this tutorial, you’ll need 
 
 ### Input/Output
 
-Our only external input will be a GeoJSON file of the Chicago city boundary. This file can be found here, though all ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.
+Our only external input will be a GeoJSON file of the Chicago city boundary. All ACS data used in this tutorial will be downloaded directly from the U.S. Census Bureau using the Census API.
 
 -   Chicago City Boundary: `boundaries_chicago.geojson`
 
