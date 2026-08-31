@@ -27,6 +27,18 @@ Well known errors may occur that can bias results, alter interpretations, and di
 
 Always consider and report on limitations in your analyses. 
 
+::: {.callout-warning}
+### Using Imputed Data
+
+Some data is imputed from coarser scales using complex statistical techniques, providing data at a finer resolution. Imputed data should be used with tremendous caution, and always reported as a limitation. 
+
+For example, **CDC Places Data** imputes data from county-level (and in some cases, even coarser) scales and models it at the census-tract level. It may use socioeconomic measures to generate that modeled imputation. Therefore, using socioeconomic measures in a regression with Place data can be problematic, as it was used for the data's construction. Be sure to read the *Documentation* in detail before using Places Data in your research.
+ 
+Modeled or imputed data does not have the same quality as data measured at the finer resolution; in the same way that a model will never be the same quality as the thing it is modeling. Please be careful! 
+:::
+
+### More Options
+
 ### Space as a Key
 
 Once you view your data as spatial, you can begin to conceptualize merging in measures using space as a key. That means integrating data based on location. This could mean:
