@@ -609,5 +609,16 @@
       "PART 1",
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Link Community Data</span>"
     ]
+  },
+  {
+    "objectID": "nearestresource.html",
+    "href": "nearestresource.html",
+    "title": "8  Nearest Resource Analysis",
+    "section": "",
+    "text": "8.1 Overview\nxxx",
+    "crumbs": [
+      "PART 3",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Nearest Resource Analysis</span>"
+    ]
   }
 ]

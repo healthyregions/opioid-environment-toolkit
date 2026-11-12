@@ -20,6 +20,9 @@ book:
       - census.qmd
       - oeps.qmd
       - sdohplace.qmd
+    - part: "PART 3"
+      chapters:
+      - nearestresource.qmd
 
 bibliography: references.bib
 
