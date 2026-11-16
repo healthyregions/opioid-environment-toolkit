@@ -2,4 +2,263 @@
 
 ## Overview
 
-xxx
+Spatial access to specific resources is often considered a multidimensional concept, though geographic distance is central to many measures of access. **Distance to the nearest resource** is a common metric used to characterize geographic access. In this tutorial, we demonstrate how to calculate the minimum straight-line distance from a ZIP Code Tabulation Area (ZCTA) centroid to a set of resources, such as methadone clinics. Each ZCTA will be assigned a minimum distance access metric representing the distance from its centroid to the nearest resource.
+
+Our objectives are thus to:
+
+- Generate centroids from areal data
+- Calculate the minimum distance from each area centroid to the nearest resource
+- Map the minimum distance metric and overlay resource locations
+
+## Environment Setup
+
+To replicate the code and functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language.
+
+### Input/Output
+
+Our inputs will be the clinic points generated in previous tutorials and the Chicago ZIP Code area boundaries.
+
+- Chicago Methadone Clinics: `methadone_clinics.shp`
+- Chicago ZIP Code Areas: `chicago_zips.shp`
+
+We will calculate the minimum straight-line distance from each area centroid to the nearest methadone clinic, then save the results as a shapefile and a CSV file. Both outputs will include the minimum distance value for each area, and the shapefile will also retain the area boundaries for mapping.
+
+If you don’t have a shapefile of your resource locations but already have longitude and latitude coordinates as two columns in a CSV file, you can still use this tutorial. For a reminder of how to convert these coordinates into an `sf` object in R, see [here](https://healthyregions.github.io/opioid-environment-toolkit/geocoding.html).
+
+### Load Libraries
+
+We will use the following packages in this tutorial:
+
+- `sf`: to manipulate spatial data
+- `tmap`: to visualize and create maps
+- `units`: to convert distance units
+
+First, load the required libraries.
+
+```{r nearest-load-libraries, warning = FALSE, message = FALSE}
+library(sf)
+library(tmap)
+library(units)
+```
+
+## Load Data
+
+First, load the methadone clinic locations generated in the previous tutorials.
+
+```{r nearest-load-clinics, warning = FALSE, message = FALSE}
+methadoneSf <- st_read("data/methadone_clinics.shp")
+```
+
+Let’s take a look at the first few rows of the dataset.
+
+```{r nearest-inspect-clinics, warning = FALSE, message = FALSE}
+head(methadoneSf)
+```
+
+Next, load the Chicago ZIP Code area boundaries.
+
+```{r nearest-load-areas, warning = FALSE, message = FALSE}
+chicagoZips <- read_sf("data/chicago_zips.shp")
+```
+
+We can quickly plot both datasets on an interactive map to check that the clinic locations and area boundaries appear in the expected locations.
+
+```{r nearest-map-inputs, warning = FALSE, message = FALSE}
+tmap_mode("view")
+
+tm_shape(chicagoZips) +
+  tm_borders() +
+  tm_shape(methadoneSf) +
+  tm_dots(col = "blue", size = 0.2)
+```
+
+## Calculate Centroids
+
+Now, we will calculate the centroids of the ZIP Code areas. A centroid represents the geometric center of an area. We will first transform our data from geographic coordinates (longitude and latitude) to a projected coordinate reference system suitable for the Chicago area. This allows us to calculate centroids and straight-line distances using planar coordinates.
+
+We’ll use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. This coordinate reference system uses US survey feet.
+
+**Aside**: When choosing a projection for your own data, check its geographic coverage and units. States may have multiple State Plane zones, so choose one appropriate for your study area. You can review the [EPSG:3435 reference page](https://epsg.io/3435) for the projection used here.
+
+Use the `st_transform()` function to change the projection of the data. Notice that the geometry coordinates are now expressed in US survey feet rather than degrees.
+
+```{r nearest-project-areas, warning = FALSE, message = FALSE}
+chicagoZips <- st_transform(chicagoZips, 3435)
+
+chicagoZips
+```
+
+Then, calculate the centroids using `st_centroid()`.
+
+```{r nearest-calculate-centroids, warning = FALSE, message = FALSE}
+chicagoCentroids <- st_centroid(chicagoZips)
+
+chicagoCentroids
+```
+
+This creates one point for each ZIP Code area while retaining the original attributes. If you run this code directly in R, you may see a warning that `st_centroid()` assumes attributes are constant over each geometry. The attributes are carried over from the original areas; they are not recalculated for the centroid locations.
+
+These centroids represent geometric centers rather than population centers. For irregularly shaped areas, a centroid may fall outside the area boundary.
+
+We can plot the boundaries and centroids to check their locations. The `st_geometry()` function extracts the geometry from each spatial object so that we can plot it without the attribute data.
+
+```{r nearest-plot-centroids, warning = FALSE, message = FALSE}
+plot(st_geometry(chicagoZips))
+plot(st_geometry(chicagoCentroids), add = TRUE, col = "red")
+```
+
+### Visualize & Confirm
+
+Once again, we can create an interactive map to explore the area boundaries and centroid locations.
+
+```{r nearest-map-centroids, warning = FALSE, message = FALSE}
+tmap_mode("view")
+
+tm_shape(chicagoZips) +
+  tm_borders() +
+  tm_shape(chicagoCentroids) +
+  tm_dots()
+```
+
+## Standardize CRS
+
+Before calculating distances between the area centroids and the resource locations, we need to make sure that both datasets use the same coordinate reference system (CRS). In the previous section, we projected the ZIP Code areas before calculating their centroids, but the clinic locations still use their original CRS. Attempting to calculate distances with `st_distance()` while these coordinate reference systems differ will produce an error.
+
+First, use `st_crs()` to inspect the coordinate reference system of each dataset.
+
+```{r nearest-check-crs, warning = FALSE, message = FALSE}
+st_crs(chicagoCentroids)
+st_crs(methadoneSf)
+```
+
+The centroids use NAD83 / Illinois East (ftUS), while the clinic locations use WGS 84. We’ll take the CRS from the centroid data and use it as the target CRS when transforming the clinic locations with `st_transform()`.
+
+```{r nearest-transform-clinics, warning = FALSE, message = FALSE}
+newCRS <- st_crs(chicagoCentroids)
+
+methadoneSf <- st_transform(methadoneSf, newCRS)
+```
+
+We can now check that the coordinate reference systems match.
+
+```{r nearest-confirm-crs, warning = FALSE, message = FALSE}
+st_crs(chicagoCentroids) == st_crs(methadoneSf)
+```
+
+The result should be `TRUE`, indicating that both datasets use the same CRS. Mismatched coordinate reference systems are a common issue in geospatial data processing, so it is helpful to check them before conducting spatial analysis.
+
+Now we can plot the ZIP Code area boundaries, their centroids, and the clinic locations together. Centroids are shown in red and clinics in blue.
+
+```{r nearest-plot-aligned-data, warning = FALSE, message = FALSE}
+plot(st_geometry(chicagoZips))
+plot(st_geometry(chicagoCentroids), col = "red", add = TRUE)
+plot(st_geometry(methadoneSf), col = "blue", add = TRUE)
+```
+
+Next, we will calculate the distance from each area centroid to its nearest resource.
+
+## Calculate Distance
+
+First, we’ll identify the clinic closest to each ZIP Code area centroid using `st_nearest_feature()`. This function returns the row index of the nearest clinic in `methadoneSf`. We can use these indices to select the corresponding clinic for each centroid.
+
+```{r nearest-identify-clinics, warning = FALSE, message = FALSE}
+nearestClinic_indexes <- st_nearest_feature(chicagoCentroids, methadoneSf)
+
+nearestClinic <- methadoneSf[nearestClinic_indexes, ]
+
+head(nearestClinic)
+```
+
+The resulting dataset has one row for each centroid, in the same order as `chicagoCentroids`. A clinic may appear more than once if it is the nearest resource for multiple areas.
+
+Next, calculate the straight-line distance between each centroid and its nearest clinic using `st_distance()`. Both datasets now use the same projected CRS.
+
+Setting `by_element = TRUE` calculates the distance between corresponding rows: the first centroid and its matched clinic, the second centroid and its matched clinic, and so on.
+
+```{r nearest-calculate-distance, warning = FALSE, message = FALSE}
+minDist <- st_distance(chicagoCentroids, nearestClinic, by_element = TRUE)
+
+head(minDist)
+```
+
+The distances are expressed in US survey feet, the units of our projected CRS. To convert them to miles, use `set_units()`.
+
+```{r nearest-convert-distance, warning = FALSE, message = FALSE}
+minDist_mi <- set_units(minDist, "mi")
+
+head(minDist_mi)
+```
+
+### Merge Data
+
+We can now add the minimum distances to the original ZIP Code area data. Because the centroids were created from `chicagoZips` and their row order has not changed, each distance corresponds to the same row in the original dataset.
+
+We will store the distances as numeric values for mapping and export. The field name `minDist_mi` indicates that the values are in miles.
+
+```{r nearest-merge-distance, warning = FALSE, message = FALSE}
+minDistSf <- chicagoZips
+minDistSf$minDist_mi <- as.numeric(minDist_mi)
+
+head(minDistSf)
+```
+
+### Visualize & Confirm
+
+We can now visualize the minimum distance to methadone clinics using the `tmap` package. We’ll use five quantile classes, which group areas into approximately equal-sized groups based on their distance values.
+
+```{r nearest-map-distance, warning = FALSE, message = FALSE}
+tmap_mode("plot")
+
+tm_shape(minDistSf) +
+  tm_polygons(
+    fill = "minDist_mi",
+    fill.scale = tm_scale_intervals(style = "quantile", n = 5),
+    fill.legend = tm_legend(title = "Minimum Distance (mi)")
+  ) +
+  tm_title(
+    "Minimum Distance from ZIP Code Area Centroid\n to Methadone Clinic",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  )
+```
+
+We can also overlay the clinic locations to help interpret the distance patterns.
+
+```{r nearest-map-distance-clinics, warning = FALSE, message = FALSE}
+tm_shape(minDistSf) +
+  tm_polygons(
+    fill = "minDist_mi",
+    fill.scale = tm_scale_intervals(style = "quantile", n = 5),
+    fill.legend = tm_legend(title = "Minimum Distance (mi)")
+  ) +
+  tm_shape(methadoneSf) +
+  tm_dots(size = 0.2) +
+  tm_title(
+    "Minimum Distance from ZIP Code Area Centroid\n to Methadone Clinic",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+```
+
+Smaller values indicate that an area's centroid is closer to a clinic in our dataset. These values represent straight-line distances, not travel distances or travel times. They also describe access from each area's centroid rather than from every resident's location.
+
+## Save Data
+
+We can save the area attributes and minimum distance values as a CSV file. Use `st_drop_geometry()` to remove the spatial geometry and `row.names = FALSE` to avoid adding an extra row-number column.
+
+```{r nearest-save-csv, warning = FALSE, message = FALSE}
+write.csv(
+  st_drop_geometry(minDistSf),
+  "data/chizips_Access.csv",
+  row.names = FALSE
+)
+```
+
+We can also save the results as a shapefile, retaining the area boundaries for future mapping and spatial analysis.
+
+```{r nearest-save-spatial, warning = FALSE, message = FALSE}
+write_sf(minDistSf, "data/chizips_Access.shp")
+```
+
+The `minDist_mi` field in both outputs contains the minimum straight-line distance to the nearest clinic in miles.
