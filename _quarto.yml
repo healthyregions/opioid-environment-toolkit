@@ -24,6 +24,7 @@ book:
       chapters:
       - bufferaccess.qmd
       - nearestresource.qmd
+      - advancedmetrics.qmd
 
 bibliography: references.bib
 
