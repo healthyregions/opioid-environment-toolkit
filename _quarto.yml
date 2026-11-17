@@ -22,6 +22,7 @@ book:
       - sdohplace.qmd
     - part: "PART 3"
       chapters:
+      - bufferaccess.qmd
       - nearestresource.qmd
 
 bibliography: references.bib

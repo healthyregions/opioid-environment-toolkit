@@ -1,0 +1,427 @@
+# Buffer-Based Access
+
+## Overview
+
+In Part 1, we created buffers around methadone clinics in Chicago to visualize areas within one and two miles of a provider. These maps helped us explore the geographic distribution of resources and their surrounding areas. We can now build on that analysis by calculating measures that allow us to compare resource availability and coverage across communities.
+
+Resource counts describe how many clinics are located within an area, while resource density expresses that count relative to the area's size. Buffer-based coverage provides another perspective: how much of an area falls within a specified distance of at least one clinic. An area with no clinics inside its boundaries may still be partially covered by a buffer around a nearby clinic outside those boundaries.
+
+In this tutorial, we use the same Chicago methadone clinic locations and ZIP Code area boundaries introduced in Part 1. We will calculate clinic counts and density for each ZIP Code area, then use provider buffers to calculate the percentage of each area's surface covered within one and two miles of a clinic. Comparing these distances will help us understand how the choice of buffer radius affects our results. These coverage measures describe area-based proximity using straight-line distance; they do not represent the percentage of residents served or actual travel times.
+
+Our objectives are thus to:
+
+- Count methadone clinics within each ZIP Code area
+- Calculate resource density as the number of clinics per square mile
+- Calculate the percentage of each area covered by provider buffers
+- Compare coverage using one-mile and two-mile buffers
+- Map and save the resulting area-level measures
+
+## Environment Setup
+
+To replicate the code and functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language and the buffer operations introduced in the [Buffer Analysis chapter](buffers.qmd).
+
+### Input/Output
+
+Our inputs will be the same methadone clinic locations and Chicago ZIP Code area boundaries used in Part 1.
+
+- Chicago Methadone Clinics: `methadone_clinics.shp`
+- Chicago ZIP Code Areas: `chicago_zips.shp`
+
+We will use these datasets to count clinics within each area, calculate resource density, and measure the percentage of each area covered by one-mile and two-mile provider buffers. We will recreate the buffers in this tutorial, so a previously saved buffer file is not required.
+
+Our final outputs will include a CSV file and a shapefile containing the following measures for each ZIP Code area:
+
+- Number of methadone clinics within the area
+- Area size in square miles
+- Resource density in clinics per square mile
+- Percentage of the area covered by one-mile and two-mile provider buffers
+- Difference in coverage between the two buffer distances, expressed in percentage points
+
+These outputs can be used for mapping, comparison across areas, or further spatial analysis.
+
+### Load Libraries
+
+We will use the following packages in this tutorial:
+
+- `sf`: to manipulate spatial data and perform spatial operations
+- `dplyr`: to manipulate and summarize data
+- `tmap`: to visualize and create maps
+- `units`: to convert distance and area units
+
+First, load the required libraries.
+
+```{r buffer-access-load-libraries, warning = FALSE, message = FALSE}
+library(sf)
+library(dplyr)
+library(tmap)
+library(units)
+```
+
+## Load and Prepare Data
+
+First, load the methadone clinic locations and Chicago ZIP Code area boundaries used in Part 1.
+
+```{r buffer-access-load-data, warning = FALSE, message = FALSE}
+metClinics <- st_read("data/methadone_clinics.shp")
+areas <- st_read("data/chicago_zips.shp")
+```
+
+Let’s take a look at the first few rows of each dataset.
+
+```{r buffer-access-inspect-data, warning = FALSE, message = FALSE}
+head(metClinics)
+head(areas)
+```
+
+The clinic dataset contains point locations, while the area dataset contains polygons. The `zip` field identifies the ZIP Code areas and will be retained alongside the measures calculated in this tutorial.
+
+We will use the area boundaries as provided in this file. These should not automatically be treated as Census ZIP Code Tabulation Areas (ZCTAs), which may have different boundaries and identifiers.
+
+Next, transform both datasets to the same projected coordinate reference system. As in Part 1, we will use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. Its coordinate units are US survey feet.
+
+```{r buffer-access-transform-crs, warning = FALSE, message = FALSE}
+CRS.new <- st_crs(3435)
+
+metClinics.3435 <- st_transform(metClinics, CRS.new)
+areas.3435 <- st_transform(areas, CRS.new)
+```
+
+Check that the coordinate reference systems match before proceeding.
+
+```{r buffer-access-check-crs, warning = FALSE, message = FALSE}
+st_crs(metClinics.3435) == st_crs(areas.3435)
+```
+
+The result should be `TRUE`. We can now use these projected datasets to count resources, calculate areas, and create provider buffers. When reporting our results, we will convert area measurements to square miles.
+
+Our calculations will describe access to the clinics included in the input dataset. Clinics outside the dataset will not contribute to the counts or buffer coverage, which should be considered when interpreting results near the study area's boundary.
+
+## Calculate Resource Counts and Density
+
+Resource counts provide a simple starting point for comparing the distribution of methadone clinics across areas. However, ZIP Code areas vary in size. We can account for these differences by calculating resource density, expressed as the number of clinics per square mile.
+
+### Count Resources Within Areas
+
+First, identify the clinics that intersect each ZIP Code area using `st_intersects()`. This function returns a list containing the indices of the clinic points associated with each area. We can use `lengths()` to count the number of matches.
+
+```{r buffer-access-count-clinics, warning = FALSE, message = FALSE}
+clinicMatches <- st_intersects(areas.3435, metClinics.3435)
+
+areas.3435$clinic_n <- lengths(clinicMatches)
+```
+
+Inspect the counts alongside the ZIP Code identifiers.
+
+```{r buffer-access-inspect-counts, warning = FALSE, message = FALSE}
+areas.3435 %>%
+  st_drop_geometry() %>%
+  select(zip, clinic_n) %>%
+  head()
+```
+
+The `clinic_n` field contains the number of clinic points intersecting each area. Areas with no matching clinics receive a count of zero.
+
+This approach includes points on polygon boundaries. A clinic located exactly on a shared boundary may be counted in both adjacent areas, so boundary matches should be checked if each clinic must be assigned to only one area.
+
+### Calculate Resource Density
+
+Next, calculate the size of each ZIP Code area using `st_area()`. Because our projected CRS uses US survey feet, we will convert the resulting area measurements to square miles with `set_units()`.
+
+```{r buffer-access-calculate-area, warning = FALSE, message = FALSE}
+areaSqMi <- set_units(st_area(areas.3435), "mi^2")
+
+areas.3435$area_sqmi <- as.numeric(areaSqMi)
+```
+
+We store the area measurements as numeric values for calculation and export. The field name `area_sqmi` indicates that the values are in square miles. These measurements use the polygon geometries as provided; they do not separately exclude water areas.
+
+We can now divide each area's clinic count by its area to calculate resource density.
+
+```{r buffer-access-calculate-density, warning = FALSE, message = FALSE}
+areas.3435 <- areas.3435 %>%
+  mutate(dens_sqmi = clinic_n / area_sqmi)
+```
+
+Inspect the resulting measures.
+
+```{r buffer-access-inspect-density, warning = FALSE, message = FALSE}
+areas.3435 %>%
+  st_drop_geometry() %>%
+  select(zip, clinic_n, area_sqmi, dens_sqmi) %>%
+  head()
+```
+
+The `dens_sqmi` field represents the number of clinics per square mile. For example, an area containing two clinics across four square miles would have a density of 0.5 clinics per square mile. If two areas contain the same number of clinics, the smaller area will have a higher resource density.
+
+Counts and density describe resources within area boundaries. They do not account for nearby clinics outside those boundaries or the distribution of residents within each area. In the next section, we will use provider buffers to measure how much of each area lies within a specified distance of at least one clinic.
+
+## Calculate Buffer-Based Coverage
+
+Resource counts and density describe clinics within area boundaries. Buffer-based coverage provides a different perspective: the percentage of each area located within a specified distance of at least one clinic. This allows nearby clinics to contribute to an area's coverage even when they are located outside its boundaries.
+
+### Prepare Provider Buffers
+
+As in Part 1, we will create one-mile and two-mile buffers around the methadone clinic locations. We use `set_units()` to specify the distances in miles so that `st_buffer()` can convert them to the units of our projected CRS.
+
+```{r buffer-access-create-buffers, warning = FALSE, message = FALSE}
+clinicBuffers1mi <- st_buffer(
+  metClinics.3435,
+  dist = set_units(1, "mi")
+)
+
+clinicBuffers2mi <- st_buffer(
+  metClinics.3435,
+  dist = set_units(2, "mi")
+)
+```
+
+Next, combine the buffers for each distance using `st_union()`. This ensures that locations covered by multiple clinic buffers are counted only once when calculating coverage.
+
+```{r buffer-access-union-buffers, warning = FALSE, message = FALSE}
+unionBuffers1mi <- st_union(clinicBuffers1mi)
+unionBuffers2mi <- st_union(clinicBuffers2mi)
+```
+
+The resulting geometries represent the combined areas within one and two miles of at least one clinic. For a more detailed introduction to creating and combining buffers, see the [Buffer Analysis chapter](buffers.qmd).
+
+### Calculate Coverage by Area
+
+We will calculate coverage by intersecting each ZIP Code area with the combined provider buffers, measuring the intersecting area, and dividing it by the original area's total size.
+
+Because we will repeat this calculation for two buffer distances, we can define a small helper function. For each area, the function returns the total covered area in square miles. Areas that do not overlap the buffers receive a value of zero.
+
+```{r buffer-access-coverage-function, warning = FALSE, message = FALSE}
+calculateCoveredArea <- function(areaData, bufferUnion) {
+  vapply(seq_len(nrow(areaData)), function(i) {
+    overlap <- st_intersection(
+      st_geometry(areaData)[i],
+      bufferUnion
+    )
+
+    coveredArea <- sum(st_area(overlap))
+
+    as.numeric(set_units(coveredArea, "mi^2"))
+  }, numeric(1))
+}
+```
+
+Apply the function to the one-mile and two-mile buffers. The returned values follow the same row order as `areas.3435`.
+
+```{r buffer-access-calculate-covered-area, warning = FALSE, message = FALSE}
+covered1mi <- calculateCoveredArea(areas.3435, unionBuffers1mi)
+covered2mi <- calculateCoveredArea(areas.3435, unionBuffers2mi)
+```
+
+We can now divide the covered areas by the total area measurements calculated in the previous section and multiply by 100 to obtain percentages.
+
+```{r buffer-access-calculate-coverage, warning = FALSE, message = FALSE}
+areas.3435 <- areas.3435 %>%
+  mutate(
+    cov1mi_pct = covered1mi / area_sqmi * 100,
+    cov2mi_pct = covered2mi / area_sqmi * 100
+  )
+```
+
+Inspect the coverage measures.
+
+```{r buffer-access-inspect-coverage, warning = FALSE, message = FALSE}
+areas.3435 %>%
+  st_drop_geometry() %>%
+  select(zip, cov1mi_pct, cov2mi_pct) %>%
+  head()
+```
+
+A value of 0 indicates that none of the area's surface falls within the specified distance of a clinic in our dataset. A value of 100 indicates complete area coverage. For example, a one-mile coverage value of 50 means that half of the area's surface lies within one mile of at least one clinic.
+
+These percentages describe area coverage, not population coverage. They do not indicate the percentage of residents living within the buffers or receiving treatment.
+
+### Compare Buffer Distances
+
+The choice of buffer radius affects how we describe proximity to resources. Comparing one-mile and two-mile coverage provides a simple sensitivity analysis: we can examine how much our results change when we change the distance threshold.
+
+Calculate the difference between the two coverage percentages.
+
+```{r buffer-access-compare-distances, warning = FALSE, message = FALSE}
+areas.3435 <- areas.3435 %>%
+  mutate(covDiff_pp = cov2mi_pct - cov1mi_pct)
+```
+
+The `covDiff_pp` field expresses the increase in coverage in percentage points. For example, an increase from 20% to 65% is a difference of 45 percentage points.
+
+We can sort the results to identify areas with the largest changes.
+
+```{r buffer-access-inspect-differences, warning = FALSE, message = FALSE}
+areas.3435 %>%
+  st_drop_geometry() %>%
+  select(zip, cov1mi_pct, cov2mi_pct, covDiff_pp) %>%
+  arrange(desc(covDiff_pp)) %>%
+  head()
+```
+
+A large increase indicates that coverage is sensitive to the distance threshold within the range examined. A small increase should be interpreted alongside the original coverage values: an area may already have high coverage at one mile, or it may remain poorly covered even at two miles.
+
+Because the two-mile buffers contain the one-mile buffers, two-mile coverage should be at least as large as one-mile coverage, allowing for minor numerical rounding differences. The clinic counts and density measures remain unchanged because the ZIP Code boundaries and clinic locations have not changed.
+
+Increasing the buffer radius changes our definition of proximity; it does not represent an improvement in actual services. Both buffer distances describe straight-line proximity rather than travel distances or travel times.
+
+## Visualize & Interpret Results
+
+We can now map the resource density and buffer coverage measures calculated in the previous sections. These maps describe different aspects of resource availability: density summarizes clinics within each area relative to its size, while coverage describes the proportion of an area located near at least one clinic.
+
+First, switch to the static plotting mode.
+
+```{r buffer-access-set-map-mode, warning = FALSE, message = FALSE}
+tmap_mode("plot")
+```
+
+### Map Resource Density
+
+We will map the number of clinics per square mile and overlay the clinic locations. Areas with a value of zero have no clinics counted within their boundaries.
+
+```{r buffer-access-map-density, warning = FALSE, message = FALSE}
+tm_shape(areas.3435) +
+  tm_polygons(
+    fill = "dens_sqmi",
+    fill.scale = tm_scale_intervals(style = "pretty", n = 5),
+    fill.legend = tm_legend(title = "Clinics per Square Mile")
+  ) +
+  tm_shape(metClinics.3435) +
+  tm_dots(size = 0.2) +
+  tm_title(
+    "Methadone Clinic Density by ZIP Code Area",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+```
+
+Higher density values indicate more clinics relative to the size of an area. They do not necessarily indicate that clinics are evenly distributed within the area or that they have sufficient capacity to serve the surrounding population.
+
+### Compare Coverage Maps
+
+Next, map the percentage of each area covered by the one-mile and two-mile provider buffers.
+
+For these maps, we will use the same percentage breaks and color palette. This ensures that the same color represents the same coverage range in both maps.
+
+```{r buffer-access-set-coverage-scale, warning = FALSE, message = FALSE}
+coverageBreaks <- c(0, 20, 40, 60, 80, 100)
+
+coverageColors <- c(
+  "#eff3ff",
+  "#bdd7e7",
+  "#6baed6",
+  "#3182bd",
+  "#08519c"
+)
+```
+
+First, map one-mile coverage.
+
+```{r buffer-access-map-coverage-1mi, warning = FALSE, message = FALSE}
+tm_shape(areas.3435) +
+  tm_polygons(
+    fill = "cov1mi_pct",
+    fill.scale = tm_scale_intervals(
+      breaks = coverageBreaks,
+      values = coverageColors
+    ),
+    fill.legend = tm_legend(title = "Area Covered (%)")
+  ) +
+  tm_shape(metClinics.3435) +
+  tm_dots(size = 0.2) +
+  tm_title(
+    "Area Within One Mile of a Methadone Clinic",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+```
+
+Then, map two-mile coverage using the same scale.
+
+```{r buffer-access-map-coverage-2mi, warning = FALSE, message = FALSE}
+tm_shape(areas.3435) +
+  tm_polygons(
+    fill = "cov2mi_pct",
+    fill.scale = tm_scale_intervals(
+      breaks = coverageBreaks,
+      values = coverageColors
+    ),
+    fill.legend = tm_legend(title = "Area Covered (%)")
+  ) +
+  tm_shape(metClinics.3435) +
+  tm_dots(size = 0.2) +
+  tm_title(
+    "Area Within Two Miles of a Methadone Clinic",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+```
+
+Darker shades indicate greater area coverage. Compare the two maps to identify areas where coverage increases substantially and areas that remain poorly covered at both distances. The `covDiff_pp` field calculated earlier provides the exact change in percentage points for each area.
+
+### Interpret the Results
+
+Consider the following questions when comparing the maps:
+
+- Which areas have few or no clinics within their boundaries?
+- Do any areas with no clinics still have coverage from nearby providers outside their boundaries?
+- Which areas show the largest increase in coverage between one and two miles?
+- Which areas remain poorly covered at both distances?
+
+Counts, density, and coverage should be interpreted together. An area may have a high clinic density but incomplete coverage if its clinics are concentrated in one location. Conversely, an area with no clinics inside its boundaries may still be close to clinics in neighboring areas.
+
+These measures describe the geographic distribution of the clinics included in our dataset. They do not account for treatment capacity, competing demand, transportation barriers, or whether residents can use a particular clinic. We will introduce measures that incorporate supply and demand in the Advanced Metrics chapter.
+
+## Save Data
+
+We can now save the resource counts, density, and buffer coverage measures for future mapping and analysis.
+
+First, select the ZIP Code identifier and the measures calculated in this tutorial. The spatial geometry will be retained automatically when selecting columns from an `sf` object.
+
+```{r buffer-access-prepare-output, warning = FALSE, message = FALSE}
+bufferAccessSf <- areas.3435 %>%
+  select(
+    zip,
+    clinic_n,
+    area_sqmi,
+    dens_sqmi,
+    cov1mi_pct,
+    cov2mi_pct,
+    covDiff_pp
+  )
+
+head(bufferAccessSf)
+```
+
+The output includes the following fields:
+
+- `zip`: ZIP Code area identifier
+- `clinic_n`: number of clinics intersecting the area
+- `area_sqmi`: area size in square miles
+- `dens_sqmi`: number of clinics per square mile
+- `cov1mi_pct`: percentage of the area within one mile of at least one clinic
+- `cov2mi_pct`: percentage of the area within two miles of at least one clinic
+- `covDiff_pp`: increase in coverage from one mile to two miles, in percentage points
+
+To save the results as a CSV file, use `st_drop_geometry()` to remove the spatial geometry. Setting `row.names = FALSE` avoids adding an extra row-number column.
+
+```{r buffer-access-save-csv, warning = FALSE, message = FALSE}
+write.csv(
+  st_drop_geometry(bufferAccessSf),
+  "data/chizips_BufferAccess.csv",
+  row.names = FALSE
+)
+```
+
+We can also save the results as a shapefile, retaining the area boundaries for future mapping and spatial analysis.
+
+```{r buffer-access-save-spatial, warning = FALSE, message = FALSE}
+write_sf(
+  bufferAccessSf,
+  "data/chizips_BufferAccess.shp"
+)
+```
+
+Both outputs contain the same area-level measures. The CSV can be used for tabular analysis or linked to compatible area data using the ZIP Code identifier, while the shapefile includes the geometries needed for mapping.
