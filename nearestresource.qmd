@@ -2,7 +2,9 @@
 
 ## Overview
 
-Spatial access to specific resources is often considered a multidimensional concept, though geographic distance is central to many measures of access. **Distance to the nearest resource** is a common metric used to characterize geographic access. In this tutorial, we demonstrate how to calculate the minimum straight-line distance from a ZIP Code Tabulation Area (ZCTA) centroid to a set of resources, such as methadone clinics. Each ZCTA will be assigned a minimum distance access metric representing the distance from its centroid to the nearest resource.
+Spatial access to specific resources is often considered a multidimensional concept, though geographic distance is central to many measures of access. **Distance to the nearest resource** is a common metric used to characterize geographic access.
+
+In this tutorial, we demonstrate how to calculate the minimum straight-line distance from a ZIP Code Tabulation Area (ZCTA) centroid to a set of resources, such as methadone clinics. Each ZCTA will be assigned a minimum distance access metric representing the distance from its centroid to the nearest resource.
 
 Our objectives are thus to:
 
@@ -78,7 +80,7 @@ Now, we will calculate the centroids of the ZIP Code areas. A centroid represent
 
 We’ll use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. This coordinate reference system uses US survey feet.
 
-**Aside**: When choosing a projection for your own data, check its geographic coverage and units. States may have multiple State Plane zones, so choose one appropriate for your study area. You can review the [EPSG:3435 reference page](https://epsg.io/3435) for the projection used here.
+**Note**: When choosing a projection for your own data, check its geographic coverage and units. States may have multiple State Plane zones, so choose one appropriate for your study area. You can review the [EPSG:3435 reference page](https://epsg.io/3435) for the projection used here.
 
 Use the `st_transform()` function to change the projection of the data. Notice that the geometry coordinates are now expressed in US survey feet rather than degrees.
 
