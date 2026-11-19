@@ -6,7 +6,7 @@ In Part 1, we created buffers around methadone clinics in Chicago to visualize a
 
 Resource counts describe how many clinics are located within an area, while resource density expresses that count relative to the area's size. Buffer-based coverage provides another perspective: how much of an area falls within a specified distance of at least one clinic. An area with no clinics inside its boundaries may still be partially covered by a buffer around a nearby clinic outside those boundaries.
 
-In this tutorial, we use the same Chicago methadone clinic locations and ZIP Code area boundaries introduced in Part 1. We will calculate clinic counts and density for each ZIP Code area, then use provider buffers to calculate the percentage of each area's surface covered within one and two miles of a clinic. Comparing these distances will help us understand how the choice of buffer radius affects our results. These coverage measures describe area-based proximity using straight-line distance; they do not represent the percentage of residents served or actual travel times.
+In this tutorial, we use the same Chicago methadone clinic locations and ZIP Code area boundaries introduced in Part 1. We will calculate clinic counts and density for each ZIP Code area, then use provider buffers to calculate the percentage of each area's surface covered within one and two miles of a clinic. Comparing these distances will help us understand how the choice of buffer radius affects our results. These coverage measures describe area-based proximity using straight-line distance. They do not represent the percentage of residents served or actual travel times.
 
 Our objectives are thus to:
 
@@ -18,7 +18,7 @@ Our objectives are thus to:
 
 ## Environment Setup
 
-To replicate the code and functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language and the buffer operations introduced in the [Buffer Analysis chapter](buffers.qmd).
+To replicate the code and functions illustrated in this tutorial, you’ll need to have R and RStudio downloaded and installed on your system. This tutorial assumes some familiarity with the R programming language and the buffer operations introduced in the [Buffer Analysis](buffers.qmd) chapter.
 
 ### Input/Output
 
@@ -29,13 +29,13 @@ Our inputs will be the same methadone clinic locations and Chicago ZIP Code area
 
 We will use these datasets to count clinics within each area, calculate resource density, and measure the percentage of each area covered by one-mile and two-mile provider buffers. We will recreate the buffers in this tutorial, so a previously saved buffer file is not required.
 
-Our final outputs will include a CSV file and a shapefile containing the following measures for each ZIP Code area:
+Our final outputs will include a CSV file and a shapefile containing three types of measures for each ZIP Code area:
 
-- Number of methadone clinics within the area
-- Area size in square miles
-- Resource density in clinics per square mile
-- Percentage of the area covered by one-mile and two-mile provider buffers
-- Difference in coverage between the two buffer distances, expressed in percentage points
+- **Resource Count**: the number of methadone clinics within the area
+- **Resource Density**: the number of clinics per square mile
+- **Buffer Coverage**: the percentage of the area within one mile and two miles of at least one clinic
+
+The outputs will also retain each area's size in square miles, used to calculate density and coverage, and the difference between one-mile and two-mile coverage in percentage points.
 
 These outputs can be used for mapping, comparison across areas, or further spatial analysis.
 
@@ -73,11 +73,9 @@ head(metClinics)
 head(areas)
 ```
 
-The clinic dataset contains point locations, while the area dataset contains polygons. The `zip` field identifies the ZIP Code areas and will be retained alongside the measures calculated in this tutorial.
+The clinic dataset contains point locations, while the area dataset contains Chicago ZIP Code area boundaries. The `zip` field identifies each area and will be retained alongside the measures calculated in this tutorial.
 
-We will use the area boundaries as provided in this file. These should not automatically be treated as Census ZIP Code Tabulation Areas (ZCTAs), which may have different boundaries and identifiers.
-
-Next, transform both datasets to the same projected coordinate reference system. As in Part 1, we will use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. Its coordinate units are US survey feet.
+Next, transform both datasets to the same projected coordinate reference system (CRS) so that we can calculate areas and create distance-based buffers. As in Part 1, we will use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. This CRS uses US survey feet. We first define the target CRS, then apply it to both datasets using `st_transform()`.
 
 ```{r buffer-access-transform-crs, warning = FALSE, message = FALSE}
 CRS.new <- st_crs(3435)
@@ -133,7 +131,7 @@ areaSqMi <- set_units(st_area(areas.3435), "mi^2")
 areas.3435$area_sqmi <- as.numeric(areaSqMi)
 ```
 
-We store the area measurements as numeric values for calculation and export. The field name `area_sqmi` indicates that the values are in square miles. These measurements use the polygon geometries as provided; they do not separately exclude water areas.
+We store the area measurements as numeric values for calculation and export. The field name `area_sqmi` indicates that the values are in square miles. These measurements use the polygon geometries as provided, but they do not separately exclude water areas.
 
 We can now divide each area's clinic count by its area to calculate resource density.
 
@@ -182,7 +180,7 @@ unionBuffers1mi <- st_union(clinicBuffers1mi)
 unionBuffers2mi <- st_union(clinicBuffers2mi)
 ```
 
-The resulting geometries represent the combined areas within one and two miles of at least one clinic. For a more detailed introduction to creating and combining buffers, see the [Buffer Analysis chapter](buffers.qmd).
+The resulting geometries represent the combined areas within one and two miles of at least one clinic. For a more detailed introduction to creating and combining buffers, see the [Buffer Analysis](buffers.qmd) chapter.
 
 ### Calculate Coverage by Area
 
@@ -231,24 +229,38 @@ areas.3435 %>%
   head()
 ```
 
-A value of 0 indicates that none of the area's surface falls within the specified distance of a clinic in our dataset. A value of 100 indicates complete area coverage. For example, a one-mile coverage value of 50 means that half of the area's surface lies within one mile of at least one clinic.
+A value of 0 indicates that none of the area's surface falls within the specified distance of a clinic in our dataset. An area may have zero coverage if it lies outside all provider buffers at the selected distance. This result applies only to the clinics included in our dataset; nearby clinics not represented in the data will not contribute to coverage.
+
+A value of 100 indicates complete area coverage. For example, a one-mile coverage value of 50 means that half of the area's surface lies within one mile of at least one clinic.
 
 These percentages describe area coverage, not population coverage. They do not indicate the percentage of residents living within the buffers or receiving treatment.
 
 ### Compare Buffer Distances
 
-The choice of buffer radius affects how we describe proximity to resources. Comparing one-mile and two-mile coverage provides a simple sensitivity analysis: we can examine how much our results change when we change the distance threshold.
+The two-mile buffers cover at least as much area as the one-mile buffers. We can compare the two coverage percentages to measure how much additional area is covered when we increase the buffer radius.
 
-Calculate the difference between the two coverage percentages.
+For each ZIP Code area, we calculate:
+
+$$
+\text{Coverage change (percentage points)}
+=
+\text{Two-mile coverage (\%)}
+-
+\text{One-mile coverage (\%)}
+$$
+
+Both coverage percentages use the same ZIP Code area as their denominator. The difference therefore represents the additional share of that area's surface covered by the larger buffers. For example, if coverage increases from 20% to 65%, the additional coverage is 45 percentage points.
+
+This comparison provides a simple sensitivity analysis: it shows how our coverage results change when we change the distance threshold from one mile to two miles.
 
 ```{r buffer-access-compare-distances, warning = FALSE, message = FALSE}
 areas.3435 <- areas.3435 %>%
   mutate(covDiff_pp = cov2mi_pct - cov1mi_pct)
 ```
 
-The `covDiff_pp` field expresses the increase in coverage in percentage points. For example, an increase from 20% to 65% is a difference of 45 percentage points.
+The `covDiff_pp` field stores this coverage change in percentage points.
 
-We can sort the results to identify areas with the largest changes.
+We can sort the results from largest to smallest change using `arrange(desc())`. The code below displays the six areas with the largest increases in coverage.
 
 ```{r buffer-access-inspect-differences, warning = FALSE, message = FALSE}
 areas.3435 %>%
@@ -258,9 +270,11 @@ areas.3435 %>%
   head()
 ```
 
-A large increase indicates that coverage is sensitive to the distance threshold within the range examined. A small increase should be interpreted alongside the original coverage values: an area may already have high coverage at one mile, or it may remain poorly covered even at two miles.
+A large increase indicates that a substantial share of the area falls outside the one-mile buffers but inside the two-mile buffers. Its coverage result is therefore sensitive to the distance threshold within the range examined.
 
-Because the two-mile buffers contain the one-mile buffers, two-mile coverage should be at least as large as one-mile coverage, allowing for minor numerical rounding differences. The clinic counts and density measures remain unchanged because the ZIP Code boundaries and clinic locations have not changed.
+A small increase should be interpreted alongside the original coverage values. An area may already have high coverage at one mile, leaving little additional area to cover. Alternatively, it may remain poorly covered even at two miles.
+
+Because the two-mile buffers contain the one-mile buffers, the coverage change should be nonnegative, allowing for minor numerical rounding differences. The clinic counts and resource density remain unchanged because the clinic locations and ZIP Code boundaries have not changed.
 
 Increasing the buffer radius changes our definition of proximity; it does not represent an improvement in actual services. Both buffer distances describe straight-line proximity rather than travel distances or travel times.
 
