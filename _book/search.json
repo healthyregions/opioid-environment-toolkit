@@ -785,5 +785,16 @@
       "PART 3",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Buffer-Based Access</span>"
     ]
+  },
+  {
+    "objectID": "advancedmetrics.html",
+    "href": "advancedmetrics.html",
+    "title": "10  Advanced Access Metrics",
+    "section": "",
+    "text": "10.1 Overview",
+    "crumbs": [
+      "PART 3",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Advanced Access Metrics</span>"
+    ]
   }
 ]
