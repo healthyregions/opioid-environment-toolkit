@@ -22,6 +22,7 @@ book:
       - sdohplace.qmd
     - part: "PART 3"
       chapters:
+      - measuringaccess.qmd
       - bufferaccess.qmd
       - nearestresource.qmd
       - advancedmetrics.qmd

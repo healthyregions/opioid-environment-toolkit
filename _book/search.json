@@ -796,5 +796,16 @@
       "PART 3",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>Advanced Access Metrics</span>"
     ]
+  },
+  {
+    "objectID": "measuringaccess.html",
+    "href": "measuringaccess.html",
+    "title": "Measuring Spatial Access",
+    "section": "",
+    "text": "In Part 1, we learned how to work with spatial data, map resource locations, and create buffers around providers. In Part 2, we explored sources of population and community data that can help us understand opioid environments. We can now bring these skills together to examine spatial access to resources.\nWhere are resources located, and how evenly are they distributed? How close are communities to a provider? How might the number of people seeking services affect access? These questions describe related aspects of spatial access, but each requires a different measure.\nResource density describes how many resources are available relative to an area’s size. Proximity describes how close places are to resources. For example, we can measure the distance to the nearest clinic or calculate the percentage of an area within a specified distance of a provider. An area with no clinics inside its boundaries may still be close to a clinic in a neighboring area.\nThese measures help describe the geographic distribution of resources, but they do not directly account for how many people may need them. Measures that incorporate supply and demand add another perspective by considering available resources alongside the populations that may use them. Two communities with similar distances to a clinic may face different levels of competition for its services.\nIn this part of the toolkit, we will explore three approaches:\n\nBuffer-Based Access: Count clinics within each ZIP Code area, calculate clinics per square mile, and measure the percentage of each area covered by one-mile and two-mile provider buffers.\nNearest Resource Analysis: Calculate the straight-line distance from each area’s centroid to its nearest clinic.\nAdvanced Access Metrics: Introduce the two-step floating catchment area method (2SFCA) and the rational agent access model (RAAM), using population, resource supply, and travel-time data in an Illinois example.\n\nThe first two chapters use the same Chicago methadone clinic locations and ZIP Code boundaries, allowing us to compare different ways of describing access using familiar data. The final chapter introduces additional inputs to examine how travel time and demand influence access.\nEach approach answers a different question. Buffer coverage describes the share of an area near a provider, rather than the share of residents served. Distance from a centroid provides a summary of proximity, rather than the journey experienced by every resident. Measures that include demand offer additional information, but their interpretation still depends on how supply, demand, and travel are represented.\nSpatial access is one aspect of access to care. These measures do not, by themselves, establish whether services are affordable, accepting new patients, or appropriate for an individual’s needs. Throughout the following chapters, we will consider what each measure tells us and how to interpret its results.",
+    "crumbs": [
+      "PART 3",
+      "Measuring Spatial Access"
+    ]
   }
 ]
