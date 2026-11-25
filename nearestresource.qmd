@@ -4,7 +4,7 @@
 
 Spatial access to specific resources is often considered a multidimensional concept, though geographic distance is central to many measures of access. **Distance to the nearest resource** is a common metric used to characterize geographic access.
 
-In this tutorial, we demonstrate how to calculate the minimum straight-line distance from a ZIP Code Tabulation Area (ZCTA) centroid to a set of resources, such as methadone clinics. Each ZCTA will be assigned a minimum distance access metric representing the distance from its centroid to the nearest resource.
+In this tutorial, we demonstrate how to calculate the minimum straight-line distance from each Chicago ZIP Code area centroid to the nearest methadone clinic in our dataset. Each area will be assigned a minimum distance metric representing proximity from its centroid to the nearest clinic.
 
 Our objectives are thus to:
 
@@ -243,7 +243,21 @@ tm_shape(minDistSf) +
   tm_layout(frame = FALSE)
 ```
 
-Smaller values indicate that an area's centroid is closer to a clinic in our dataset. These values represent straight-line distances, not travel distances or travel times. They also describe access from each area's centroid rather than from every resident's location.
+### Interpret Distance Measures
+
+Smaller values indicate that an area's centroid is closer to a clinic in our dataset. These values describe proximity from the centroid rather than from every resident's location.
+
+When interpreting the results, it helps to distinguish three measures:
+
+- **Straight-line distance** measures the direct distance between two locations. This is the measure calculated in this chapter.
+- **Network distance** measures the length of a route along a transportation network, such as roads or walking paths. Rivers, limited crossings, and road layouts can make this route longer than the straight-line distance.
+- **Travel time** measures how long a journey takes. It depends on the route, mode of transportation, and travel conditions.
+
+The nearest clinic by straight-line distance may therefore differ from the nearest clinic by road distance or travel time. For example, a clinic across a river may appear close on the map but require a longer journey to reach a bridge.
+
+Calculating network distance or travel time requires additional routing data or a routing service; converting the straight-line distances from feet to miles does not change the type of distance measured.
+
+Like the buffer-based measures in the previous chapter, nearest distance describes proximity without directly incorporating population demand or treatment capacity. In the Advanced Access Metrics chapter, we will use prepared travel-time data alongside resource supply and population-based demand to explore these additional aspects of access.
 
 ## Save Data
 
