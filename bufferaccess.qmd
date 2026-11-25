@@ -4,7 +4,7 @@
 
 In Part 1, we created buffers around methadone clinics in Chicago to visualize areas within one and two miles of a provider. These maps helped us explore the geographic distribution of resources and their surrounding areas. We can now build on that analysis by calculating measures that allow us to compare resource availability and coverage across communities.
 
-Resource counts describe how many clinics are located within an area, while resource density expresses that count relative to the area's size. Buffer-based coverage provides another perspective: how much of an area falls within a specified distance of at least one clinic. An area with no clinics inside its boundaries may still be partially covered by a buffer around a nearby clinic outside those boundaries.
+Resource counts describe how many clinics are located within an area. **Resource density** expresses that count relative to the area's size, measured here as clinics per square mile. **Buffer-based coverage** describes area-based proximity: how much of an area lies within a specified distance of at least one clinic. These measures capture different aspects of resource availability. An area with no clinics inside its boundaries may still be partially covered by a buffer around a nearby clinic. None of these measures directly incorporates population demand.
 
 In this tutorial, we use the same Chicago methadone clinic locations and ZIP Code area boundaries introduced in Part 1. We will calculate clinic counts and density for each ZIP Code area, then use provider buffers to calculate the percentage of each area's surface covered within one and two miles of a clinic. Comparing these distances will help us understand how the choice of buffer radius affects our results. These coverage measures describe area-based proximity using straight-line distance. They do not represent the percentage of residents served or actual travel times.
 
@@ -75,7 +75,15 @@ head(areas)
 
 The clinic dataset contains point locations, while the area dataset contains Chicago ZIP Code area boundaries. The `zip` field identifies each area and will be retained alongside the measures calculated in this tutorial.
 
-Next, transform both datasets to the same projected coordinate reference system (CRS) so that we can calculate areas and create distance-based buffers. As in Part 1, we will use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. This CRS uses US survey feet. We first define the target CRS, then apply it to both datasets using `st_transform()`.
+Next, transform both datasets to the same projected coordinate reference system (CRS) for area and buffer calculations. As in Part 1, we will use NAD83 / Illinois East (ftUS), with an EPSG code of 3435. We first define the target CRS, then apply it to both datasets using `st_transform()`.
+
+::: callout-tip
+## Check your CRS and units
+
+Matching coordinate systems is only part of the check—coordinate units also matter. For this workflow, use a projected CRS with linear units, such as feet or meters, rather than latitude and longitude in degrees.
+
+EPSG: 3435 uses US survey feet, so a buffer distance entered as a plain number would be interpreted in feet, not miles. We will use `units` to specify buffer distances in miles explicitly and convert area measurements to square miles.
+:::
 
 ```{r buffer-access-transform-crs, warning = FALSE, message = FALSE}
 CRS.new <- st_crs(3435)
@@ -173,6 +181,52 @@ clinicBuffers2mi <- st_buffer(
 )
 ```
 
+Before combining the buffers, let’s visually inspect them alongside the clinic locations and ZIP Code boundaries.
+
+First, plot the one-mile buffers. The blue outlines show the buffers, and the red points show the clinics.
+
+```{r buffer-access-check-buffers-1mi, warning = FALSE, message = FALSE}
+plot(
+  st_geometry(areas.3435),
+  border = "grey",
+  main = "One-Mile Clinic Buffers"
+)
+plot(
+  st_geometry(clinicBuffers1mi),
+  add = TRUE,
+  border = "blue"
+)
+plot(
+  st_geometry(metClinics.3435),
+  add = TRUE,
+  col = "red",
+  pch = 20
+)
+```
+
+Next, plot the two-mile buffers using the same ZIP Code boundaries as the map extent.
+
+```{r buffer-access-check-buffers-2mi, warning = FALSE, message = FALSE}
+plot(
+  st_geometry(areas.3435),
+  border = "grey",
+  main = "Two-Mile Clinic Buffers"
+)
+plot(
+  st_geometry(clinicBuffers2mi),
+  add = TRUE,
+  border = "blue"
+)
+plot(
+  st_geometry(metClinics.3435),
+  add = TRUE,
+  col = "red",
+  pch = 20
+)
+```
+
+Each buffer should be centered on a clinic, and the two-mile buffers should extend farther than the one-mile buffers. Overlapping buffers and buffers extending across ZIP Code boundaries are expected. If the buffers appear unusually small or large, or do not align with the clinic locations, check the CRS and distance units before proceeding.
+
 Next, combine the buffers for each distance using `st_union()`. This ensures that locations covered by multiple clinic buffers are counted only once when calculating coverage.
 
 ```{r buffer-access-union-buffers, warning = FALSE, message = FALSE}
@@ -186,7 +240,53 @@ The resulting geometries represent the combined areas within one and two miles o
 
 We will calculate coverage by intersecting each ZIP Code area with the combined provider buffers, measuring the intersecting area, and dividing it by the original area's total size.
 
-Because we will repeat this calculation for two buffer distances, we can define a small helper function. For each area, the function returns the total covered area in square miles. Areas that do not overlap the buffers receive a value of zero.
+Let’s first work through this calculation for a single ZIP Code area using the one-mile buffers.
+
+**Calculate coverage for one area**
+
+Select the first ZIP Code area. The `[1, ]` selects the first row while retaining all columns, including its geometry.
+
+```{r buffer-access-example-area, warning = FALSE, message = FALSE}
+exampleArea <- areas.3435[1, ]
+```
+
+Use `st_intersection()` to find the portion of this area that overlaps the combined one-mile buffers. We use `st_geometry()` because this step only needs the area's shape.
+
+```{r buffer-access-example-intersection, warning = FALSE, message = FALSE}
+exampleOverlap <- st_intersection(
+  st_geometry(exampleArea),
+  unionBuffers1mi
+)
+```
+
+Next, measure the overlapping area with `st_area()` and sum the resulting areas. Convert the total to square miles so that it matches the units of `area_sqmi`.
+
+```{r buffer-access-example-covered-area, warning = FALSE, message = FALSE}
+exampleCoveredArea <- sum(st_area(exampleOverlap))
+
+exampleCoveredSqMi <- as.numeric(
+  set_units(exampleCoveredArea, "mi^2")
+)
+```
+
+Divide the covered area by the ZIP Code area's total size and multiply by 100 to calculate coverage as a percentage.
+
+```{r buffer-access-example-percentage, warning = FALSE, message = FALSE}
+exampleCoveragePct <- exampleCoveredSqMi / exampleArea$area_sqmi * 100
+
+data.frame(
+  zip = exampleArea$zip,
+  cov1mi_pct = exampleCoveragePct
+)
+```
+
+The result tells us what percentage of this ZIP Code area lies within one mile of at least one clinic in our dataset. Because we combined the provider buffers before calculating the intersection, locations near multiple clinics are counted only once.
+
+**Repeat the calculation with a function**
+
+We need to repeat these steps for every ZIP Code area and for both buffer distances. Rather than writing the same calculation each time, we can place the steps in a helper function called `calculateCoveredArea()`.
+
+The function takes two inputs: `areaData`, containing the area boundaries, and `bufferUnion`, containing the combined provider buffers. It returns the covered area in square miles for each ZIP Code area.
 
 ```{r buffer-access-coverage-function, warning = FALSE, message = FALSE}
 calculateCoveredArea <- function(areaData, bufferUnion) {
@@ -203,6 +303,8 @@ calculateCoveredArea <- function(areaData, bufferUnion) {
 }
 ```
 
+Inside the function, `seq_len(nrow(areaData))` supplies the row numbers, and `vapply()` repeats the calculation for each row. The index `i` selects the current area's geometry, replacing the single area we selected in our example. The final `numeric(1)` specifies that each calculation should return one numeric value. Areas with no overlap receive a covered area of zero.
+
 Apply the function to the one-mile and two-mile buffers. The returned values follow the same row order as `areas.3435`.
 
 ```{r buffer-access-calculate-covered-area, warning = FALSE, message = FALSE}
@@ -210,7 +312,7 @@ covered1mi <- calculateCoveredArea(areas.3435, unionBuffers1mi)
 covered2mi <- calculateCoveredArea(areas.3435, unionBuffers2mi)
 ```
 
-We can now divide the covered areas by the total area measurements calculated in the previous section and multiply by 100 to obtain percentages.
+As in our single-area example, divide the covered areas by the total area measurements and multiply by 100 to obtain percentages.
 
 ```{r buffer-access-calculate-coverage, warning = FALSE, message = FALSE}
 areas.3435 <- areas.3435 %>%
@@ -220,7 +322,7 @@ areas.3435 <- areas.3435 %>%
   )
 ```
 
-Inspect the coverage measures.
+Inspect the coverage measures. The one-mile coverage for the first row should match the result from our single-area example.
 
 ```{r buffer-access-inspect-coverage, warning = FALSE, message = FALSE}
 areas.3435 %>%
@@ -384,9 +486,11 @@ Consider the following questions when comparing the maps:
 - Which areas show the largest increase in coverage between one and two miles?
 - Which areas remain poorly covered at both distances?
 
-Counts, density, and coverage should be interpreted together. An area may have a high clinic density but incomplete coverage if its clinics are concentrated in one location. Conversely, an area with no clinics inside its boundaries may still be close to clinics in neighboring areas.
+Counts, density, and coverage should be interpreted together. Density describes the number of clinics relative to area size, while coverage describes how much of an area is near at least one clinic. An area may have a high clinic density but incomplete coverage if its clinics are concentrated in one location. Conversely, an area with no clinics inside its boundaries may still be close to clinics in neighboring areas.
 
-These measures describe the geographic distribution of the clinics included in our dataset. They do not account for treatment capacity, competing demand, transportation barriers, or whether residents can use a particular clinic. We will introduce measures that incorporate supply and demand in the Advanced Metrics chapter.
+These calculations use clinic locations and area boundaries, without incorporating population demand. For example, two areas with the same clinic density and buffer coverage could have very different numbers of residents who may need services. Similar values therefore do not necessarily indicate that resources are equally adequate for the populations they serve.
+
+The measures also do not account for treatment capacity, transportation barriers, or whether residents can use a particular clinic. In the Advanced Access Metrics chapter, we will introduce approaches that combine resource supply, population-based demand, and travel time.
 
 ## Save Data
 
