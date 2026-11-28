@@ -4261,8 +4261,11 @@ vertical-align: -.125em;
 
 <section id="overview" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">10.1</span> Overview</h2>
-<p>In the previous chapters, we measured resource availability using clinic counts, density, buffer coverage, and distance to the nearest clinic. These measures describe where resources are located and how close communities are to them, but they do not directly consider how many people may need those resources.</p>
-<p>In this chapter, we introduce two methods that bring together <strong>resource supply</strong>, <strong>population-based demand</strong>, and <strong>travel time</strong>. The <strong>two-step floating catchment area (2SFCA)</strong> method compares supply with demand within a specified travel-time threshold, then summarizes the resources available to each population location. The <strong>rational agent access model (RAAM)</strong> considers both travel time and competition for limited resources when estimating access costs.</p>
+<p>In the previous chapters, we measured resource availability using clinic counts, density, buffer coverage, and distance to the nearest clinic. These measures describe where resources are located and how close communities are to them, but they do not directly consider how many people may need those resources. In this chapter, we introduce two methods that bring together <strong>resource supply</strong>, <strong>population-based demand</strong>, and <strong>travel time</strong>.</p>
+<ul>
+<li>The <strong>two-step floating catchment area (2SFCA)</strong> method compares supply with demand within a specified travel-time threshold, then summarizes the resources available to each population location.</li>
+<li>The <strong>rational agent access model (RAAM)</strong> considers both travel time and competition for limited resources when estimating access costs.</li>
+</ul>
 <p>We will use an Illinois example with prepared datasets containing census tract boundaries, household population counts, Opioid Treatment Program (OTP) facility counts, and tract-to-tract driving times. Population represents potential demand, while the number of OTP facilities represents supply. These are simplified measures: population does not directly measure treatment need, and facility counts do not describe how many patients each provider can serve.</p>
 <p>We will calculate 2SFCA in R and run RAAM using Python’s <code>access</code> package through <code>reticulate</code>, keeping the workflow within RStudio. We will then map and compare the results. Higher 2SFCA scores indicate greater resource availability relative to demand, while lower RAAM costs indicate better access under the model’s assumptions.</p>
 <p>Our objectives are thus to:</p>
@@ -4795,12 +4798,12 @@ Geodetic CRS:  WGS 84
 <span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(raamResults)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        GEOID raam_cost
-1 17031823303 0.7300628
-2 17031810702 1.1221975
-3 17197880111 1.5570135
-4 17143003403 1.5142051
-5 17031843800 0.6407133
-6 17097863701 1.4292168</code></pre>
+1 17031802404  1.656177
+2 17031803005  1.650169
+3 17111871004  2.446367
+4 17043846314  1.660932
+5 17127970200  4.314403
+6 17097860907  1.610615</code></pre>
 </div>
 </div>
 <p>RAAM costs combine normalized travel and congestion components. They are not travel times in minutes and should not be interpreted as the duration of a trip.</p>

@@ -2,9 +2,10 @@
 
 ## Overview
 
-In the previous chapters, we measured resource availability using clinic counts, density, buffer coverage, and distance to the nearest clinic. These measures describe where resources are located and how close communities are to them, but they do not directly consider how many people may need those resources.
+In the previous chapters, we measured resource availability using clinic counts, density, buffer coverage, and distance to the nearest clinic. These measures describe where resources are located and how close communities are to them, but they do not directly consider how many people may need those resources. In this chapter, we introduce two methods that bring together **resource supply**, **population-based demand**, and **travel time**.
 
-In this chapter, we introduce two methods that bring together **resource supply**, **population-based demand**, and **travel time**. The **two-step floating catchment area (2SFCA)** method compares supply with demand within a specified travel-time threshold, then summarizes the resources available to each population location. The **rational agent access model (RAAM)** considers both travel time and competition for limited resources when estimating access costs.
+- The **two-step floating catchment area (2SFCA)** method compares supply with demand within a specified travel-time threshold, then summarizes the resources available to each population location.
+- The **rational agent access model (RAAM)** considers both travel time and competition for limited resources when estimating access costs.
 
 We will use an Illinois example with prepared datasets containing census tract boundaries, household population counts, Opioid Treatment Program (OTP) facility counts, and tract-to-tract driving times. Population represents potential demand, while the number of OTP facilities represents supply. These are simplified measures: population does not directly measure treatment need, and facility counts do not describe how many patients each provider can serve.
 
