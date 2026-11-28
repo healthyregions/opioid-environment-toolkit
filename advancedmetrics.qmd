@@ -2,4 +2,676 @@
 
 ## Overview
 
+In the previous chapters, we measured resource availability using clinic counts, density, buffer coverage, and distance to the nearest clinic. These measures describe where resources are located and how close communities are to them, but they do not directly consider how many people may need those resources.
 
+In this chapter, we introduce two methods that bring together **resource supply**, **population-based demand**, and **travel time**. The **two-step floating catchment area (2SFCA)** method compares supply with demand within a specified travel-time threshold, then summarizes the resources available to each population location. The **rational agent access model (RAAM)** considers both travel time and competition for limited resources when estimating access costs.
+
+We will use an Illinois example with prepared datasets containing census tract boundaries, household population counts, Opioid Treatment Program (OTP) facility counts, and tract-to-tract driving times. Population represents potential demand, while the number of OTP facilities represents supply. These are simplified measures: population does not directly measure treatment need, and facility counts do not describe how many patients each provider can serve.
+
+We will calculate 2SFCA in R and run RAAM using Python's `access` package through `reticulate`, keeping the workflow within RStudio. We will then map and compare the results. Higher 2SFCA scores indicate greater resource availability relative to demand, while lower RAAM costs indicate better access under the model's assumptions.
+
+Our objectives are thus to:
+
+- Load prepared Illinois demand, supply, travel-time, and boundary data
+- Calculate 2SFCA scores and RAAM access costs
+- Map and interpret the spatial patterns produced by each method
+- Compare the measures and save the results
+
+## Environment Setup
+
+This tutorial uses RStudio for data preparation, mapping, and export. We will calculate 2SFCA using the R package `accessibility` and calculate RAAM using Python's `access` package through `reticulate`. This allows us to run both methods within the same RStudio workflow.
+
+### Input/Output
+
+We will use four prepared Illinois datasets. Place these files in your project's `data` folder:
+
+- **Population demand:** `il_demand.csv`, containing household population counts for each census tract.
+- **Resource supply:** `il_supply.csv`, containing the number of OTP facilities in each tract with at least one facility.
+- **Travel times:** `il_travel_times.csv`, containing driving times in minutes from Illinois origin tracts to Illinois tracts with OTP facilities.
+- **Tract boundaries:** `il_tracts.gpkg`, containing Illinois census tract boundaries for mapping.
+
+These files were prepared from the original datasets by selecting Illinois records and organizing them into matching demand, supply, and travel-time tables. We will describe the sources and preparation steps when loading each dataset.
+
+Our outputs will include a CSV file containing tract identifiers and both access measures, along with a GeoPackage containing the same results and tract boundaries. We will also create maps to examine and compare the spatial patterns of 2SFCA scores and RAAM access costs.
+
+### Load Libraries
+
+We will use the following R packages in this tutorial:
+
+- `sf`: to read tract boundaries and work with spatial data
+- `dplyr`: to prepare tables and join results
+- `tmap`: to map access measures
+- `accessibility`: to calculate 2SFCA scores
+- `reticulate`: to run Python code from R for the RAAM calculation
+
+If any of these packages are not installed, run the following code in the R console.
+
+```{r advanced-access-install-packages, eval = FALSE}
+install.packages(
+  c("sf", "dplyr", "tmap", "accessibility", "reticulate"),
+  repos = "https://cloud.r-project.org"
+)
+```
+
+Then, load the libraries.
+
+```{r advanced-access-load-libraries, warning = FALSE, message = FALSE}
+library(sf)
+library(dplyr)
+library(tmap)
+library(accessibility)
+library(reticulate)
+```
+
+::: callout-tip
+## R and Python packages
+
+The R package `accessibility` and the Python package `access` are separate packages. We will use `accessibility` for 2SFCA and `access` for RAAM. Loading `reticulate` allows R to communicate with Python, but it does not install the Python `access` package. We will configure that environment in the next section.
+:::
+
+### Set Up Python for RAAM
+
+We will use `reticulate` to run Python's `access` package from R. The following code selects a Python environment managed by `reticulate` and declares the packages we need: `access` for RAAM and `pandas` for working with tables.
+
+Run this setup before importing Python packages.
+
+```{r advanced-access-python-requirements}
+Sys.setenv(RETICULATE_PYTHON = "managed")
+
+py_require(
+  packages = c("access", "pandas"),
+  python_version = ">=3.10,<3.13"
+)
+```
+
+Next, import the packages. The first import may take a few minutes while `reticulate` downloads Python and installs the required packages. An internet connection is needed for this initial setup.
+
+```{r advanced-access-import-python}
+access <- import("access", convert = FALSE)
+pd <- import("pandas", convert = FALSE)
+```
+
+Setting `convert = FALSE` keeps Python objects in their original format. We will explicitly convert the RAAM results back to R when they are ready for mapping.
+
+We can inspect the Python configuration to confirm which environment is being used.
+
+```{r advanced-access-check-python}
+py_config()
+```
+
+::: callout-tip
+## Already using Python in this R session?
+
+If Python has already been initialized in your current R session, restart R using **Session → Restart R**, then run the library-loading and Python setup code again. This allows the environment selection to take effect before Python starts.
+
+If R cannot find `py_require()`, update `reticulate` and restart R. This function requires `reticulate` version 1.41 or later.
+:::
+
+Once the imports complete without errors, we are ready to load the prepared Illinois datasets.
+
+## Load and Prepare Data
+
+We will load the prepared Illinois datasets and connect them using census tract identifiers. Each tract has an 11-character **GEOID**, which links population, resource supply, travel times, and boundaries.
+
+### Tract Boundaries and Population Demand
+
+The tract boundaries were prepared from the [2020 census tract boundary file](https://herop-geodata.s3.us-east-2.amazonaws.com/census/tract-2020-500k-shp.zip) by selecting Illinois records using the state FIPS code `"17"`. The resulting file, `il_tracts.gpkg`, contains the tract identifiers and geometries.
+
+First, load the boundaries.
+
+```{r advanced-access-load-boundaries, warning = FALSE, message = FALSE}
+ilTracts <- st_read(
+  "data/il_tracts.gpkg",
+  layer = "il_tracts"
+)
+
+head(ilTracts)
+```
+
+Our demand data were prepared from the [tract-level population table](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/tract-2020.csv). In the preparation notebook, we selected Illinois tracts and renamed the household population field, `TotPopHh`, to `demand`. The resulting table was saved as `il_demand.csv`.
+
+Here, household population represents potential demand. It does not directly measure the number of people seeking or needing OTP services. The preparation notebook also assigned zero to missing population values, so a zero in this prepared file may represent either a recorded zero or a missing value replaced during preparation.
+
+Load the demand table, keeping `GEOID` as a character column so that tract identifiers retain their formatting.
+
+```{r advanced-access-load-demand}
+demand <- read.csv(
+  "data/il_demand.csv",
+  colClasses = c(
+    GEOID = "character",
+    demand = "numeric"
+  )
+)
+
+head(demand)
+```
+
+Check that each tract identifier appears only once and that every tract in the boundary file has a corresponding demand record.
+
+```{r advanced-access-check-demand}
+anyDuplicated(demand$GEOID)
+
+all(ilTracts$GEOID %in% demand$GEOID)
+```
+
+The expected results are `0`, indicating no duplicate identifiers, and `TRUE`, indicating that every boundary tract has a matching demand record.
+
+We can now attach demand to the boundaries using `GEOID`.
+
+```{r advanced-access-join-demand}
+ilTracts <- ilTracts %>%
+  left_join(demand, by = "GEOID")
+
+ilTracts %>%
+  st_drop_geometry() %>%
+  select(GEOID, demand) %>%
+  head()
+```
+
+The `demand` table will be used in the access calculations, while `ilTracts` retains the boundaries for mapping. Next, we will load the OTP resource supply data.
+
+### OTP Resource Supply
+
+Our supply data were prepared from the [2025 OTP provider dataset](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/Opioid_Treatemnt_Programs_2025_G.csv). In the preparation notebook, we converted provider coordinates into spatial points, matched those points to Illinois census tracts, and counted the facilities within each tract.
+
+The resulting file, `il_supply.csv`, contains one row for each tract with at least one matched OTP facility. The `supply` field records the number of facilities in that tract. Tracts without matched facilities are not included in this table.
+
+Load the supply data, keeping `GEOID` as a character column.
+
+```{r advanced-access-load-supply}
+supply <- read.csv(
+  "data/il_supply.csv",
+  colClasses = c(
+    GEOID = "character",
+    supply = "numeric"
+  )
+)
+
+head(supply)
+```
+
+Check that each supply tract appears only once and that all supply tracts are present in our Illinois boundary data.
+
+```{r advanced-access-check-supply}
+anyDuplicated(supply$GEOID)
+
+all(supply$GEOID %in% ilTracts$GEOID)
+```
+
+The expected results are `0` and `TRUE`.
+
+We can also inspect the number of tracts with facilities and the total number of facilities represented in the table.
+
+```{r advanced-access-supply-summary}
+data.frame(
+  supply_tracts = nrow(supply),
+  otp_facilities = sum(supply$supply)
+)
+```
+
+Facility count provides a simple measure of resource supply. Each facility contributes one unit, regardless of its staffing, treatment capacity, or number of available appointments. Our results therefore describe access to facilities rather than access to a measured number of treatment slots.
+
+For this example, facilities are grouped by census tract because our travel-time data connect origin tracts to destination tracts. Facilities within the same tract will share the same tract-to-tract travel time from a given origin.
+
+The supply table includes only facilities matched to Illinois tracts. Access to providers in neighboring states is outside the scope of this example. Next, we will load the travel times connecting demand tracts to supply tracts.
+
+### Travel-Time Data
+
+Our travel-time data were prepared from the [tract-to-tract driving-time matrix](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/TCM-SVI2022-Drive-192km-90min.parquet). In the preparation notebook, we retained records whose origins were Illinois demand tracts and whose destinations were Illinois tracts with OTP facilities. We then kept travel times of up to 90 minutes and saved the resulting table as `il_travel_times.csv`.
+
+The file contains three columns:
+
+- `origin`: the GEOID of the demand tract
+- `dest`: the GEOID of the tract containing OTP facilities
+- `cost`: driving time in minutes
+
+Load the table, keeping both tract identifiers as character columns.
+
+```{r advanced-access-load-travel-times}
+travelTimes <- read.csv(
+  "data/il_travel_times.csv",
+  colClasses = c(
+    origin = "character",
+    dest = "character",
+    cost = "numeric"
+  )
+)
+
+head(travelTimes)
+```
+
+Each row represents a recorded trip from one demand tract to one supply tract. These are tract-to-tract travel times, rather than routes from individual residents' homes to specific clinic addresses.
+
+Check that the origin and destination identifiers match our demand and supply tables.
+
+```{r advanced-access-check-travel-ids}
+all(travelTimes$origin %in% demand$GEOID)
+
+all(travelTimes$dest %in% supply$GEOID)
+```
+
+Both results should be `TRUE`.
+
+Next, check for duplicate origin–destination pairs and inspect the travel-time values.
+
+```{r advanced-access-check-travel-values}
+anyDuplicated(travelTimes[c("origin", "dest")])
+
+summary(travelTimes$cost)
+
+sum(is.na(travelTimes$cost))
+```
+
+The duplicate check should return `0`. Travel times should be nonnegative, no greater than 90 minutes, and have no missing values.
+
+The table contains only the origin–destination pairs available in the source matrix and retained during preparation. An absent pair should not be interpreted as a zero-minute trip. We retain recorded zero-minute values, but these do not mean that every resident can reach a clinic instantly.
+
+We can also check how many demand tracts have at least one travel-time record to an OTP supply tract.
+
+```{r advanced-access-check-travel-coverage}
+data.frame(
+  demand_tracts = nrow(demand),
+  tracts_with_travel_records = sum(
+    demand$GEOID %in% travelTimes$origin
+  ),
+  tracts_without_travel_records = sum(
+    !demand$GEOID %in% travelTimes$origin
+  )
+)
+```
+
+A tract without travel-time records has no recorded connection to an included supply tract in this prepared table. This does not establish that no provider is reachable in practice. We will distinguish missing connections from calculated access values when interpreting the results.
+
+The 90-minute limit describes the travel-time records retained in our input data. It does not set the catchment threshold for 2SFCA or the travel-cost parameter for RAAM; we will specify those separately when calculating each measure.
+
+We now have the demand, supply, travel-time, and boundary data needed for the access calculations.
+
+## Calculate 2SFCA
+
+The **two-step floating catchment area (2SFCA)** method combines resource supply, population demand, and travel time. We will use a 30-minute driving threshold to define which demand locations can reach each supply location.
+
+The calculation has two steps:
+
+1. For each supply tract, divide its number of OTP facilities by the total population in demand tracts within the travel-time threshold.
+2. For each demand tract, add the supply-to-demand ratios of the supply tracts reachable within that threshold.
+
+Higher scores indicate greater resource availability relative to surrounding demand. Within the catchment, this version of 2SFCA gives equal weight to all included trips.
+
+### Prepare the Calculation Tables
+
+The `accessibility` package requires a travel table with identifiers named `from_id` and `to_id`, and a second table containing an `id`, demand, and supply for each tract.
+
+First, rename the travel-table identifiers.
+
+```{r advanced-access-2sfca-travel}
+travel2sfca <- travelTimes %>%
+  rename(
+    from_id = origin,
+    to_id = dest
+  )
+```
+
+Next, join supply to the demand table. Tracts absent from our supply table have no matched OTP facilities in the prepared dataset, so we assign them a supply of zero.
+
+```{r advanced-access-2sfca-land-use}
+landUse <- demand %>%
+  left_join(supply, by = "GEOID") %>%
+  mutate(supply = coalesce(supply, 0)) %>%
+  rename(id = GEOID)
+
+head(landUse)
+```
+
+### Calculate Access Scores
+
+Use `floating_catchment_area()` with `method = "2sfca"`. The binary decay function applies the selected travel-time cutoff.
+
+```{r advanced-access-calculate-2sfca}
+catchmentMinutes <- 30
+
+access2sfca <- accessibility::floating_catchment_area(
+  travel_matrix = travel2sfca,
+  land_use_data = landUse,
+  opportunity = "supply",
+  travel_cost = "cost",
+  demand = "demand",
+  method = "2sfca",
+  decay_function = accessibility::decay_binary(
+    cutoff = catchmentMinutes
+  )
+)
+```
+
+The output column `supply` contains the calculated access score. Rename it and multiply by 10,000 to express the score per 10,000 people in our household-population demand measure.
+
+```{r advanced-access-format-2sfca}
+access2sfca <- as.data.frame(access2sfca) %>%
+  rename(
+    GEOID = id,
+    sfca_score = supply
+  ) %>%
+  mutate(sfca_10k = sfca_score * 10000)
+
+head(access2sfca)
+```
+
+This is a catchment-based access score, not simply the number of facilities inside a tract divided by its population. Facilities outside a tract can contribute if they are reachable within the selected threshold.
+
+### Map and Interpret the Results
+
+Join the scores to the tract boundaries using `GEOID`.
+
+```{r advanced-access-join-2sfca}
+ilAccess <- ilTracts %>%
+  left_join(access2sfca, by = "GEOID")
+
+summary(ilAccess$sfca_10k)
+
+sum(is.na(ilAccess$sfca_10k))
+```
+
+Keep missing scores as `NA`. A missing result is different from a calculated score of zero and should not automatically be replaced with zero.
+
+Now map the scores using five quantile classes. These classes group tracts with calculated scores into approximately equal-sized groups.
+
+```{r advanced-access-map-2sfca, warning = FALSE, message = FALSE}
+tmap_mode("plot")
+
+tm_shape(ilAccess) +
+  tm_polygons(
+    fill = "sfca_10k",
+    fill.scale = tm_scale_intervals(
+      style = "quantile",
+      n = 5,
+      values = "brewer.blues",
+      value.na = "grey85",
+      label.na = "No calculated score"
+    ),
+    fill.legend = tm_legend(
+      title = "2SFCA Score\n(per 10,000 People)"
+    ),
+    col = "grey65",
+    lwd = 0.2,
+    col_alpha = 0.6
+  ) +
+  tm_title(
+    "Access to OTP Facilities in Illinois\n2SFCA: 30-Minute Catchment",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+```
+
+Higher scores indicate more facility supply relative to the population sharing access to that supply. A high score does not necessarily mean that a tract contains many facilities: a small number of facilities serving a smaller surrounding population can also produce a relatively high score.
+
+A calculated score of zero indicates no positive supply contribution under the selected threshold and available travel records. Grey areas have no calculated score and require checking against the input data.
+
+These results reflect the facilities, population measure, and travel connections included in our Illinois example. They do not measure treatment capacity or account for cross-state access. Next, we will calculate RAAM to examine access through a model that combines travel cost and competition for resources.
+
+## Calculate RAAM
+
+The **rational agent access model (RAAM)** considers both the cost of traveling to resources and competition for those resources. A nearby facility may attract substantial demand, while traveling farther may provide access to a less crowded alternative.
+
+Here, congestion refers to modeled demand relative to resource supply, rather than road traffic congestion. Because our supply measure is facility count, the model represents competition for facilities rather than measured appointment availability.
+
+RAAM produces an access cost: **lower values indicate better access** under the model's assumptions.
+
+### Prepare the Python Tables
+
+We will use the same demand, supply, and travel-time tables as before. Convert these R tables into Python pandas DataFrames using `r_to_py()`.
+
+```{r advanced-access-raam-python-tables}
+demandPy <- r_to_py(as.data.frame(demand))
+supplyPy <- r_to_py(as.data.frame(supply))
+travelPy <- r_to_py(as.data.frame(travelTimes))
+```
+
+Import the RAAM module from Python's `access` package.
+
+```{r advanced-access-import-raam}
+raamModule <- import("access.raam", convert = FALSE)
+```
+
+### Calculate Access Costs
+
+We will use `tau = 30`. This parameter scales travel time relative to the congestion component: increasing it reduces the contribution of a given travel time to the total cost.
+
+Unlike the 30-minute threshold used for 2SFCA, `tau = 30` does not exclude trips longer than 30 minutes. RAAM will use the available connections in our prepared travel-time table, which retains trips up to 90 minutes.
+
+Run the model using `GEOID` to identify demand and supply locations. The calculation may take a little time.
+
+```{r advanced-access-calculate-raam}
+raamPy <- raamModule$raam(
+  demand_df = demandPy,
+  supply_df = supplyPy,
+  cost_df = travelPy,
+  demand_index = "GEOID",
+  demand_name = "demand",
+  supply_index = "GEOID",
+  supply_name = "supply",
+  cost_origin = "origin",
+  cost_dest = "dest",
+  cost_name = "cost",
+  tau = 30,
+  max_cycles = 150L,
+  verbose = FALSE
+)
+```
+
+The model returns a Python Series indexed by tract identifier. Convert it into a table with columns named `GEOID` and `raam_cost`, then bring it back into R.
+
+```{r advanced-access-convert-raam}
+raamTablePy <- raamPy$rename_axis("GEOID")$reset_index(
+  name = "raam_cost"
+)
+
+raamResults <- py_to_r(raamTablePy)
+
+head(raamResults)
+```
+
+RAAM costs combine normalized travel and congestion components. They are not travel times in minutes and should not be interpreted as the duration of a trip.
+
+### Map and Interpret the Results
+
+Join the RAAM results to `ilAccess`, which already contains the tract boundaries and 2SFCA scores.
+
+```{r advanced-access-join-raam}
+ilAccess <- ilAccess %>%
+  left_join(raamResults, by = "GEOID")
+
+summary(ilAccess$raam_cost)
+
+sum(is.na(ilAccess$raam_cost))
+```
+
+The implementation excludes locations with nonpositive demand and does not return scores for demand locations absent from the travel table. Keep missing results as `NA`; replacing them with zero would incorrectly suggest very low access costs.
+
+Map the RAAM costs using five quantile classes and an orange color palette. Darker shades represent higher costs and therefore poorer modeled access.
+
+```{r advanced-access-map-raam, warning = FALSE, message = FALSE}
+tmap_mode("plot")
+
+tm_shape(ilAccess) +
+  tm_polygons(
+    fill = "raam_cost",
+    fill.scale = tm_scale_intervals(
+      style = "quantile",
+      n = 5,
+      values = "brewer.oranges",
+      value.na = "grey85",
+      label.na = "No calculated score"
+    ),
+    fill.legend = tm_legend(
+      title = "RAAM Access Cost\nLower = Better Access"
+    ),
+    col = "grey65",
+    lwd = 0.2,
+    col_alpha = 0.6
+  ) +
+  tm_title(
+    "Access to OTP Facilities in Illinois\nRAAM: tau = 30 Minutes",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+```
+
+Higher costs can reflect longer travel times, greater competition for available facilities, or both. Lower costs indicate a more favorable combination of these factors within the model.
+
+These results depend on our population proxy, facility counts, available travel connections, and Illinois-only study boundary. They describe modeled access rather than observed patient choices or waiting times.
+
+Next, we will compare the spatial patterns of RAAM and 2SFCA, keeping in mind that the two measures have different scales and opposite directions of interpretation.
+
+## Compare and Interpret the Results
+
+The two maps describe access from different perspectives. 2SFCA summarizes the supply-to-demand ratios available within a selected catchment, while RAAM estimates a combined travel and congestion cost.
+
+Keep the direction of each measure in mind:
+
+| Measure | Interpretation | Better access |
+|---|---|---|
+| 2SFCA | Resource availability relative to surrounding demand | Higher scores |
+| RAAM | Combined travel and congestion cost | Lower costs |
+
+In our maps, darker blue indicates higher 2SFCA scores, while lighter orange indicates lower RAAM costs. Compare the geographic patterns rather than matching colors between the maps.
+
+Place the maps side by side to compare their spatial patterns. Each map retains its own legend because the measures have different scales and directions of interpretation.
+
+```{r advanced-access-compare-maps, fig.width = 14, fig.height = 9, warning = FALSE, message = FALSE}
+tmap_mode("plot")
+
+map2sfca <- tm_shape(ilAccess) +
+  tm_polygons(
+    fill = "sfca_10k",
+    fill.scale = tm_scale_intervals(
+      style = "quantile",
+      n = 5,
+      values = "brewer.blues",
+      value.na = "grey85",
+      label.na = "No calculated score"
+    ),
+    fill.legend = tm_legend(
+      title = "2SFCA per 10,000 People\nHigher = Better Access"
+    ),
+    col = "grey65",
+    lwd = 0.2,
+    col_alpha = 0.6
+  ) +
+  tm_title(
+    "2SFCA: 30-Minute Catchment",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+
+mapRaam <- tm_shape(ilAccess) +
+  tm_polygons(
+    fill = "raam_cost",
+    fill.scale = tm_scale_intervals(
+      style = "quantile",
+      n = 5,
+      values = "brewer.oranges",
+      value.na = "grey85",
+      label.na = "No calculated score"
+    ),
+    fill.legend = tm_legend(
+      title = "RAAM Access Cost\nLower = Better Access"
+    ),
+    col = "grey65",
+    lwd = 0.2,
+    col_alpha = 0.6
+  ) +
+  tm_title(
+    "RAAM: tau = 30 Minutes",
+    position = tm_pos_out("center", "top"),
+    size = 1
+  ) +
+  tm_layout(frame = FALSE)
+
+tmap_arrange(
+  map2sfca,
+  mapRaam,
+  ncol = 2
+)
+```
+
+We can inspect both measures alongside the tract identifiers.
+
+```{r advanced-access-compare-results}
+ilAccess %>%
+  st_drop_geometry() %>%
+  select(GEOID, demand, sfca_10k, raam_cost) %>%
+  head()
+```
+
+The scores have different scales and should not be subtracted or compared numerically as if they measured the same quantity. A 2SFCA score of 1 and a RAAM cost of 1 do not have equivalent meanings.
+
+Our parameter choices also differ. The 2SFCA calculation uses a 30-minute catchment, excluding contributions beyond that threshold. RAAM uses the available travel connections in our prepared table, up to 90 minutes, with `tau = 30` controlling the balance between travel and congestion costs. The maps therefore reflect differences in both methods and settings.
+
+When comparing the maps, consider:
+
+- Which areas have both higher 2SFCA scores and lower RAAM costs?
+- Where do the methods suggest different patterns of access?
+- Which areas have no calculated score for one or both measures?
+
+Differences between the maps do not automatically indicate an error. A tract may have limited supply within the 2SFCA catchment but additional options farther away that contribute to the RAAM calculation. Conversely, proximity to facilities does not necessarily imply low RAAM costs if those facilities face substantial competing demand.
+
+Both measures depend on how we represent supply and demand. Here, household population is a proxy for potential demand, and facility counts represent supply without distinguishing treatment capacity. Travel times connect tracts rather than individual homes and clinic addresses. Restricting the example to Illinois also excludes cross-state connections.
+
+These results help us explore geographic patterns of potential access. They do not establish whether residents receive treatment or whether available services meet their needs.
+
+## Save Data
+
+We can now save the 2SFCA scores and RAAM access costs for future mapping and analysis.
+
+First, select the tract identifier, population demand, and access measures. Selecting columns from an `sf` object retains the geometry automatically.
+
+```{r advanced-access-prepare-output}
+accessResults <- ilAccess %>%
+  select(
+    GEOID,
+    demand,
+    sfca_score,
+    sfca_10k,
+    raam_cost
+  )
+
+head(accessResults)
+```
+
+The output contains the following fields:
+
+- `GEOID`: census tract identifier
+- `demand`: household population used as potential demand
+- `sfca_score`: original 2SFCA score using a 30-minute catchment
+- `sfca_10k`: 2SFCA score multiplied by 10,000
+- `raam_cost`: RAAM access cost calculated with `tau = 30`
+
+Higher 2SFCA scores indicate better access, while lower RAAM costs indicate better access. Missing scores remain missing in the exported files.
+
+Save a CSV file for tabular analysis. Use `st_drop_geometry()` to remove the geometry and `row.names = FALSE` to avoid adding an extra row-number column. Setting `na = "NA"` makes missing values explicit.
+
+```{r advanced-access-save-csv}
+write.csv(
+  st_drop_geometry(accessResults),
+  "data/il_advanced_access.csv",
+  row.names = FALSE,
+  na = "NA"
+)
+```
+
+Next, save a GeoPackage containing the same attributes and tract boundaries.
+
+```{r advanced-access-save-spatial}
+st_write(
+  accessResults,
+  "data/il_advanced_access.gpkg",
+  layer = "advanced_access",
+  delete_layer = TRUE
+)
+```
+
+The GeoPackage retains the geometries and coordinate reference system for future mapping. Setting `delete_layer = TRUE` replaces the `advanced_access` layer if it already exists.
+
+Both files contain the same access measures. When reading the CSV again, keep `GEOID` as a character column so that tract identifiers retain their formatting.
