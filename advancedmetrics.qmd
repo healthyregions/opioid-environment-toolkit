@@ -31,7 +31,11 @@ We will use four prepared Illinois datasets. Place these files in your project's
 - **Travel times:** `il_travel_times.csv`, containing driving times in minutes from Illinois origin tracts to Illinois tracts with OTP facilities.
 - **Tract boundaries:** `il_tracts.gpkg`, containing Illinois census tract boundaries for mapping.
 
-These files were prepared from the original datasets by selecting Illinois records and organizing them into matching demand, supply, and travel-time tables. We will describe the sources and preparation steps when loading each dataset.
+These data files were prepared from four source datasets: a national census tract population table containing the household population field `TotPopHh`, a 2025 OTP provider location dataset, a national tract-to-tract driving-time matrix, and 2020 census tract boundaries.
+
+We selected Illinois tracts and their population records, assigned OTP provider locations to tracts, and counted facilities within each tract. We then extracted travel-time records connecting Illinois demand tracts to Illinois tracts with OTP facilities, retaining trips of up to 90 minutes.
+
+The resulting files allow us to work with a smaller dataset without downloading and processing the national files during this tutorial. Links to the source files and details about each input are provided in the following Load and Prepare Data section.
 
 Our outputs will include a CSV file containing tract identifiers and both access measures, along with a GeoPackage containing the same results and tract boundaries. We will also create maps to examine and compare the spatial patterns of 2SFCA scores and RAAM access costs.
 
@@ -51,7 +55,7 @@ If any of these packages are not installed, run the following code in the R cons
 install.packages(
   c("sf", "dplyr", "tmap", "accessibility", "reticulate"),
   repos = "https://cloud.r-project.org"
-)
+  )
 ```
 
 Then, load the libraries.
@@ -67,12 +71,18 @@ library(reticulate)
 ::: callout-tip
 ## R and Python packages
 
-The R package `accessibility` and the Python package `access` are separate packages. We will use `accessibility` for 2SFCA and `access` for RAAM. Loading `reticulate` allows R to communicate with Python, but it does not install the Python `access` package. We will configure that environment in the next section.
+The R package `accessibility` and the Python package `access` are separate packages. We will use `accessibility` for 2SFCA and `access` for RAAM.
+
+Loading `reticulate` connects R to Python, but does not by itself install `access`. In the next section, we will use `reticulate` to prepare a Python environment and install the required Python packages.
 :::
 
 ### Set Up Python for RAAM
 
-We will use `reticulate` to run Python's `access` package from R. The following code selects a Python environment managed by `reticulate` and declares the packages we need: `access` for RAAM and `pandas` for working with tables.
+We will use `reticulate` to manage the Python environment needed for RAAM. A Python environment contains a Python installation and the packages available to it. Packages installed in one environment may not be available in another.
+
+Although we could install `access` manually, we would need to ensure that it is installed in the same environment that R uses. Letting `reticulate` manage this setup keeps the installation and use of Python packages together within our RStudio workflow.
+
+The following code selects a managed environment and uses `py_require()` to declare the packages we need: `access` for RAAM and `pandas` for working with tables. When we first call `import()`, `reticulate` prepares the environment and installs the required packages if needed.
 
 Run this setup before importing Python packages.
 
@@ -85,7 +95,7 @@ py_require(
 )
 ```
 
-Next, import the packages. The first import may take a few minutes while `reticulate` downloads Python and installs the required packages. An internet connection is needed for this initial setup.
+Next, import the packages. The initial setup may take a few minutes and requires an internet connection.
 
 ```{r advanced-access-import-python}
 access <- import("access", convert = FALSE)
@@ -94,11 +104,7 @@ pd <- import("pandas", convert = FALSE)
 
 Setting `convert = FALSE` keeps Python objects in their original format. We will explicitly convert the RAAM results back to R when they are ready for mapping.
 
-We can inspect the Python configuration to confirm which environment is being used.
-
-```{r advanced-access-check-python}
-py_config()
-```
+If both imports complete without errors, the required Python packages are available for the RAAM calculation.
 
 ::: callout-tip
 ## Already using Python in this R session?
@@ -108,7 +114,7 @@ If Python has already been initialized in your current R session, restart R usin
 If R cannot find `py_require()`, update `reticulate` and restart R. This function requires `reticulate` version 1.41 or later.
 :::
 
-Once the imports complete without errors, we are ready to load the prepared Illinois datasets.
+We are now ready to load the prepared Illinois datasets.
 
 ## Load and Prepare Data
 
@@ -116,7 +122,7 @@ We will load the prepared Illinois datasets and connect them using census tract 
 
 ### Tract Boundaries and Population Demand
 
-The tract boundaries were prepared from the [2020 census tract boundary file](https://herop-geodata.s3.us-east-2.amazonaws.com/census/tract-2020-500k-shp.zip) by selecting Illinois records using the state FIPS code `"17"`. The resulting file, `il_tracts.gpkg`, contains the tract identifiers and geometries.
+The tract boundaries were prepared from the [2020 census tract boundary](https://herop-geodata.s3.us-east-2.amazonaws.com/census/tract-2020-500k-shp.zip) file by selecting Illinois records using the state FIPS code `"17"`. The resulting file, `il_tracts.gpkg`, contains the tract identifiers and geometries.
 
 First, load the boundaries.
 
@@ -129,9 +135,9 @@ ilTracts <- st_read(
 head(ilTracts)
 ```
 
-Our demand data were prepared from the [tract-level population table](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/tract-2020.csv). In the preparation notebook, we selected Illinois tracts and renamed the household population field, `TotPopHh`, to `demand`. The resulting table was saved as `il_demand.csv`.
+Our demand data were prepared from the [tract-level population](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/tract-2020.csv) table. To prepare the input data, we selected Illinois tracts and renamed the household population field, `TotPopHh`, to `demand`. The resulting table was saved as `il_demand.csv`.
 
-Here, household population represents potential demand. It does not directly measure the number of people seeking or needing OTP services. The preparation notebook also assigned zero to missing population values, so a zero in this prepared file may represent either a recorded zero or a missing value replaced during preparation.
+Here, household population represents potential demand. It does not directly measure the number of people seeking or needing OTP services. When preparing the input data, we also replaced missing population values with zero. A zero in this file may therefore represent either a recorded zero or a missing value replaced during this step.
 
 Load the demand table, keeping `GEOID` as a character column so that tract identifiers retain their formatting.
 
@@ -169,11 +175,13 @@ ilTracts %>%
   head()
 ```
 
-The `demand` table will be used in the access calculations, while `ilTracts` retains the boundaries for mapping. Next, we will load the OTP resource supply data.
+The `demand` table will be used in the access calculations, while `ilTracts` retains the boundaries for mapping.
+
+Next, we will load the OTP resource supply data.
 
 ### OTP Resource Supply
 
-Our supply data were prepared from the [2025 OTP provider dataset](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/Opioid_Treatemnt_Programs_2025_G.csv). In the preparation notebook, we converted provider coordinates into spatial points, matched those points to Illinois census tracts, and counted the facilities within each tract.
+Our supply data were prepared from the [2025 OTP provider dataset](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/Opioid_Treatemnt_Programs_2025_G.csv). To prepare the input data, we converted provider coordinates into spatial points, matched those points to Illinois census tracts, and counted the facilities within each tract.
 
 The resulting file, `il_supply.csv`, contains one row for each tract with at least one matched OTP facility. The `supply` field records the number of facilities in that tract. Tracts without matched facilities are not included in this table.
 
@@ -214,11 +222,13 @@ Facility count provides a simple measure of resource supply. Each facility contr
 
 For this example, facilities are grouped by census tract because our travel-time data connect origin tracts to destination tracts. Facilities within the same tract will share the same tract-to-tract travel time from a given origin.
 
-The supply table includes only facilities matched to Illinois tracts. Access to providers in neighboring states is outside the scope of this example. Next, we will load the travel times connecting demand tracts to supply tracts.
+The supply table includes only facilities matched to Illinois tracts. Access to providers in neighboring states is outside the scope of this example.
+
+Next, we will load the travel times connecting demand tracts to supply tracts.
 
 ### Travel-Time Data
 
-Our travel-time data were prepared from the [tract-to-tract driving-time matrix](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/TCM-SVI2022-Drive-192km-90min.parquet). In the preparation notebook, we retained records whose origins were Illinois demand tracts and whose destinations were Illinois tracts with OTP facilities. We then kept travel times of up to 90 minutes and saved the resulting table as `il_travel_times.csv`.
+Our travel-time data were prepared from the [tract-to-tract driving-time matrix](https://matrices-collab-notebook.s3.us-east-2.amazonaws.com/TCM-SVI2022-Drive-192km-90min.parquet). To prepare the input data, we selected trips from Illinois demand tracts to Illinois tracts with OTP facilities, retained driving times of up to 90 minutes, and saved the resulting table as `il_travel_times.csv`.
 
 The file contains three columns:
 
@@ -283,7 +293,7 @@ data.frame(
 
 A tract without travel-time records has no recorded connection to an included supply tract in this prepared table. This does not establish that no provider is reachable in practice. We will distinguish missing connections from calculated access values when interpreting the results.
 
-The 90-minute limit describes the travel-time records retained in our input data. It does not set the catchment threshold for 2SFCA or the travel-cost parameter for RAAM; we will specify those separately when calculating each measure.
+The 90-minute limit describes the travel-time records retained in our input data. It does not set the catchment threshold for 2SFCA or the travel-cost parameter for RAAM. We will specify those separately when calculating each measure.
 
 We now have the demand, supply, travel-time, and boundary data needed for the access calculations.
 
